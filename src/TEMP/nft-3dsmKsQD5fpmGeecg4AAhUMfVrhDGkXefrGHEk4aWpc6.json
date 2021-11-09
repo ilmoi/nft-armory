@@ -1,0 +1,149 @@
+{
+  "mint": "3dsmKsQD5fpmGeecg4AAhUMfVrhDGkXefrGHEk4aWpc6",
+  "metadataPDA": "5B7YBcrNmvPcrkjFS2Xe1A7uJar5sWdscznvVHQouj5H",
+  "metadataOnchain": {
+    "key": 4,
+    "updateAuthority": "AGsJu1jZmFcVDPdm6bbaP54S3sMEinxmdiYWhaBBDNVX",
+    "mint": "3dsmKsQD5fpmGeecg4AAhUMfVrhDGkXefrGHEk4aWpc6",
+    "data": {
+      "name": "Aurorian #6489",
+      "symbol": "AUROR",
+      "uri": "https://ipfs.io/ipfs/QmTA8bzAdsSPMUVM9gUoi3WcRphEXznPkqUH3uvjA9fHw9",
+      "sellerFeeBasisPoints": 500,
+      "creators": [
+        {
+          "address": "75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA",
+          "verified": 1,
+          "share": 65
+        },
+        {
+          "address": "aury7LJUae7a92PBo35vVbP61GX8VbyxFKausvUtBrt",
+          "verified": 0,
+          "share": 35
+        }
+      ]
+    },
+    "primarySaleHappened": 0,
+    "isMutable": 0
+  },
+  "address": "HkWWB2JLHR9mLjQuQKVeLuFvYMxYGp92nttyfu2Z5CmZ",
+  "splTokenInfo": {
+    "mint": "3dsmKsQD5fpmGeecg4AAhUMfVrhDGkXefrGHEk4aWpc6",
+    "owner": "75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA",
+    "amount": "01",
+    "delegateOption": 0,
+    "delegate": null,
+    "state": 1,
+    "isNativeOption": 0,
+    "isNative": false,
+    "delegatedAmount": "00",
+    "closeAuthorityOption": 0,
+    "closeAuthority": null,
+    "address": "HkWWB2JLHR9mLjQuQKVeLuFvYMxYGp92nttyfu2Z5CmZ",
+    "isInitialized": true,
+    "isFrozen": false,
+    "rentExemptReserve": null
+  },
+  "splMintInfo": {
+    "mintAuthorityOption": 1,
+    "mintAuthority": "2yr1tme27wezcSNNx8zDDSFE48rkGe7BunWtxBVCs8gq",
+    "supply": "01",
+    "decimals": 0,
+    "isInitialized": true,
+    "freezeAuthorityOption": 1,
+    "freezeAuthority": "2yr1tme27wezcSNNx8zDDSFE48rkGe7BunWtxBVCs8gq"
+  },
+  "metadataExternal": {
+    "name": "Aurorian #6489",
+    "symbol": "AUROR",
+    "description": "The villagers from the whole country have gathered in Neftiville for the party, meet the Aurorians.",
+    "seller_fee_basis_points": 500,
+    "image": "https://arweave.net/vkk1RRYm9UsH7hIE92nBMcfYJBqBUwcYKh5zj__AjyA",
+    "external_url": "https://app.aurory.io/aurorian/2021/6488",
+    "edition": "2021",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Base Background"
+      },
+      {
+        "trait_type": "Skin",
+        "value": "Human"
+      },
+      {
+        "trait_type": "Cloth",
+        "value": "Base Cloth"
+      },
+      {
+        "trait_type": "Necklace",
+        "value": "No Trait"
+      },
+      {
+        "trait_type": "Mouth",
+        "value": "Cat Mask"
+      },
+      {
+        "trait_type": "Clothing",
+        "value": "No Trait"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Green Eyes"
+      },
+      {
+        "trait_type": "Hair",
+        "value": "Brown Dreadlocks "
+      },
+      {
+        "trait_type": "Hat",
+        "value": "No Trait"
+      },
+      {
+        "trait_type": "Type",
+        "value": "Aurorian"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "generation",
+        "value": 1
+      },
+      {
+        "display_type": "number",
+        "trait_type": " sequence",
+        "value": 6489
+      }
+    ],
+    "properties": {
+      "category": "image",
+      "files": [
+        {
+          "uri": "https://arweave.net/vkk1RRYm9UsH7hIE92nBMcfYJBqBUwcYKh5zj__AjyA",
+          "type": "image/png"
+        }
+      ],
+      "creators": [
+        {
+          "address": "75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA",
+          "share": 65
+        },
+        {
+          "address": "aury7LJUae7a92PBo35vVbP61GX8VbyxFKausvUtBrt",
+          "share": 35
+        }
+      ]
+    }
+  },
+  "editionType": "EditionV1",
+  "editionPDA": "2yr1tme27wezcSNNx8zDDSFE48rkGe7BunWtxBVCs8gq",
+  "editionData": {
+    "key": 1,
+    "parent": "HmZtcsaPNDmQCtm6ZxaNfjmiPb9cRjTANZTi5KhvnV3U",
+    "edition": "04"
+  },
+  "masterEditionPDA": "HmZtcsaPNDmQCtm6ZxaNfjmiPb9cRjTANZTi5KhvnV3U",
+  "masterEditionData": {
+    "key": 6,
+    "supply": "04",
+    "maxSupply": "64"
+  }
+}

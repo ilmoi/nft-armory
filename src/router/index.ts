@@ -1,27 +1,27 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import ViewGet from '../views/ViewGet.vue';
+import ViewView from '../views/ViewView.vue';
 import ViewMint from '@/views/ViewMint.vue';
 import ViewUpdate from '@/views/ViewUpdate.vue';
 import ViewMisc from '@/views/ViewMisc.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'Get',
-    component: ViewGet,
+    path: '/view',
+    name: 'View',
+    component: ViewView,
   },
   {
-    path: '/',
+    path: '/mint',
     name: 'Mint',
     component: ViewMint,
   },
   {
-    path: '/',
+    path: '/update',
     name: 'Update',
     component: ViewUpdate,
   },
   {
-    path: '/',
+    path: '/misc',
     name: 'Misc',
     component: ViewMisc,
   },

@@ -7,6 +7,7 @@ import {
   getEnumKeyByEnumValue,
   joinArraysOnKey,
   okToFailAsync,
+  stringifyPubkeysInArray,
   writeToDisk,
 } from './helpers/util';
 import {
@@ -190,12 +191,16 @@ export async function getNFTs(
 ): Promise<INFT[]> {
   let metadatas;
   if (owner) {
+    console.log('Time to get em NFTs!', owner.toBase58());
     metadatas = await getMetadataByOwner(owner);
   } else if (creators && creators.length > 0) {
+    console.log('Time to get em NFTs!', stringifyPubkeysInArray(creators));
     metadatas = await getMetadataByCreators(creators);
   } else if (mint) {
+    console.log('Time to get em NFTs!', mint.toBase58());
     metadatas = await getMetadataByMint(mint);
   } else if (updateAuthority) {
+    console.log('Time to get em NFTs!', updateAuthority.toBase58());
     metadatas = await getMetadataByUpdateAuthority(updateAuthority);
   } else {
     throw new Error(
