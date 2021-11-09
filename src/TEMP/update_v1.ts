@@ -1,29 +1,41 @@
-import {Account, actions, Connection, MetadataJson, programs, utils, Wallet} from "@metaplex/js";
-import {PublicKey} from "@solana/web3.js";
-import {CONN} from "./helpers/constants";
-import {editionMintDevnet, LocalWallet, masterMintDevnet} from "./mint_v1";
-import axios from "axios";
-import {UpdateMetadata} from "./temp_borsh";
-import {ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID} from "@solana/spl-token";
+import {
+  Account,
+  actions,
+  Connection,
+  MetadataJson,
+  programs,
+  utils,
+  Wallet,
+} from '@metaplex/js';
+import { PublicKey } from '@solana/web3.js';
+import axios from 'axios';
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  Token,
+  TOKEN_PROGRAM_ID,
+} from '@solana/spl-token';
+import { CONN } from './helpers/constants';
+import { editionMintDevnet, LocalWallet, masterMintDevnet } from './mint_v1';
+import { UpdateMetadata } from './temp_borsh';
 
 // --------------------------------------- update as edition owner
 
-//update authority can update 3 things:
-//1) metadata if it's mutable (NOTE: limited editions are NEVER mutable - see mint_limited_edition, ie only master is mutable)
-//2) set another update authority
-//3) flip primary sale happened to true, but never back to false after that
+// update authority can update 3 things:
+// 1) metadata if it's mutable (NOTE: limited editions are NEVER mutable - see mint_limited_edition, ie only master is mutable)
+// 2) set another update authority
+// 3) flip primary sale happened to true, but never back to false after that
 
 export async function updateMetadata(
   connection: Connection,
-  wallet: Wallet, //assume that wallet is the authority
-  editionMint: PublicKey, //this can be master or limited
+  wallet: Wallet, // assume that wallet is the authority
+  editionMint: PublicKey, // this can be master or limited
   newMetadataData?: any,
   newUpdateAuthority?: PublicKey,
-  primarySaleHappened?: boolean,
+  primarySaleHappened?: boolean
 ) {
   const metadata = await programs.metadata.Metadata.getPDA(editionMint);
   const updateTx = new UpdateMetadata(
-    {feePayer: wallet.publicKey},
+    { feePayer: wallet.publicKey },
     {
       metadata,
       updateAuthority: wallet.publicKey,
@@ -31,7 +43,7 @@ export async function updateMetadata(
       newUpdateAuthority,
       primarySaleHappened,
     }
-  )
+  );
   // ---------------- send to metaplex
   const txId = await actions.sendTransaction({
     connection,
@@ -40,29 +52,34 @@ export async function updateMetadata(
     wallet,
   });
   console.log(txId);
-  return txId
+  return txId;
 }
 
 // --------------------------------------- update as master owner
 
-//works on both master and normal editions
-//todo not sure if worth showing in FE, might bring more confusion than worth
+// works on both master and normal editions
+// todo not sure if worth showing in FE, might bring more confusion than worth
 export async function updatePrimarySaleHappenedViaToken(
   connection: Connection,
   wallet: Wallet,
-  editionMint: PublicKey,
+  editionMint: PublicKey
 ) {
   const metadata = await programs.metadata.Metadata.getPDA(editionMint);
-  const tokenAccount = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, editionMint, wallet.publicKey);
+  const tokenAccount = await Token.getAssociatedTokenAddress(
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+    editionMint,
+    wallet.publicKey
+  );
 
   const updateTx = new programs.metadata.UpdatePrimarySaleHappenedViaToken(
-    {feePayer: wallet.publicKey},
+    { feePayer: wallet.publicKey },
     {
       metadata,
       owner: wallet.publicKey,
       tokenAccount,
     }
-  )
+  );
   // ---------------- send to metaplex
   const txId = await actions.sendTransaction({
     connection,
@@ -71,33 +88,36 @@ export async function updatePrimarySaleHappenedViaToken(
     wallet,
   });
   console.log(txId);
-  return txId
+  return txId;
 }
 
 // --------------------------------------- play
 
 export async function prepNewMetadataData(
   uri: string,
-  wallet: Wallet,
+  wallet: Wallet
 ): Promise<programs.metadata.MetadataDataData> {
-  const {data} = await axios.get(uri);
+  const { data } = await axios.get(uri);
   const {
     name,
     symbol,
     seller_fee_basis_points,
-    properties: {creators},
+    properties: { creators },
   } = data as MetadataJson;
 
-  const creatorsData = creators.reduce<programs.metadata.Creator[]>((memo, {address, share}) => {
-    const verified = address === wallet.publicKey.toString();
-    const creator = new programs.metadata.Creator({
-      address,
-      share,
-      verified,
-    });
-    memo = [...memo, creator];
-    return memo;
-  }, []);
+  const creatorsData = creators.reduce<programs.metadata.Creator[]>(
+    (memo, { address, share }) => {
+      const verified = address === wallet.publicKey.toString();
+      const creator = new programs.metadata.Creator({
+        address,
+        share,
+        verified,
+      });
+      memo = [...memo, creator];
+      return memo;
+    },
+    []
+  );
 
   return new programs.metadata.MetadataDataData({
     name,
@@ -109,7 +129,10 @@ export async function prepNewMetadataData(
 }
 
 async function play() {
-  const newData = await prepNewMetadataData("https://ipfs.io/ipfs/QmNQh8noRHn7e7zt9oYNfGWuxHgKWkNPducMZs1SiZaYw4", new LocalWallet());
+  const newData = await prepNewMetadataData(
+    'https://ipfs.io/ipfs/QmNQh8noRHn7e7zt9oYNfGWuxHgKWkNPducMZs1SiZaYw4',
+    new LocalWallet()
+  );
   // console.log(`new url will be ${newData.uri}`);
   // console.log(newData)
   await updateMetadata(
@@ -118,8 +141,8 @@ async function play() {
     masterMintDevnet,
     newData,
     undefined,
-    undefined,
-  )
+    undefined
+  );
 }
 
 // play()

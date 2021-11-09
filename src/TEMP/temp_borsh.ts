@@ -4,15 +4,15 @@
 // import { MetadataDataData } from '../accounts/Metadata';
 // import { MetadataProgram } from '../MetadataProgram';
 
-import { programs, actions, utils } from "@metaplex/js";
-import { TransactionInstruction } from "@solana/web3.js";
+import { programs, actions, utils } from '@metaplex/js';
+import { TransactionInstruction } from '@solana/web3.js';
 
 export class UpdateMetadataArgs extends utils.Borsh.Data<{
   data?: programs.metadata.MetadataDataData;
   updateAuthority?: string;
   primarySaleHappened: boolean | null;
 }> {
-  static readonly SCHEMA:any = new Map([
+  static readonly SCHEMA: any = new Map([
     ...programs.metadata.MetadataDataData.SCHEMA,
     // @ts-ignore
     ...this.struct([
@@ -24,16 +24,23 @@ export class UpdateMetadataArgs extends utils.Borsh.Data<{
   ]);
 
   instruction = 1;
+
   // data: MetadataDataData | null = null;
   updateAuthority: string | null = null;
+
   primarySaleHappened?: boolean | null;
 }
 
 export class UpdateMetadata extends programs.Transaction {
   constructor(options: any, params: any) {
     super(options);
-    const { metadata, metadataData, updateAuthority, newUpdateAuthority, primarySaleHappened } =
-      params;
+    const {
+      metadata,
+      metadataData,
+      updateAuthority,
+      newUpdateAuthority,
+      primarySaleHappened,
+    } = params;
 
     const data = UpdateMetadataArgs.serialize({
       data: metadataData,
@@ -59,7 +66,7 @@ export class UpdateMetadata extends programs.Transaction {
         ],
         programId: programs.metadata.MetadataProgram.PUBKEY,
         data,
-      }),
+      })
     );
   }
 }
