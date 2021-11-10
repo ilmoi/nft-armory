@@ -1,109 +1,78 @@
 <template>
   <div>
-    <TheConfigPane />
+    <ConfigPane />
     <div class="p-10">
       <div class="nes-field">
         <label for="addr">Wallet Address:</label>
         <input type="text" id="addr" class="nes-input" v-model="owner" :placeholder="owner" />
       </div>
-      <button class="nes-btn is-primary mt-5" @click="fetchNFTs">Show NFTs!</button>
+      <button class="nes-btn is-primary mt-5" @click="fetchNFTs">Load NFTs</button>
 
-      <div v-for="n in NFTs" :key="n.mint" class="my-5 nes-container with-title text-xs">
-        <p class="title">{{ n.metadataExternal.name }} / {{ n.metadataExternal.symbol }}</p>
-        <div class="flex flex-row">
-          <img :alt="n.mint" :src="n.metadataExternal.image" />
-          <div class="ml-5 text-gray-400">
-            <p v-if="isMaster(n.editionType)" class="bg-pink-300 text-black p-2 inline-block">
-              {{ n.editionType }}
-            </p>
-            <p v-else class="bg-gray-300 text-black p-2 inline-block">
-              {{ n.editionType }} #{{ n.editionData.edition }}
-            </p>
-            <p>
-              About:
-              <span class="text-black">{{ n.metadataExternal.description }}</span>
-            </p>
-            <p>
-              Mint: <span class="text-black">{{ n.mint }}</span>
-            </p>
-            <p>
-              Address: <span class="text-black">{{ n.address }}</span>
-            </p>
-            <p>
-              Owner: <span class="text-black">{{ n.splTokenInfo.owner }}</span>
-            </p>
-            <button class="nes-btn is-primary" @click="toggleJSON(n.mint)">{ full JSON }</button>
-          </div>
-        </div>
-
-        <div v-if="openJSONs.indexOf(n.mint) > -1" class="bg-gray-200 mt-5">
-          <vue-json-pretty class="text-xs" :data="stringifyPubkeysInObject(n)"></vue-json-pretty>
-        </div>
+      <!--per NFT display-->
+      <LoadingBar v-if="isLoading" :progress="progress" :text="text" class="my-5" />
+      <div v-else-if="isError" class="nes-text is-error my-5">
+        Oh no something went wrong! Try again?
+      </div>
+      <div v-else>
+        <NFTView v-for="n in NFTs" :key="n.mint" :n="n"> </NFTView>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { PublicKey } from '@solana/web3.js';
-import VueJsonPretty from 'vue-json-pretty';
-import { getNFTs } from '@/TEMP/get';
 import { INFT } from '@/TEMP/helpers/types';
 import 'vue-json-pretty/lib/styles.css';
-import { stringifyPubkeysInObject } from '@/TEMP/helpers/util';
-import TheConfigPane from '@/components/TheConfigPane.vue';
 
-// {{ JSON.stringify(n, undefined, 2); }}
+import ConfigPane from '@/components/ConfigPane.vue';
+import LoadingBar from '@/components/LoadingBar.vue';
+import { getNFTs } from '@/common/NFTget';
+import NFTView from '@/components/NFTView.vue';
+import useLoading, { LoadStatus } from '@/composables/loading';
+import { EE } from '../globals';
 
 export default defineComponent({
   components: {
-    TheConfigPane,
-    VueJsonPretty,
+    NFTView,
+    LoadingBar,
+    ConfigPane,
   },
   setup() {
     const owner = ref('AGsJu1jZmFcVDPdm6bbaP54S3sMEinxmdiYWhaBBDNVX');
-    const NFTs = reactive<INFT[]>([]);
-    const openJSONs = reactive<string[]>([]);
+    const NFTs = ref<INFT[]>([]);
 
-    const fetchNFTs = async () => {
-      const pulledNFTs = await getNFTs({ owner: new PublicKey(owner.value) });
-      pulledNFTs.forEach((n) => NFTs.push(n));
-      console.log('done', NFTs);
-    };
+    const { progress, text, isLoading, isError, updateLoading } = useLoading();
 
-    const isMaster = (editionType: string) => editionType.toLowerCase().includes('master');
+    const fetchNFTs = () => {
+      updateLoading({ newStatus: LoadStatus.Loading, maxProgress: 50 });
 
-    const toggleJSON = (mint: string) => {
-      const idx = openJSONs.indexOf(mint);
-      if (idx === -1) {
-        openJSONs.push(mint);
-      } else {
-        openJSONs.splice(idx, 1);
-      }
+      EE.removeAllListeners();
+      EE.on('loading', updateLoading);
+
+      NFTs.value = []; // clear while loading
+      getNFTs({ owner: new PublicKey(owner.value) })
+        .then((n) => {
+          NFTs.value = n;
+          updateLoading({ newStatus: LoadStatus.Success });
+        })
+        .catch((e) => {
+          updateLoading({ newStatus: LoadStatus.Error });
+        });
     };
 
     return {
       owner,
       NFTs,
-      openJSONs,
+      progress,
+      text,
+      isLoading,
+      isError,
       fetchNFTs,
-      isMaster,
-      VueJsonPretty,
-      toggleJSON,
-      stringifyPubkeysInObject,
     };
   },
 });
 </script>
 
-<style scoped>
-img {
-  max-height: 200px;
-  max-width: 200px;
-}
-
-p {
-  @apply my-2;
-}
-</style>
+<style scoped></style>

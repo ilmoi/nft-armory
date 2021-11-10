@@ -1,16 +1,16 @@
 <template>
   <div>
-    <TheConfigPane />
+    <ConfigPane />
     <div>mint</div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import TheConfigPane from '@/components/TheConfigPane.vue';
+import ConfigPane from '@/components/ConfigPane.vue';
 
 export default defineComponent({
-  components: { TheConfigPane },
+  components: { ConfigPane },
   setup() {
     return {};
   },
