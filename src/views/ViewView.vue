@@ -9,14 +9,23 @@
     <div v-else>
       <NFTViewCard v-for="n in NFTs" :key="n.mint" :n="n"></NFTViewCard>
     </div>
+
+    <!--must sit at the very bottom-->
+    <infinite-loading
+      @infinite="infiniteHandler"
+      :identifier="
+        new Date() //needs to be something thta dynamically updates, or won't work
+      "
+      spinner="spiral"
+    ></infinite-loading>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import InfiniteLoading from 'vue-infinite-loading';
 import { INFT } from '@/TEMP/helpers/types';
 import 'vue-json-pretty/lib/styles.css';
-
 import ConfigPane from '@/components/ConfigPane.vue';
 import LoadingBar from '@/components/LoadingBar.vue';
 import { getNFTs } from '@/common/NFTget';
@@ -34,6 +43,7 @@ export default defineComponent({
     NFTViewCard,
     LoadingBar,
     ConfigPane,
+    InfiniteLoading,
   },
   setup() {
     const {
@@ -45,7 +55,18 @@ export default defineComponent({
       updateLoadingStdErr,
       updateLoadingStdWin,
     } = useLoading();
-    const NFTs = ref<INFT[]>([]);
+    const displayedNFTs = ref<INFT[]>([]); // this is what's shown on FE
+    const allFetchedNFTs = ref<INFT[]>([]); // this is everything fetched in mem
+
+    const getNextBatch = (size: number): INFT[] => {
+      if (allFetchedNFTs.value.length === 0) {
+        return [];
+      }
+      if (allFetchedNFTs.value.length > size) {
+        return allFetchedNFTs.value.splice(0, size);
+      }
+      return allFetchedNFTs.value.splice(0, allFetchedNFTs.value.length);
+    };
 
     const fetchNFTs = (params: INFTParams) => {
       updateLoading({
@@ -58,14 +79,19 @@ export default defineComponent({
       EE.removeAllListeners();
       EE.on('loading', updateLoading);
 
-      NFTs.value = []; // clear while loading
+      // clear for new fetch
+      displayedNFTs.value = [];
+      allFetchedNFTs.value = [];
+
       getNFTs(params)
         .then((fetchedNFTs) => {
-          NFTs.value = fetchedNFTs;
-          if (NFTs.value.length === 0) {
-            updateLoadingStdErr(ERR_NO_NFTS);
-          } else {
+          if (fetchedNFTs.length) {
+            allFetchedNFTs.value = fetchedNFTs;
+            const nextBatch = getNextBatch(10);
+            displayedNFTs.value.push(...nextBatch);
             updateLoadingStdWin();
+          } else {
+            updateLoadingStdErr(ERR_NO_NFTS);
           }
         })
         .catch(updateLoadingStdErr);
@@ -75,16 +101,32 @@ export default defineComponent({
       fetchNFTs(params);
     };
 
+    const infiniteHandler = ($state: any) => {
+      const nextBatch = getNextBatch(10);
+      if (nextBatch.length) {
+        displayedNFTs.value.push(...nextBatch);
+        $state.loaded();
+      } else {
+        $state.complete();
+      }
+    };
+
     return {
-      NFTs,
+      NFTs: displayedNFTs,
       progress,
       text,
       isLoading,
       isError,
       handleSubmitForm,
+      infiniteHandler,
     };
   },
 });
 </script>
 
-<style scoped></style>
+<style>
+/*temp hackaround...*/
+.infinite-status-prompt {
+  @apply text-white !important;
+}
+</style>

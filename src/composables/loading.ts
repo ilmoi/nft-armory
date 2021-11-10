@@ -31,7 +31,7 @@ export default function useLoading() {
   // todo is this the best solution? Feels hacky...
   let currentVersion = 0;
   const startTicking = (max: number, passedVersion: number) => {
-    const counter = useInterval(500);
+    const counter = useInterval(1000);
     watchAtMost(
       counter,
       (newVal) => {
@@ -41,7 +41,7 @@ export default function useLoading() {
           return;
         }
         // console.log(newVal);
-        progress.value += 1;
+        progress.value += 2;
       },
       // this ensures we stop after required number of times
       { count: Math.max(max - progress.value, 0) }

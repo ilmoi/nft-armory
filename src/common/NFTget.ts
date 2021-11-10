@@ -155,7 +155,8 @@ function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
 async function turnMetadatasIntoNFTs(metadatas: programs.metadata.Metadata[]): Promise<INFT[]> {
   let NFTs = deserializeMetadataOnchain(metadatas);
 
-  // NFTs = NFTs.slice(0, 100);
+  // todo temp
+  NFTs = NFTs.slice(0, 100);
 
   const enrichedNFTs = await Promise.all(
     NFTs.map(async (n) => {
@@ -176,7 +177,7 @@ async function turnMetadatasIntoNFTs(metadatas: programs.metadata.Metadata[]): P
   return NFTs;
 }
 
-// --------------------------------------- interface
+// --------------------------------------- exported
 
 export async function getNFTs(
   { owner, creators, mint, updateAuthority } = {} as INFTParams

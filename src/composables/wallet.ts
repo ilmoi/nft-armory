@@ -31,10 +31,12 @@ export default function useWallet() {
         // only set the two if the call succeeds
         walletClass.value = gottenWallet;
         walletAdapter.value = connectedAdapter;
-        console.log('Wallet updated, now', newWallet, network);
+        console.log('wallet updated, now', newWallet, network);
       })
       .catch(() => {
-        console.log('oh no, try again');
+        console.log('oh no, failed to connect to wallet, try again');
+        walletClass.value = null;
+        walletAdapter.value = null;
       });
   };
 
