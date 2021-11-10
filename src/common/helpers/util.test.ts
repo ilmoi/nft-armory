@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import { stringifyPubkeysInObject } from './util';
+import { stringifyPubkeysAndBNsInObject } from './util';
 
 describe('stringifies pubkeys', () => {
   it('in both objects and arrays', () => {
@@ -47,7 +47,7 @@ describe('stringifies pubkeys', () => {
       ],
     };
 
-    const actual = stringifyPubkeysInObject(input);
+    const actual = stringifyPubkeysAndBNsInObject(input);
 
     expect(actual).toEqual(expected);
   });

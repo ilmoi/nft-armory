@@ -2,6 +2,7 @@
 
 import { Keypair, PublicKey } from '@solana/web3.js';
 import fs from 'fs';
+import BN from 'bn.js';
 
 export function getEnumKeyByEnumValue(myEnum: any, enumValue: any) {
   const keys = Object.keys(myEnum).filter((x) => myEnum[x] == enumValue);
@@ -46,15 +47,17 @@ export function loadKeypairSync(path: string): Keypair {
   return Keypair.fromSecretKey(Uint8Array.from(secretKey));
 }
 
-export function stringifyPubkeysInObject(o: any): any {
+export function stringifyPubkeysAndBNsInObject(o: any): any {
   const newO = { ...o };
   for (const [k, v] of Object.entries(newO)) {
     if (v instanceof PublicKey) {
       newO[k] = v.toBase58();
+    } else if (v instanceof BN) {
+      newO[k] = v.toString();
     } else if (parseType(v) === 'array') {
-      newO[k] = stringifyPubkeysInArray(v as any);
+      newO[k] = stringifyPubkeysAndBNInArray(v as any);
     } else if (parseType(v) === 'dict') {
-      newO[k] = stringifyPubkeysInObject(v);
+      newO[k] = stringifyPubkeysAndBNsInObject(v);
     } else {
       newO[k] = v;
     }
@@ -62,13 +65,17 @@ export function stringifyPubkeysInObject(o: any): any {
   return newO;
 }
 
-export function stringifyPubkeysInArray(a: any[]): any[] {
+export function stringifyPubkeysAndBNInArray(a: any[]): any[] {
   const newA = [];
   for (const i of a) {
-    if (parseType(i) === 'array') {
-      newA.push(stringifyPubkeysInArray(i));
+    if (i instanceof PublicKey) {
+      newA.push(i.toBase58());
+    } else if (i instanceof BN) {
+      newA.push(i.toString());
+    } else if (parseType(i) === 'array') {
+      newA.push(stringifyPubkeysAndBNInArray(i));
     } else if (parseType(i) === 'dict') {
-      newA.push(stringifyPubkeysInObject(i));
+      newA.push(stringifyPubkeysAndBNsInObject(i));
     } else {
       newA.push(i);
     }

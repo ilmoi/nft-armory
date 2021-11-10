@@ -35,7 +35,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import VueJsonPretty from 'vue-json-pretty';
-import { stringifyPubkeysInObject } from '@/common/helpers/util';
+import { stringifyPubkeysAndBNsInObject } from '@/common/helpers/util';
 
 export default defineComponent({
   props: {
@@ -56,7 +56,7 @@ export default defineComponent({
       isMaster,
       fullJSON,
       toggleJSON,
-      stringifyPubkeysInObject,
+      stringifyPubkeysInObject: stringifyPubkeysAndBNsInObject,
     };
   },
 });

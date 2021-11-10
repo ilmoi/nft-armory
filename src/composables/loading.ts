@@ -9,10 +9,10 @@ export enum LoadStatus {
 }
 
 export interface UpdateLoadingParams {
-  newStatus?: LoadStatus;
-  newProgress?: number;
-  maxProgress?: number;
-  newText?: string;
+  newStatus: LoadStatus;
+  newProgress: number;
+  maxProgress: number;
+  newText: string;
 }
 
 export default function useLoading() {
@@ -28,16 +28,16 @@ export default function useLoading() {
     () => status.value === LoadStatus.Idle || status.value === LoadStatus.Success
   );
 
-  const startTicking = (max: number) => {
-    // console.log('triggered with max of', max);
-
-    // todo is this the best solution? Feels hacky...
-    const counter = useInterval(200);
+  // todo is this the best solution? Feels hacky...
+  let currentVersion = 0;
+  const startTicking = (max: number, passedVersion: number) => {
+    const counter = useInterval(500);
     watchAtMost(
       counter,
       (newVal) => {
         // if for some reason progress bar jumps above, we don't want to keep incrementing
-        if (progress.value > max) {
+        // also use versioning to stop old counters
+        if (progress.value > max || passedVersion !== currentVersion) {
           return;
         }
         // console.log(newVal);
@@ -51,10 +51,12 @@ export default function useLoading() {
   const updateLoading = (
     { newStatus, newProgress, maxProgress, newText } = {} as UpdateLoadingParams
   ) => {
-    if (newStatus) status.value = newStatus;
-    if (newProgress) progress.value = newProgress;
-    if (newText) text.value = newText;
-    if (maxProgress) startTicking(maxProgress);
+    // console.log('received', newStatus, newProgress, maxProgress, newText);
+    status.value = newStatus;
+    progress.value = newProgress;
+    text.value = newText;
+    currentVersion += 1;
+    startTicking(maxProgress, currentVersion);
   };
 
   return {
@@ -68,10 +70,4 @@ export default function useLoading() {
     isOk,
     updateLoading,
   };
-}
-
-function pause(ms: number) {
-  setTimeout(() => {
-    console.log(`pausing for ${ms / 1000}s`);
-  }, ms);
 }
