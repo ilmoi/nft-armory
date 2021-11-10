@@ -3,8 +3,14 @@ import ViewView from '../views/ViewView.vue';
 import ViewMint from '@/views/ViewMint.vue';
 import ViewUpdate from '@/views/ViewUpdate.vue';
 import ViewMisc from '@/views/ViewMisc.vue';
+import ViewHome from '@/views/ViewHome.vue';
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    name: 'Home',
+    component: ViewHome,
+  },
   {
     path: '/view',
     name: 'View',

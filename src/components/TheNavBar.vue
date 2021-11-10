@@ -23,6 +23,7 @@ export default defineComponent({
     const path = computed(() => route.path);
 
     const menu = [
+      { name: '/', url: '/' },
       { name: 'VIEW', url: '/view' },
       { name: 'MINT', url: '/mint' },
       { name: 'UPDATE', url: '/update' },
@@ -41,8 +42,9 @@ export default defineComponent({
 .active {
   @apply bg-white text-black;
 }
+
 .more {
-  @apply px-3 py-3 text-white
+  @apply px-10 py-3 text-white
   hover:bg-white hover:text-black;
   outline: none;
 }

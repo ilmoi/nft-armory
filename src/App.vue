@@ -5,7 +5,6 @@
     <TheLogo />
     <p class="text-4xl pt-3 px-2 text-black underline">ARMORY</p>
   </div>
-  <TheConfigPane />
 
   <router-view />
   <div class="flex justify-center fork">
@@ -26,10 +25,9 @@
 import { defineComponent, ref } from 'vue';
 import TheLogo from '@/components/TheLogo.vue';
 import TheNavBar from '@/components/TheNavBar.vue';
-import TheConfigPane from '@/components/TheConfigPane.vue';
 
 export default defineComponent({
-  components: { TheConfigPane, TheLogo, TheNavBar },
+  components: { TheLogo, TheNavBar },
   setup() {
     const showText = ref(false);
     return {

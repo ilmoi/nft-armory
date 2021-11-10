@@ -21,9 +21,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from 'vue';
-import { Wallet, WalletName } from '@solana/wallet-adapter-wallets';
-import { BaseWalletAdapter } from '@solana/wallet-adapter-base';
+import { computed, defineComponent } from 'vue';
+import { WalletName } from '@solana/wallet-adapter-wallets';
 import useCluster, { Cluster } from '@/composables/cluster';
 import useWallet from '@/composables/wallet';
 
@@ -44,10 +43,9 @@ export default defineComponent({
     const { wallet, setWallet } = useWallet();
     const chosenWallet = computed({
       get() {
-        // todo stupid error - https://stackoverflow.com/questions/69905506/vue-typescript-how-to-annotate-computed-with-types
         return wallet.value ? wallet.value!.name : null;
       },
-      set(newVal: WalletName) {
+      set(newVal: WalletName | null) {
         // check to make sure wallet is not null
         if (!newVal) {
           console.log('back to ground 0');
