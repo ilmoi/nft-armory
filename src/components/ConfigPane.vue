@@ -40,10 +40,10 @@ export default defineComponent({
     });
 
     // wallet
-    const { wallet, setWallet } = useWallet();
+    const { getWalletName, setWallet } = useWallet();
     const chosenWallet = computed({
       get() {
-        return wallet.value ? wallet.value!.name : null;
+        return getWalletName();
       },
       set(newVal: WalletName | null) {
         // check to make sure wallet is not null
@@ -52,16 +52,6 @@ export default defineComponent({
           return;
         }
         setWallet(newVal, cluster.value);
-        const connectedAdapter = wallet.value!.adapter();
-        connectedAdapter
-          .connect()
-          .then(() => {
-            console.log('hooray');
-          })
-          .catch(() => {
-            console.log('oh no, try again');
-            setWallet(null, cluster.value);
-          });
       },
     });
 

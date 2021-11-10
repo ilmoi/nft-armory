@@ -183,16 +183,16 @@ export async function getNFTs(
 ): Promise<INFT[]> {
   let metadatas;
   if (owner) {
-    console.log('Time to get em NFTs!', owner.toBase58());
+    console.log('Time to get em NFTs by owner:', owner.toBase58());
     metadatas = await getMetadataByOwner(owner);
   } else if (creators && creators.length > 0) {
-    console.log('Time to get em NFTs!', stringifyPubkeysAndBNInArray(creators));
+    console.log('Time to get em NFTs by creators:', stringifyPubkeysAndBNInArray(creators));
     metadatas = await getMetadataByCreators(creators);
   } else if (mint) {
-    console.log('Time to get em NFTs!', mint.toBase58());
+    console.log('Time to get em NFTs by mint:', mint.toBase58());
     metadatas = await getMetadataByMint(mint);
   } else if (updateAuthority) {
-    console.log('Time to get em NFTs!', updateAuthority.toBase58());
+    console.log('Time to get em NFTs by authority:', updateAuthority.toBase58());
     metadatas = await getMetadataByUpdateAuthority(updateAuthority);
   } else {
     throw new Error('You must pass one of owner / creators / mint / updateAuthority');
