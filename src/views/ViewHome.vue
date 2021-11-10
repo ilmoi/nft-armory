@@ -1,5 +1,5 @@
 <template>
-  <div class="p-10">
+  <div>
     <h1>Welcome anon 👋</h1>
     <p class="mt-5">
       NFT armory is a simple tool to

@@ -59,6 +59,24 @@ export default function useLoading() {
     startTicking(maxProgress, currentVersion);
   };
 
+  const updateLoadingStdErr = (e: Error) => {
+    updateLoading({
+      newStatus: LoadStatus.Error,
+      newProgress: 0,
+      maxProgress: 0,
+      newText: `Uh oh something went wrong: ${e}`,
+    });
+  };
+
+  const updateLoadingStdWin = () => {
+    updateLoading({
+      newStatus: LoadStatus.Success,
+      newProgress: 0,
+      maxProgress: 0,
+      newText: 'Successfully loaded!',
+    });
+  };
+
   return {
     status: readonly(status),
     progress: readonly(progress),
@@ -69,5 +87,7 @@ export default function useLoading() {
     isSuccess,
     isOk,
     updateLoading,
+    updateLoadingStdErr,
+    updateLoadingStdWin,
   };
 }

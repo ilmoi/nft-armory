@@ -1,8 +1,8 @@
 <template>
-  <div class="p-10">
+  <div>
     <div class="nes-container with-title">
       <p class="title">View NFTs by:</p>
-      <div class="text-gray-400 mt-2">
+      <div class="text-gray-400 mt-2 flex justify-between">
         <label>
           <input type="radio" class="nes-radio" value="address" v-model="chosenMethod" />
           <span>Address</span>
@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <form @submit.prevent="fetchNFTs" class="mt-10">
+    <form @submit.prevent="emitSubmitForm" class="mt-10">
       <div v-if="byAddress" class="nes-field">
         <label for="addr">Wallet Address:</label>
         <input type="text" id="addr" class="nes-input" v-model="owner" :placeholder="owner" />
@@ -91,23 +91,23 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue';
 import { PublicKey } from '@solana/web3.js';
-import { INFT } from '@/TEMP/helpers/types';
 import 'vue-json-pretty/lib/styles.css';
-
-import { getNFTs } from '@/common/NFTget';
-import useLoading, { LoadStatus } from '@/composables/loading';
-import { EE } from '@/globals';
 import { INFTParams } from '@/common/helpers/types';
 import useWallet from '@/composables/wallet';
 
 export default defineComponent({
   props: {
-    owner: String,
-    creator: String,
-    authority: String,
-    mint: String,
+    isLoading: Boolean,
   },
-  setup(props, context) {
+  emits: ['submit-form'],
+  setup(props, ctx) {
+    // prepare params
+    const owner = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
+    const creator = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
+    const authority = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
+    const mint = ref('3dsmKsQD5fpmGeecg4AAhUMfVrhDGkXefrGHEk4aWpc6');
+
+    // select method
     const chosenMethod = ref<string>('address');
     const byAddress = computed(() => chosenMethod.value === 'address');
     const byWallet = computed(() => chosenMethod.value === 'wallet');
@@ -115,6 +115,7 @@ export default defineComponent({
     const byAuthority = computed(() => chosenMethod.value === 'authority');
     const byMint = computed(() => chosenMethod.value === 'mint');
 
+    // wallet method
     const { wallet, getWalletAddress } = useWallet();
     watch(byWallet, () => {
       if (getWalletAddress()) owner.value = getWalletAddress()!.toBase58();
@@ -125,72 +126,44 @@ export default defineComponent({
     const missingWallet = computed(() => getWalletAddress() === null);
     const missingWalletNotice = 'Please connect your wallet above.';
 
-    // fetch NFTs
-    const { progress, text, isLoading, isError, updateLoading } = useLoading();
-    const NFTs = ref<INFT[]>([]);
-    const fetchNFTs = () => {
-      updateLoading({
-        newStatus: LoadStatus.Loading,
-        newProgress: 0,
-        maxProgress: 50,
-        newText: 'Looking for NFTs...',
-      });
+    const prepareParams = (): INFTParams | null => {
+      try {
+        return {
+          owner: byAddress.value || byWallet.value ? new PublicKey(owner.value) : undefined,
+          creators: byCreator.value ? [new PublicKey(creator.value)] : undefined,
+          updateAuthority: byAuthority.value ? new PublicKey(authority.value) : undefined,
+          mint: byMint.value ? new PublicKey(mint.value) : undefined,
+        } as INFTParams;
+      } catch (e) {
+        console.log('Bad PK:', e);
+        // todo notify the user
+        return null;
+      }
+    };
 
-      EE.removeAllListeners();
-      EE.on('loading', updateLoading);
-
-      NFTs.value = []; // clear while loading
-
-      // todo need bad pk error
-      const params = {
-        owner: byAddress.value || byWallet.value ? new PublicKey(owner.value) : undefined,
-        creators: byCreator.value ? [new PublicKey(creator.value)] : undefined,
-        updateAuthority: byAuthority.value ? new PublicKey(authority.value) : undefined,
-        mint: byMint.value ? new PublicKey(mint.value) : undefined,
-      } as INFTParams;
-
-      getNFTs(params)
-        .then((fetchedNFTs) => {
-          NFTs.value = fetchedNFTs;
-          updateLoading({
-            newStatus: LoadStatus.Success,
-            newProgress: 0,
-            maxProgress: 0,
-            newText: 'Successfully loaded!',
-          });
-        })
-        .catch((e) => {
-          updateLoading({
-            newStatus: LoadStatus.Error,
-            newProgress: 0,
-            maxProgress: 0,
-            newText: `Uh oh something went wrong: ${e}`,
-          });
-        });
+    const emitSubmitForm = () => {
+      const params = prepareParams();
+      if (params) ctx.emit('submit-form', params);
     };
 
     return {
-      // select method
+      // params
+      owner,
+      creator,
+      authority,
+      mint,
+      // method
       chosenMethod,
       byAddress,
       byWallet,
       byCreator,
       byAuthority,
       byMint,
-      // params
-      owner,
-      creator,
-      authority,
-      mint,
+      // wallet
       missingWallet,
       missingWalletNotice,
-      // fetch
-      NFTs,
-      progress,
-      text,
-      isLoading,
-      isError,
-      fetchNFTs,
+      // event
+      emitSubmitForm,
     };
   },
 });
@@ -199,9 +172,5 @@ export default defineComponent({
 <style scoped>
 input[type='radio']:checked + span {
   @apply text-black;
-}
-
-label {
-  @apply mr-1;
 }
 </style>

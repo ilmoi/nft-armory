@@ -11,7 +11,7 @@ import {
 import { deserializeTokenAccount, deserializeTokenMint } from './helpers/spl-token';
 import { INFT, INFTParams } from './helpers/types';
 import useCluster from '@/composables/cluster';
-import { EE } from '../globals';
+import { EE, ERR_NO_NFTS } from '../globals';
 import { LoadStatus, UpdateLoadingParams } from '@/composables/loading';
 
 const {
@@ -141,7 +141,7 @@ function deserializeMetadataOnchain(metadatas: programs.metadata.Metadata[]): IN
 
 function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
   return NFTs.filter(
-    // based on the stuff we're explicitly showing in NFTView.vue
+    // based on the stuff we're explicitly showing in NFTViewCard.vue
     (n) =>
       n.mint &&
       n.address &&
@@ -198,13 +198,13 @@ export async function getNFTs(
     throw new Error('You must pass one of owner / creators / mint / updateAuthority');
   }
   if (metadatas.length === 0) {
-    throw new Error('Found no NFTs :(');
+    throw ERR_NO_NFTS;
   }
   EE.emit('loading', {
     newStatus: LoadStatus.Loading,
     newProgress: 50,
     maxProgress: 90,
-    newText: `Found a total of ${metadatas.length} NFTs. Fetching metadata...`,
+    newText: `Found ${metadatas.length} tokens of interest. Let's see if these are real NFTs...`,
   } as UpdateLoadingParams);
   const NFTs = await turnMetadatasIntoNFTs(metadatas);
   return filterOutIncompleteNFTs(NFTs);
