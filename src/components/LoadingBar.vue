@@ -15,7 +15,7 @@
       ></progress>
       <progress v-else class="nes-progress is-error" :value="progress" max="100"></progress>
       <div class="flex justify-center">
-        <img alt="loading" src="../assets/pixel-cookie.gif" width="40" height="40" class="mr-5" />
+        <img src="../assets/pixel-cookie.gif" width="40" height="40" class="mr-5" />
         <p class="mt-2">{{ text ?? 'Loading...' }}</p>
       </div>
     </div>

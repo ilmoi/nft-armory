@@ -205,7 +205,7 @@ export async function getNFTs(
     newStatus: LoadStatus.Loading,
     newProgress: 50,
     maxProgress: 90,
-    newText: `Found ${metadatas.length} tokens of interest. Let's see if these are real NFTs...`,
+    newText: `Found ${metadatas.length} tokens of interest. Fetching metadata...`,
   } as UpdateLoadingParams);
   const NFTs = await turnMetadatasIntoNFTs(metadatas);
   return filterOutIncompleteNFTs(NFTs);

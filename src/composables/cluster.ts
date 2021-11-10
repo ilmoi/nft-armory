@@ -2,7 +2,7 @@ import { readonly, ref } from 'vue';
 import { Connection } from '@solana/web3.js';
 
 export enum Cluster {
-  Mainnet = 'https://rough-thrumming-haze.solana-mainnet.quiknode.pro/d94e66e565fc77b8b07563f5c5cef8113fcc15ec/',
+  Mainnet = 'https://api.mainnet-beta.solana.com',
   Devnet = 'https://api.devnet.solana.com',
   Testnet = 'https://api.testnet.solana.com',
   Localnet = 'http://localhost:8899',

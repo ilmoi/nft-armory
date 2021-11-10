@@ -26,8 +26,9 @@
         <button class="nes-btn is-primary" @click="toggleJSON">{ full JSON }</button>
       </div>
     </div>
-    <div v-if="fullJSON" class="bg-gray-200 mt-5">
-      <vue-json-pretty class="text-xs" :data="stringifyPubkeysInObject(n)"></vue-json-pretty>
+    <div v-if="fullJSON" class="bg-gray-200 mt-5 copy-father">
+      <button class="nes-btn is-primary copy" @click="doCopy">{{ copyText }}</button>
+      <vue-json-pretty class="text-xs" :data="stringifyPubkeysAndBNsInObject(n)"></vue-json-pretty>
     </div>
   </div>
 </template>
@@ -35,6 +36,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import VueJsonPretty from 'vue-json-pretty';
+import useClipboard from 'vue-clipboard3';
 import { stringifyPubkeysAndBNsInObject } from '@/common/helpers/util';
 
 export default defineComponent({
@@ -44,7 +46,7 @@ export default defineComponent({
   components: {
     VueJsonPretty,
   },
-  setup() {
+  setup(props) {
     const isMaster = (editionType: string) => editionType.toLowerCase().includes('master');
     const fullJSON = ref(false);
 
@@ -52,11 +54,28 @@ export default defineComponent({
       fullJSON.value = !fullJSON.value;
     };
 
+    // clipboard
+    const copyText = ref('copy');
+    const { toClipboard } = useClipboard();
+    const doCopy = async () => {
+      try {
+        await toClipboard(JSON.stringify(stringifyPubkeysAndBNsInObject(props.n)));
+        copyText.value = 'done!';
+        setTimeout(() => {
+          copyText.value = 'copy';
+        }, 1000);
+      } catch (e) {
+        console.error(`Error when copying to clipboard - ${e}`);
+      }
+    };
+
     return {
       isMaster,
       fullJSON,
       toggleJSON,
-      stringifyPubkeysInObject: stringifyPubkeysAndBNsInObject,
+      stringifyPubkeysAndBNsInObject,
+      doCopy,
+      copyText,
     };
   },
 });
@@ -70,5 +89,16 @@ img {
 
 p {
   @apply my-2;
+}
+
+.copy-father {
+  position: relative;
+}
+
+.copy {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 9999;
 }
 </style>
