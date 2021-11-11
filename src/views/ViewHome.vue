@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Welcome anon 👋</h1>
+    <h1>gm anon 👋</h1>
     <p class="mt-5">
       NFT armory is a simple tool to
       <router-link to="/view" class="nes-text is-primary">view</router-link>,

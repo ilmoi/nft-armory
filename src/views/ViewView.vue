@@ -3,8 +3,15 @@
     <!--all the config stuff-->
     <ConfigPane />
     <NFTViewForm :is-loading="isLoading" @submit-form="handleSubmitForm">
-      <button v-if="NFTs.length" type="button" class="nes-btn" @click="exportNFTs">
-        Export {{ NFTCount }} NFTs
+      <button
+        v-if="NFTs.length"
+        type="button"
+        class="nes-btn"
+        :class="{ 'is-disabled': disableExport }"
+        @click="exportNFTs"
+        :disabled="disableExport"
+      >
+        {{ exportBtnText }}
       </button>
     </NFTViewForm>
 
@@ -27,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import InfiniteLoading from 'vue-infinite-loading';
 import 'vue-json-pretty/lib/styles.css';
 import ConfigPane from '@/components/ConfigPane.vue';
@@ -80,7 +87,7 @@ export default defineComponent({
         newStatus: LoadStatus.Loading,
         newProgress: 0,
         maxProgress: 50,
-        newText: 'Looking for NFTs...',
+        newText: 'Looking for NFTs... ETA: <1 min',
       });
 
       EE.removeAllListeners();
@@ -122,6 +129,11 @@ export default defineComponent({
 
     // --------------------------------------- export
     const { exportJSONZip } = useDownload();
+    const exportBtnText = ref(`Export ${NFTCount.value} NFTs`);
+    const disableExport = ref(false);
+    watch(NFTCount, (newCount) => {
+      exportBtnText.value = `Export ${newCount} NFTs`;
+    });
 
     const parseParams = (): [string, string] => {
       let returnKey: string;
@@ -138,16 +150,22 @@ export default defineComponent({
       return [returnKey!, returnPk!];
     };
 
+    const doneExportingCallback = () => {
+      disableExport.value = false;
+      exportBtnText.value = `Export ${NFTCount.value} NFTs`;
+    };
+
     const exportNFTs = () => {
+      disableExport.value = true;
+      exportBtnText.value = 'preparing...';
       const allNFTs = displayedNFTs.value.concat(allFetchedNFTs.value);
       const now = +new Date();
       const [k, v] = parseParams();
-      exportJSONZip(allNFTs, 'mint', `${k}-${v}-${now}`);
+      exportJSONZip(allNFTs, 'mint', `${k}-${v}-${now}`, doneExportingCallback);
     };
 
     return {
       NFTs: displayedNFTs,
-      NFTCount,
       progress,
       text,
       isLoading,
@@ -155,6 +173,8 @@ export default defineComponent({
       exportNFTs,
       handleSubmitForm,
       infiniteHandler,
+      exportBtnText,
+      disableExport,
     };
   },
 });

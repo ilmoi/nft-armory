@@ -113,10 +113,9 @@ import QuestionMark from '@/components/QuestionMark.vue';
 import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipCreator from '@/components/content/tooltip/ContentTooltipCreator.vue';
 import useModal from '@/composables/modal';
-import ContentTooltipJSON from '@/components/content/tooltip/ContentTooltipJSON.vue';
 
 export default defineComponent({
-  components: { ContentTooltipJSON, ContentTooltipCreator, ModalWindow, QuestionMark },
+  components: { ContentTooltipCreator, ModalWindow, QuestionMark },
   props: {
     isLoading: Boolean,
   },

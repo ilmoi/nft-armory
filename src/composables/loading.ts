@@ -91,3 +91,8 @@ export default function useLoading() {
     updateLoadingStdWin,
   };
 }
+
+export function estimateNFTLoadTime(count: number) {
+  // first 100 NFTs = <1min, then 1min extra for each 2500 extra 1min
+  return 1 + Math.floor(count / 2000);
+}

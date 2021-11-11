@@ -9,7 +9,12 @@ export default function useDownload() {
     return new Blob([JSONbytes], { type: 'application/json' });
   };
 
-  const exportJSONZip = (jsonFiles: any[], jsonAttrAsName: string, zipName: string) => {
+  const exportJSONZip = (
+    jsonFiles: any[],
+    jsonAttrAsName: string,
+    zipName: string,
+    callback: any = null
+  ) => {
     const zip = JSZip();
     jsonFiles.map((file) => {
       const blob = JSONToBlob(file);
@@ -17,7 +22,8 @@ export default function useDownload() {
     });
     zip.generateAsync({ type: 'blob' }).then((zipFile) => {
       const fileName = `${zipName}.zip`;
-      return FileSaver.saveAs(zipFile, fileName);
+      FileSaver.saveAs(zipFile, fileName);
+      callback();
     });
   };
 

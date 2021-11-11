@@ -12,7 +12,7 @@ import { deserializeTokenAccount, deserializeTokenMint } from './helpers/spl-tok
 import { INFT, INFTParams } from './helpers/types';
 import useCluster from '@/composables/cluster';
 import { EE, ERR_NO_NFTS } from '../globals';
-import { LoadStatus, IUpdateLoadingParams } from '@/composables/loading';
+import { LoadStatus, IUpdateLoadingParams, estimateNFTLoadTime } from '@/composables/loading';
 
 const {
   metaplex: { Store, AuctionManager },
@@ -143,12 +143,12 @@ function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
   return NFTs.filter(
     // based on the stuff we're explicitly showing in NFTViewCard.vue
     (n) =>
-      n.mint &&
-      n.address &&
-      n.splTokenInfo &&
-      n.metadataOnchain && // this one kinda mute since we're starting with metadata, but whatever
-      n.metadataExternal &&
-      n.editionType
+      n.mint && // guaranteed
+      // n.address &&
+      // n.splTokenInfo &&
+      n.metadataOnchain && // guaranteed
+      n.metadataExternal // requirement, otherwise no picture
+    // n.editionType
   );
 }
 
@@ -156,7 +156,7 @@ async function turnMetadatasIntoNFTs(metadatas: programs.metadata.Metadata[]): P
   let NFTs = deserializeMetadataOnchain(metadatas);
 
   // todo temp
-  NFTs = NFTs.slice(0, 100);
+  // NFTs = NFTs.slice(0, 100);
 
   const enrichedNFTs = await Promise.all(
     NFTs.map(async (n) => {
@@ -182,6 +182,7 @@ async function turnMetadatasIntoNFTs(metadatas: programs.metadata.Metadata[]): P
 export async function getNFTs(
   { owner, creators, mint, updateAuthority } = {} as INFTParams
 ): Promise<INFT[]> {
+  const t1 = performance.now();
   let metadatas;
   if (owner) {
     console.log('Time to get em NFTs by owner:', owner.toBase58());
@@ -205,8 +206,16 @@ export async function getNFTs(
     newStatus: LoadStatus.Loading,
     newProgress: 50,
     maxProgress: 90,
-    newText: `Found ${metadatas.length} tokens of interest. Fetching metadata...`,
+    newText: `Found ${
+      metadatas.length
+    } potential NFTs. Fetching metadata... ETA: <${estimateNFTLoadTime(metadatas.length)} min`,
   } as IUpdateLoadingParams);
+  const t2 = performance.now();
   const NFTs = await turnMetadatasIntoNFTs(metadatas);
+  const t3 = performance.now();
+
+  console.log('Time to find NFTs:', (t2 - t1) / 1000);
+  console.log('Time to fetch Metadata:', (t3 - t2) / 1000);
+
   return filterOutIncompleteNFTs(NFTs);
 }
