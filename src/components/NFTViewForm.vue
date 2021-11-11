@@ -28,11 +28,11 @@
 
     <form @submit.prevent="emitSubmitForm" class="mt-10">
       <div v-if="byAddress" class="nes-field">
-        <label for="addr">Wallet Address:</label>
+        <div><label for="addr">Wallet Address:</label></div>
         <input type="text" id="addr" class="nes-input" v-model="owner" :placeholder="owner" />
       </div>
       <div v-else-if="byWallet && !missingWallet" class="nes-field">
-        <label for="walletAddr">Your Wallet Address:</label>
+        <div><label for="walletAddr">Your Wallet Address:</label></div>
         <input
           type="text"
           id="walletAddr"
@@ -43,7 +43,7 @@
         />
       </div>
       <div v-else-if="byWallet && missingWallet" class="nes-field">
-        <label for="missingWallet">Your Wallet Address:</label>
+        <div><label for="missingWallet">Your Wallet Address:</label></div>
         <input
           type="text"
           id="missingWallet"
@@ -53,7 +53,10 @@
         />
       </div>
       <div v-else-if="byCreator" class="nes-field">
-        <label for="creator">Creator Address:</label>
+        <div class="flex">
+          <label for="creator"> Creator Address: </label>
+          <QuestionMark @click="showModal('tooltipCreator')" />
+        </div>
         <input
           type="text"
           id="creator"
@@ -63,7 +66,7 @@
         />
       </div>
       <div v-else-if="byAuthority" class="nes-field">
-        <label for="authority">Authority Address:</label>
+        <div><label for="authority">Update Authority Address:</label></div>
         <input
           type="text"
           id="authority"
@@ -73,18 +76,30 @@
         />
       </div>
       <div v-else-if="byMint" class="nes-field">
-        <label for="mint">Mint Address:</label>
+        <div><label for="mint">Mint Address:</label></div>
         <input type="text" id="mint" class="nes-input" v-model="mint" :placeholder="mint" />
       </div>
 
-      <button
-        class="nes-btn is-primary mt-5"
-        :class="{ 'is-disabled': isLoading }"
-        :disabled="isLoading"
-      >
-        Load NFTs
-      </button>
+      <div class="flex justify-between mt-5">
+        <button
+          class="nes-btn is-primary"
+          :class="{ 'is-disabled': isLoading }"
+          :disabled="isLoading"
+          type="submit"
+        >
+          Load NFTs
+        </button>
+        <slot />
+      </div>
     </form>
+
+    <ModalWindow
+      v-if="isModalVisible('tooltipCreator')"
+      title="What's a creator?"
+      @hide-modal="hideModal('tooltipCreator')"
+    >
+      <ContentTooltipCreator />
+    </ModalWindow>
   </div>
 </template>
 
@@ -94,20 +109,24 @@ import { PublicKey } from '@solana/web3.js';
 import 'vue-json-pretty/lib/styles.css';
 import { INFTParams } from '@/common/helpers/types';
 import useWallet from '@/composables/wallet';
+import QuestionMark from '@/components/QuestionMark.vue';
+import ModalWindow from '@/components/ModalWindow.vue';
+import ContentTooltipCreator from '@/components/content/tooltip/ContentTooltipCreator.vue';
+import useModal from '@/composables/modal';
 
 export default defineComponent({
+  components: { ContentTooltipCreator, ModalWindow, QuestionMark },
   props: {
     isLoading: Boolean,
   },
   emits: ['submit-form'],
   setup(props, ctx) {
-    // prepare params
     const owner = ref('AGsJu1jZmFcVDPdm6bbaP54S3sMEinxmdiYWhaBBDNVX');
     const creator = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
     const authority = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
     const mint = ref('3dsmKsQD5fpmGeecg4AAhUMfVrhDGkXefrGHEk4aWpc6');
 
-    // select method
+    // --------------------------------------- choosing a method
     const chosenMethod = ref<string>('address');
     const byAddress = computed(() => chosenMethod.value === 'address');
     const byWallet = computed(() => chosenMethod.value === 'wallet');
@@ -115,7 +134,7 @@ export default defineComponent({
     const byAuthority = computed(() => chosenMethod.value === 'authority');
     const byMint = computed(() => chosenMethod.value === 'mint');
 
-    // wallet method
+    // --------------------------------------- wallet
     const { wallet, getWalletAddress } = useWallet();
     watch(byWallet, () => {
       if (getWalletAddress()) owner.value = getWalletAddress()!.toBase58();
@@ -146,6 +165,10 @@ export default defineComponent({
       if (params) ctx.emit('submit-form', params);
     };
 
+    // --------------------------------------- modal
+    const { registerModal, isModalVisible, showModal, hideModal } = useModal();
+    registerModal('tooltipCreator');
+
     return {
       // params
       owner,
@@ -164,6 +187,10 @@ export default defineComponent({
       missingWalletNotice,
       // event
       emitSubmitForm,
+      // modal
+      isModalVisible,
+      showModal,
+      hideModal,
     };
   },
 });

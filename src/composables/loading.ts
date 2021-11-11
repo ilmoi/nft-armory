@@ -8,7 +8,7 @@ export enum LoadStatus {
   Success,
 }
 
-export interface UpdateLoadingParams {
+export interface IUpdateLoadingParams {
   newStatus: LoadStatus;
   newProgress: number;
   maxProgress: number;
@@ -49,7 +49,7 @@ export default function useLoading() {
   };
 
   const updateLoading = (
-    { newStatus, newProgress, maxProgress, newText } = {} as UpdateLoadingParams
+    { newStatus, newProgress, maxProgress, newText } = {} as IUpdateLoadingParams
   ) => {
     // console.log('received', newStatus, newProgress, maxProgress, newText);
     status.value = newStatus;

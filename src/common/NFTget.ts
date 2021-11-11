@@ -12,7 +12,7 @@ import { deserializeTokenAccount, deserializeTokenMint } from './helpers/spl-tok
 import { INFT, INFTParams } from './helpers/types';
 import useCluster from '@/composables/cluster';
 import { EE, ERR_NO_NFTS } from '../globals';
-import { LoadStatus, UpdateLoadingParams } from '@/composables/loading';
+import { LoadStatus, IUpdateLoadingParams } from '@/composables/loading';
 
 const {
   metaplex: { Store, AuctionManager },
@@ -206,7 +206,7 @@ export async function getNFTs(
     newProgress: 50,
     maxProgress: 90,
     newText: `Found ${metadatas.length} tokens of interest. Fetching metadata...`,
-  } as UpdateLoadingParams);
+  } as IUpdateLoadingParams);
   const NFTs = await turnMetadatasIntoNFTs(metadatas);
   return filterOutIncompleteNFTs(NFTs);
 }

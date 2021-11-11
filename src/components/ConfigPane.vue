@@ -29,7 +29,7 @@ import useWallet from '@/composables/wallet';
 export default defineComponent({
   setup() {
     // cluster
-    const { cluster, setCluster } = useCluster();
+    const { cluster, setCluster, getClusterURL } = useCluster();
     const chosenCluster = computed({
       get() {
         return cluster.value;
@@ -51,7 +51,7 @@ export default defineComponent({
           console.log('back to ground 0');
           return;
         }
-        setWallet(newVal, cluster.value);
+        setWallet(newVal, getClusterURL());
       },
     });
 

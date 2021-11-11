@@ -9,7 +9,6 @@ import {
 } from '@solana/wallet-adapter-wallets';
 import { PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '@solana/wallet-adapter-base';
-import { Cluster } from '@/composables/cluster';
 
 const walletClass = ref<Wallet | null>(null);
 const walletAdapter = ref<WalletAdapter | null>(null);
@@ -22,7 +21,8 @@ const walletMapping = {
 };
 
 export default function useWallet() {
-  const setWallet = (newWallet: string | null, network: Cluster) => {
+  const setWallet = (newWallet: string | null, network: string) => {
+    console.log('attempting to set wallet', newWallet, network);
     const gottenWallet = (walletMapping as any)[newWallet!]({ network });
     const connectedAdapter = gottenWallet.adapter();
     connectedAdapter
@@ -31,7 +31,7 @@ export default function useWallet() {
         // only set the two if the call succeeds
         walletClass.value = gottenWallet;
         walletAdapter.value = connectedAdapter;
-        console.log('wallet updated, now', newWallet, network);
+        console.log('wallet successfully connected', newWallet, network);
       })
       .catch(() => {
         console.log('oh no, failed to connect to wallet, try again');

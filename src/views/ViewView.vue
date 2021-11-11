@@ -1,7 +1,12 @@
 <template>
   <div>
+    <!--all the config stuff-->
     <ConfigPane />
-    <NFTViewForm :is-loading="isLoading" @submit-form="handleSubmitForm" />
+    <NFTViewForm :is-loading="isLoading" @submit-form="handleSubmitForm">
+      <button v-if="NFTs.length" type="button" class="nes-btn" @click="exportNFTs">
+        Export {{ NFTCount }} NFTs
+      </button>
+    </NFTViewForm>
 
     <!--per NFT display-->
     <LoadingBar v-if="isLoading" :progress="progress" :text="text" class="my-5" />
@@ -14,7 +19,7 @@
     <infinite-loading
       @infinite="infiniteHandler"
       :identifier="
-        new Date() //needs to be something thta dynamically updates, or won't work
+        +new Date() //needs to be something thta dynamically updates, or won't work
       "
       spinner="spiral"
     ></infinite-loading>
@@ -22,9 +27,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import InfiniteLoading from 'vue-infinite-loading';
-import { INFT } from '@/TEMP/helpers/types';
 import 'vue-json-pretty/lib/styles.css';
 import ConfigPane from '@/components/ConfigPane.vue';
 import LoadingBar from '@/components/LoadingBar.vue';
@@ -33,8 +37,9 @@ import NFTViewCard from '@/components/NFTViewCard.vue';
 import useLoading, { LoadStatus } from '@/composables/loading';
 import { EE, ERR_NO_NFTS } from '@/globals';
 import ErrorNotice from '@/components/ErrorNotice.vue';
-import { INFTParams } from '@/common/helpers/types';
+import { INFT, INFTParams } from '@/common/helpers/types';
 import NFTViewForm from '@/components/NFTViewForm.vue';
+import useDownload from '@/composables/download';
 
 export default defineComponent({
   components: {
@@ -57,6 +62,8 @@ export default defineComponent({
     } = useLoading();
     const displayedNFTs = ref<INFT[]>([]); // this is what's shown on FE
     const allFetchedNFTs = ref<INFT[]>([]); // this is everything fetched in mem
+    const fetchParams = ref<INFTParams | null>(null);
+    const NFTCount = computed(() => displayedNFTs.value.length + allFetchedNFTs.value.length);
 
     const getNextBatch = (size: number): INFT[] => {
       if (allFetchedNFTs.value.length === 0) {
@@ -98,9 +105,11 @@ export default defineComponent({
     };
 
     const handleSubmitForm = (params: INFTParams) => {
+      fetchParams.value = params;
       fetchNFTs(params);
     };
 
+    // --------------------------------------- display
     const infiniteHandler = ($state: any) => {
       const nextBatch = getNextBatch(10);
       if (nextBatch.length) {
@@ -111,12 +120,39 @@ export default defineComponent({
       }
     };
 
+    // --------------------------------------- export
+    const { exportJSONZip } = useDownload();
+
+    const parseParams = (): [string, string] => {
+      let returnKey: string;
+      let returnPk: string;
+      for (const [k, v] of Object.entries(fetchParams.value!)) {
+        if (v && v instanceof Array) {
+          returnKey = k;
+          returnPk = v[0].toBase58(); // get the first creator
+        } else if (v) {
+          returnKey = k;
+          returnPk = v.toBase58();
+        }
+      }
+      return [returnKey!, returnPk!];
+    };
+
+    const exportNFTs = () => {
+      const allNFTs = displayedNFTs.value.concat(allFetchedNFTs.value);
+      const now = +new Date();
+      const [k, v] = parseParams();
+      exportJSONZip(allNFTs, 'mint', `${k}-${v}-${now}`);
+    };
+
     return {
       NFTs: displayedNFTs,
+      NFTCount,
       progress,
       text,
       isLoading,
       isError,
+      exportNFTs,
       handleSubmitForm,
       infiniteHandler,
     };
