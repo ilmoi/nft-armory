@@ -1,16 +1,17 @@
 <template>
   <div>
     <ConfigPane />
-    <div>mint</div>
+    <NFTMintForm />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import ConfigPane from '@/components/ConfigPane.vue';
+import NFTMintForm from '@/components/NFTMintForm.vue';
 
 export default defineComponent({
-  components: { ConfigPane },
+  components: { NFTMintForm, ConfigPane },
   setup() {
     return {};
   },

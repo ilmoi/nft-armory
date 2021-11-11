@@ -1,28 +1,47 @@
-import { readonly, ref } from 'vue';
+import { computed, readonly, ref, shallowRef, Ref } from 'vue';
 import {
   getPhantomWallet,
   getSolflareWallet,
+  getSolflareWebWallet,
   getSolletExtensionWallet,
   getSolletWallet,
   Wallet,
   WalletName,
 } from '@solana/wallet-adapter-wallets';
 import { PublicKey } from '@solana/web3.js';
-import { WalletAdapter } from '@solana/wallet-adapter-base';
+import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 
 const walletClass = ref<Wallet | null>(null);
-const walletAdapter = ref<WalletAdapter | null>(null);
+const walletAdapter = ref<Ref<SignerWalletAdapter | null>>(shallowRef(null));
 
 const walletMapping = {
   Phantom: getPhantomWallet,
   Sollet: getSolletWallet,
   'Sollet (Extension)': getSolletExtensionWallet,
   Solflare: getSolflareWallet,
+  'Solflare (Web)': getSolflareWebWallet,
 };
 
 export default function useWallet() {
+  const isConnected = computed(() => !!walletAdapter.value);
+
+  const getWallet = (): SignerWalletAdapter | null => {
+    if (walletAdapter.value) {
+      return walletAdapter.value;
+    }
+    return null;
+  };
+
   const setWallet = (newWallet: string | null, network: string) => {
     console.log('attempting to set wallet', newWallet, network);
+
+    if (!newWallet) {
+      console.log('removing active wallet');
+      walletClass.value = null;
+      walletAdapter.value = null; // don't think I need shallowRef here
+      return;
+    }
+
     const gottenWallet = (walletMapping as any)[newWallet!]({ network });
     const connectedAdapter = gottenWallet.adapter();
     connectedAdapter
@@ -56,6 +75,8 @@ export default function useWallet() {
 
   return {
     wallet: readonly(walletAdapter),
+    isConnected,
+    getWallet,
     setWallet,
     getWalletName,
     getWalletAddress,

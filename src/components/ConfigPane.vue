@@ -15,6 +15,7 @@
         <option :value="WalletName.Sollet">Sollet</option>
         <option :value="WalletName.SolletExtension">Sollet Extension</option>
         <option :value="WalletName.Solflare">Solflare</option>
+        <option :value="WalletName.SolflareWeb">Solflare Web</option>
       </select>
     </div>
   </div>
@@ -46,11 +47,6 @@ export default defineComponent({
         return getWalletName();
       },
       set(newVal: WalletName | null) {
-        // check to make sure wallet is not null
-        if (!newVal) {
-          console.log('back to ground 0');
-          return;
-        }
         setWallet(newVal, getClusterURL());
       },
     });

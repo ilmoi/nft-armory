@@ -11,14 +11,11 @@ import {
 import { deserializeTokenAccount, deserializeTokenMint } from './helpers/spl-token';
 import { INFT, INFTParams } from './helpers/types';
 import useCluster from '@/composables/cluster';
-import { EE, ERR_NO_NFTS } from '../globals';
+import { EE, ERR_NO_NFTS } from '@/globals';
 import { LoadStatus, IUpdateLoadingParams, estimateNFTLoadTime } from '@/composables/loading';
 
 const {
-  metaplex: { Store, AuctionManager },
   metadata: { Metadata },
-  auction: { Auction },
-  vault: { Vault },
 } = programs;
 
 const { getConnection } = useCluster();
@@ -141,14 +138,10 @@ function deserializeMetadataOnchain(metadatas: programs.metadata.Metadata[]): IN
 
 function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
   return NFTs.filter(
-    // based on the stuff we're explicitly showing in NFTViewCard.vue
     (n) =>
       n.mint && // guaranteed
-      // n.address &&
-      // n.splTokenInfo &&
       n.metadataOnchain && // guaranteed
       n.metadataExternal // requirement, otherwise no picture
-    // n.editionType
   );
 }
 

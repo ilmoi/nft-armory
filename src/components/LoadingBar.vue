@@ -14,18 +14,19 @@
         max="100"
       ></progress>
       <progress v-else class="nes-progress is-error" :value="progress" max="100"></progress>
-      <div class="flex justify-center">
-        <img src="../assets/pixel-cookie.gif" width="40" height="40" class="mr-5" />
+      <LoadingIcon>
         <p class="mt-2">{{ text ?? 'Loading...' }}</p>
-      </div>
+      </LoadingIcon>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import LoadingIcon from '@/components/LoadingIcon.vue';
 
 export default defineComponent({
+  components: { LoadingIcon },
   props: {
     progress: Number,
     text: String,

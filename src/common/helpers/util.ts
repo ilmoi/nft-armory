@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 
-import { Keypair, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import fs from 'fs';
 import BN from 'bn.js';
 
@@ -40,11 +40,6 @@ export function okToFailSync(callback: any, args: any[], wantObject = false) {
     console.log('Full error:', e);
     return wantObject ? {} : undefined;
   }
-}
-
-export function loadKeypairSync(path: string): Keypair {
-  const secretKey = JSON.parse(fs.readFileSync(path, 'utf8'));
-  return Keypair.fromSecretKey(Uint8Array.from(secretKey));
 }
 
 export function stringifyPubkeysAndBNsInObject(o: any): any {
@@ -112,4 +107,14 @@ export async function writeToDisk(dir: string, arr: any[]) {
     });
   });
   console.log('Done writing!');
+}
+
+export async function pause(ms: number) {
+  // weird semantics - but needed to work inside jest
+  // taken from https://stackoverflow.com/questions/46077176/jest-settimeout-not-pausing-test
+  await new Promise((response) =>
+    setTimeout(() => {
+      response(0);
+    }, ms)
+  );
 }

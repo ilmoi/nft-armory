@@ -2,7 +2,7 @@
   <div>
     <div class="nes-container with-title">
       <p class="title">View NFTs by:</p>
-      <div class="text-gray-400 mt-2 flex justify-between">
+      <div class="text-gray-400 mt-2 flex justify-around">
         <label>
           <input type="radio" class="nes-radio" value="address" v-model="chosenMethod" />
           <span>Address</span>
@@ -47,7 +47,7 @@
         <input
           type="text"
           id="missingWallet"
-          class="nes-input text-red-500"
+          class="nes-input nes-text is-error"
           v-model="missingWalletNotice"
           :disabled="true"
         />
@@ -196,8 +196,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-input[type='radio']:checked + span {
-  @apply text-black;
-}
-</style>
+<style scoped></style>
