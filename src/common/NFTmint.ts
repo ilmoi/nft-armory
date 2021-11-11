@@ -7,7 +7,6 @@ import { mintEditionFromMaster } from '@/TEMP/mint_v1';
 const { getConnection } = useCluster();
 
 // todo fix max supply after PR accepted
-// todo make sure that a call with 0 produces capped and null actually produces uncapped
 export async function mintNewNFT(wallet: Wallet, uri: string, maxSupply: number) {
   const connection = getConnection();
   const result = await actions.mintNFT({
@@ -22,6 +21,7 @@ export async function mintNewNFT(wallet: Wallet, uri: string, maxSupply: number)
 }
 
 // todo import from actual lib when PR accepted
+// todo make sure that a call with 0 produces capped and null actually produces uncapped
 export async function mintEditionNFTFromMaster(
   wallet: Wallet,
   masterEditionMint: PublicKey,

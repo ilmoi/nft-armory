@@ -227,12 +227,12 @@ export default defineComponent({
     registerModal('tooltipArweave');
 
     return {
-      chosenNFTType,
-      mintResult,
-      newNFT,
-      isLoading,
       isConnected,
       error,
+      chosenNFTType,
+      isLoading,
+      mintResult,
+      newNFT,
       // master
       uri,
       maxSupply,
