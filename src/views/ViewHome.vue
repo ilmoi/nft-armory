@@ -26,9 +26,8 @@
         I spent my childhood in MMOs, most of it in WoW. If you did too, you'll remember WoW Armory.
       </p>
       <p class="mt-5">
-        The original idea for this tool was something that would let you view / manage / easily
-        share your collection. That sounded a lot like WoW Armory to me, but for NFTs, so I called
-        it that.
+        The original idea for this tool was something that would let you view / manage / share your
+        NFT collection. That sounded a lot like WoW Armory to me, but for NFTs, so I called it that.
       </p>
       <p class="mt-5">Dunno maybe I'm weird ¯\_(ツ)_/¯</p>
     </div>

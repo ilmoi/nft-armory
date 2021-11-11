@@ -1,10 +1,12 @@
 <template>
   <div class="fixed inset-0 opacity-50 bg-black z400" @click="emitHide"></div>
   <div class="modal" @keydown.esc="emitHide" tabindex="0" id="modal">
-    <div class="nes-container with-title bg-white relative">
-      <p class="title">{{ title }}</p>
+    <div class="nes-container bg-white relative">
+      <p class="text-lg underline">{{ title }}</p>
       <p class="absolute top-1 right-1" @click="emitHide">X</p>
-      <slot />
+      <div class="mt-5 text-sm">
+        <slot />
+      </div>
     </div>
   </div>
 </template>

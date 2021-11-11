@@ -15,9 +15,3 @@
     <p class="mt-5">It's the same wallet you used to sign the minting transaction.</p>
   </div>
 </template>
-
-<script>
-export default {};
-</script>
-
-<style scoped></style>

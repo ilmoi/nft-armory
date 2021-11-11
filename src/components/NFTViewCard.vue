@@ -23,13 +23,24 @@
         <p>
           Owner: <span class="text-black">{{ n.splTokenInfo.owner }}</span>
         </p>
-        <button class="nes-btn is-primary" @click="toggleJSON">{ full JSON }</button>
+        <div class="flex">
+          <button class="nes-btn is-primary" @click="toggleJSON">{ full JSON }</button>
+          <QuestionMark class="text-base ml-2 mt-2" @click="showModal('tooltipJSON')" />
+        </div>
       </div>
     </div>
     <div v-if="fullJSON" class="bg-gray-200 mt-5 copy-father">
       <button class="nes-btn is-primary copy" @click="doCopy">{{ copyText }}</button>
       <vue-json-pretty class="text-xs" :data="stringifyPubkeysAndBNsInObject(n)"></vue-json-pretty>
     </div>
+
+    <ModalWindow
+      v-if="isModalVisible('tooltipJSON')"
+      title="What's this JSON?"
+      @hide-modal="hideModal('tooltipJSON')"
+    >
+      <ContentTooltipJSON />
+    </ModalWindow>
   </div>
 </template>
 
@@ -38,12 +49,19 @@ import { defineComponent, ref } from 'vue';
 import VueJsonPretty from 'vue-json-pretty';
 import useClipboard from 'vue-clipboard3';
 import { stringifyPubkeysAndBNsInObject } from '@/common/helpers/util';
+import useModal from '@/composables/modal';
+import ModalWindow from '@/components/ModalWindow.vue';
+import ContentTooltipJSON from '@/components/content/tooltip/ContentTooltipJSON.vue';
+import QuestionMark from '@/components/QuestionMark.vue';
 
 export default defineComponent({
   props: {
     n: Object,
   },
   components: {
+    QuestionMark,
+    ContentTooltipJSON,
+    ModalWindow,
     VueJsonPretty,
   },
   setup(props) {
@@ -69,6 +87,10 @@ export default defineComponent({
       }
     };
 
+    // --------------------------------------- modal
+    const { registerModal, isModalVisible, showModal, hideModal } = useModal();
+    registerModal('tooltipJSON');
+
     return {
       isMaster,
       fullJSON,
@@ -76,6 +98,10 @@ export default defineComponent({
       stringifyPubkeysAndBNsInObject,
       doCopy,
       copyText,
+      // modal
+      isModalVisible,
+      showModal,
+      hideModal,
     };
   },
 });
