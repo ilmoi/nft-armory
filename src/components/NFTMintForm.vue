@@ -19,12 +19,12 @@
 
     <NotifyWarning class="mt-5" v-if="chosenNFTType === 'print'">
       (!) NOTE: minting Standard Editions requires 1) that you have the Master Edition in your
-      wallet and 2) that the max supply cap isn't hit.
+      wallet and 2) that the max supply cap isn't hit. Read more
       <a
         href="https://docs.metaplex.com/about/terminology#master-edition"
         target="_blank"
         class="nes-text is-primary"
-        >Read more</a
+        >here</a
       >.
     </NotifyWarning>
 
@@ -38,9 +38,7 @@
         <input type="text" id="uri" class="nes-input" v-model="uri" :placeholder="uri" />
       </div>
       <div class="nes-field mt-5">
-        <div>
-          <label for="maxSupply">Max Supply (leave blank for uncapped):</label>
-        </div>
+        <div><label for="maxSupply">Max Supply (leave blank for uncapped):</label></div>
         <input
           type="number"
           id="maxSupply"
@@ -60,13 +58,42 @@
     </form>
 
     <!--print-->
-    <form v-else-if="chosenNFTType === 'print'" class="mt-5" @submit.prevent="mintNewPrint"></form>
+    <form v-else-if="chosenNFTType === 'print'" class="mt-5" @submit.prevent="mintNewPrint">
+      <div class="nes-field mt-5">
+        <div><label for="masterEditionMint">Master Edition Mint:</label></div>
+        <input
+          type="text"
+          id="masterEditionMint"
+          class="nes-input"
+          v-model="masterEditionMint"
+          :placeholder="masterEditionMint"
+        />
+      </div>
+      <div class="nes-field mt-5">
+        <div><label for="updateAuthority">Update Authority (leave blank for default):</label></div>
+        <input
+          type="text"
+          id="updateAuthority"
+          class="nes-input"
+          v-model="updateAuthority"
+          :placeholder="updateAuthority"
+        />
+      </div>
+      <button
+        class="nes-btn is-primary mt-5"
+        :class="{ 'is-disabled': isLoading || !isConnected }"
+        :disabled="isLoading || !isConnected"
+        type="submit"
+      >
+        Mint new Master NFT
+      </button>
+    </form>
 
     <!--notifications-->
     <NotifyError v-if="!isConnected" class="mt-5">
       Connect your wallet above to mint new NFTs.
     </NotifyError>
-    <NotifyError v-if="err" class="mt-5"> Uh oh something went wrong - {{ err }}} </NotifyError>
+    <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }} </NotifyError>
     <NotifyInfo v-if="isLoading" class="mt-5">Sit tight...</NotifyInfo>
     <NotifySuccess v-if="mintResult" class="mt-5">
       <p>Mint successful! 🎉</p>
@@ -89,7 +116,7 @@
 import { defineComponent, ref } from 'vue';
 import { PublicKey } from '@solana/web3.js';
 import QuestionMark from '@/components/QuestionMark.vue';
-import { mintNewNFT } from '@/common/NFTmint';
+import { mintEditionNFTFromMaster, mintNewNFT } from '@/common/NFTmint';
 import useWallet from '@/composables/wallet';
 import NotifyError from '@/components/content/notifications/NotifyError.vue';
 import NotifyWarning from '@/components/content/notifications/NotifyWarning.vue';
@@ -102,6 +129,7 @@ import { getNFTs } from '@/common/NFTget';
 import useModal from '@/composables/modal';
 import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipArweave from '@/components/content/tooltip/ContentTooltipArweave.vue';
+import useError from '@/composables/error';
 
 interface IMintResult {
   txId: string;
@@ -124,15 +152,17 @@ export default defineComponent({
   },
   setup() {
     const { isConnected, getWallet } = useWallet();
+    const { error, clearError, setError, tryConvertToPk } = useError();
+
     const chosenNFTType = ref('master');
     const isLoading = ref<boolean>(false);
     const mintResult = ref<IMintResult | null>(null);
     const newNFT = ref<INFT | null>(null);
-    const err = ref<Error | null>(null);
 
     const fetchNewNFT = async () => {
       // this will keep failing, while the network updates, for a while so keep retrying
       try {
+        // eslint-disable-next-line prefer-destructuring
         newNFT.value = (await getNFTs({ mint: new PublicKey(mintResult.value!.mint) }))[0];
       } catch (e) {
         await fetchNewNFT();
@@ -143,7 +173,7 @@ export default defineComponent({
       isLoading.value = false;
       mintResult.value = null;
       newNFT.value = null;
-      err.value = null;
+      clearError();
     };
 
     // --------------------------------------- master
@@ -161,12 +191,36 @@ export default defineComponent({
           await fetchNewNFT();
         })
         .catch((e) => {
-          err.value = e;
+          setError(e);
           isLoading.value = false;
         });
     };
 
     // --------------------------------------- print
+    const masterEditionMint = ref<string | null>('711qX1LxMT3x7Ti8i4JJ5jrX8a4WWnZ6dfTAWyB8SBq5');
+    const updateAuthority = ref<string | null>();
+    const mintNewPrint = async () => {
+      clearPreviousResults();
+      isLoading.value = true;
+
+      // if PKs don't deserialize, we don't want to call the rest of the function
+      const masterPk = tryConvertToPk(masterEditionMint.value!);
+      const updatePk = tryConvertToPk(updateAuthority.value!);
+      if (error.value) {
+        return;
+      }
+
+      mintEditionNFTFromMaster(getWallet() as any, masterPk!, updatePk as any)
+        .then(async (result) => {
+          mintResult.value = result as IMintResult;
+          isLoading.value = false;
+          await fetchNewNFT();
+        })
+        .catch((e) => {
+          setError(e);
+          isLoading.value = false;
+        });
+    };
 
     // --------------------------------------- modals
     const { registerModal, isModalVisible, showModal, hideModal } = useModal();
@@ -178,11 +232,15 @@ export default defineComponent({
       newNFT,
       isLoading,
       isConnected,
-      err,
+      error,
       // master
       uri,
       maxSupply,
       mintNewMaster,
+      // print
+      masterEditionMint,
+      updateAuthority,
+      mintNewPrint,
       // modal
       isModalVisible,
       showModal,

@@ -93,6 +93,8 @@
       </div>
     </form>
 
+    <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }} </NotifyError>
+
     <ModalWindow
       v-if="isModalVisible('tooltipCreator')"
       title="What's a creator?"
@@ -105,7 +107,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue';
-import { PublicKey } from '@solana/web3.js';
 import 'vue-json-pretty/lib/styles.css';
 import { INFTParams } from '@/common/helpers/types';
 import useWallet from '@/composables/wallet';
@@ -113,14 +114,19 @@ import QuestionMark from '@/components/QuestionMark.vue';
 import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipCreator from '@/components/content/tooltip/ContentTooltipCreator.vue';
 import useModal from '@/composables/modal';
+import useError from '@/composables/error';
+import NotifyError from '@/components/content/notifications/NotifyError.vue';
 
 export default defineComponent({
-  components: { ContentTooltipCreator, ModalWindow, QuestionMark },
+  components: { NotifyError, ContentTooltipCreator, ModalWindow, QuestionMark },
   props: {
     isLoading: Boolean,
   },
   emits: ['submit-form'],
   setup(props, ctx) {
+    const { error, clearError, setError, tryConvertToPk } = useError();
+
+    // --------------------------------------- params
     const owner = ref('AGsJu1jZmFcVDPdm6bbaP54S3sMEinxmdiYWhaBBDNVX');
     const creator = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
     const authority = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
@@ -146,18 +152,17 @@ export default defineComponent({
     const missingWalletNotice = 'Please connect your wallet above.';
 
     const prepareParams = (): INFTParams | null => {
-      try {
-        return {
-          owner: byAddress.value || byWallet.value ? new PublicKey(owner.value) : undefined,
-          creators: byCreator.value ? [new PublicKey(creator.value)] : undefined,
-          updateAuthority: byAuthority.value ? new PublicKey(authority.value) : undefined,
-          mint: byMint.value ? new PublicKey(mint.value) : undefined,
-        } as INFTParams;
-      } catch (e) {
-        console.log('Bad PK:', e);
-        // todo notify the user
+      clearError();
+      const params = {
+        owner: byAddress.value || byWallet.value ? tryConvertToPk(owner.value) : undefined,
+        creators: byCreator.value ? [tryConvertToPk(creator.value)] : undefined,
+        updateAuthority: byAuthority.value ? tryConvertToPk(authority.value) : undefined,
+        mint: byMint.value ? tryConvertToPk(mint.value) : undefined,
+      } as INFTParams;
+      if (error.value) {
         return null;
       }
+      return params;
     };
 
     const emitSubmitForm = () => {
@@ -170,6 +175,7 @@ export default defineComponent({
     registerModal('tooltipCreator');
 
     return {
+      error,
       // params
       owner,
       creator,

@@ -8,7 +8,7 @@ import {
   Token,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
-import { stringifyPubkeysInObject } from './helpers/util';
+import { stringifyPubkeysAndBNsInObject } from '@/common/helpers/util';
 
 // export class LocalWallet {
 //   keypair: Keypair;
@@ -169,7 +169,7 @@ export async function mintEditionFromMaster(
     edition: editionPDA,
   };
 
-  console.log(stringifyPubkeysInObject(x));
+  console.log(stringifyPubkeysAndBNsInObject(x));
 
   return x;
 }
