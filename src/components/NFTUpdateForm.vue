@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="updateNFT">
+    <form @submit.prevent="updateTheNFT">
       <div class="nes-field">
         <div><label for="editionMint">NFT Mint:</label></div>
         <input
@@ -34,12 +34,14 @@
           :placeholder="newUpdateAuthority"
         />
       </div>
-      <div class="nes-field mt-5">
-        <div><label for="primarySaleHappened">Primary Sale Happened? (optional):</label></div>
+      <div>
+        <label for="primarySaleHappened" class="mt-5">Primary Sale Happened? (optional):</label>
+        <QuestionMark external="https://docs.metaplex.com/nft-standard#token-metadata-program" />
+      </div>
+      <div class="nes-select">
         <select required id="primarySaleHappened" v-model="primarySaleHappened">
           <option :value="null">select</option>
-          <option :value="false">no</option>
-          <option :value="true">yes</option>
+          <option :value="true">yes, it's over</option>
         </select>
       </div>
       <button
@@ -54,16 +56,21 @@
 
     <!--notifications-->
     <NotifyError v-if="!isConnected" class="mt-5">
-      Connect your wallet above to update your NFT.
+      Connect your wallet above to update an NFT.
     </NotifyError>
-    <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }} </NotifyError>
+    <NotifyError v-if="error" class="mt-5">
+      Uh oh something went wrong - {{ error }}. See console for more details.</NotifyError
+    >
     <NotifyInfo v-if="isLoading" class="mt-5">Sit tight...</NotifyInfo>
     <NotifySuccess v-if="txId" class="mt-5">
       <p>Update successful! 🎉</p>
       <LoadingIcon align="left" class="mt-5" v-if="!updatedNFT"
-        >Loading your updated NFT...</LoadingIcon
+        >Loading your updated NFT... (might take a min or two)</LoadingIcon
       >
-      <NFTViewCard v-else :n="updatedNFT" class="text-black" />
+      <div v-else>
+        <ExplorerLink :tx-id="txId" />
+        <NFTViewCard :n="updatedNFT" class="text-black" />
+      </div>
     </NotifySuccess>
 
     <!--modals-->
@@ -92,9 +99,11 @@ import { INFT } from '@/common/helpers/types';
 import { getNFTs } from '@/common/NFTget';
 import { updateNFT } from '@/common/NFTupdate';
 import useModal from '@/composables/modal';
+import ExplorerLink from '@/components/ExplorerLink.vue';
 
 export default defineComponent({
   components: {
+    ExplorerLink,
     ModalWindow,
     NFTViewCard,
     LoadingIcon,
@@ -111,16 +120,6 @@ export default defineComponent({
     const txId = ref<string | null>(null);
     const updatedNFT = ref<INFT | null>(null);
 
-    const fetchUpdatedNFT = async () => {
-      // this will keep failing, while the network updates, for a while so keep retrying
-      try {
-        // eslint-disable-next-line prefer-destructuring
-        updatedNFT.value = (await getNFTs({ mint: new PublicKey(editionMint.value!) }))[0];
-      } catch (e) {
-        await fetchUpdatedNFT();
-      }
-    };
-
     const clearPreviousResults = () => {
       isLoading.value = false;
       txId.value = null;
@@ -133,9 +132,39 @@ export default defineComponent({
     const newMetadataData = ref<any>(null);
     const newUpdateAuthority = ref<string | null>(null);
     const primarySaleHappened = ref<boolean | null>(null);
+
+    const fetchUpdatedNFT = async (): Promise<void> => {
+      // retry recursively until new attributes confirmed on the network
+      try {
+        // eslint-disable-next-line prefer-destructuring
+        const fetchedNFT = (await getNFTs({ mint: new PublicKey(editionMint.value!) }))[0];
+        if (
+          // (newMetadataData && ) //todo
+          (newUpdateAuthority.value &&
+            newUpdateAuthority.value !== fetchedNFT.metadataOnchain.updateAuthority) ||
+          // primary sale can only be set to "true" = the only use case we're checking
+          (primarySaleHappened.value &&
+            (fetchedNFT.metadataOnchain.primarySaleHappened as any as number) !== 1)
+        ) {
+          return await fetchUpdatedNFT();
+        }
+
+        updatedNFT.value = fetchedNFT;
+      } catch (e) {
+        await fetchUpdatedNFT();
+      }
+    };
+
     const updateTheNFT = async () => {
       clearPreviousResults();
       isLoading.value = true;
+
+      console.log(
+        'params',
+        newMetadataData.value,
+        newUpdateAuthority.value,
+        primarySaleHappened.value
+      );
 
       // todo need to error check the json provided metadata - what's the right format there even?
 
@@ -151,7 +180,7 @@ export default defineComponent({
         editionPk!,
         newMetadataData.value,
         updatePk as any, // null-undefined conflict
-        primarySaleHappened as any // null-undefined conflict
+        primarySaleHappened.value as any // null-undefined conflict
       )
         .then(async (result: string) => {
           txId.value = result;

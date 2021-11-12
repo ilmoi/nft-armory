@@ -1,6 +1,5 @@
 import { actions, Connection, programs, Wallet } from '@metaplex/js';
 import { PublicKey } from '@solana/web3.js';
-import { UpdateMetadata } from './temp_borsh';
 
 // --------------------------------------- update as edition owner
 
@@ -18,7 +17,7 @@ export async function updateMetadata(
   primarySaleHappened?: boolean
 ) {
   const metadata = await programs.metadata.Metadata.getPDA(editionMint);
-  const updateTx = new UpdateMetadata(
+  const updateTx = new programs.metadata.UpdateMetadata(
     { feePayer: wallet.publicKey },
     {
       metadata,

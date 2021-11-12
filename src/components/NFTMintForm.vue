@@ -93,12 +93,19 @@
     <NotifyError v-if="!isConnected" class="mt-5">
       Connect your wallet above to mint new NFTs.
     </NotifyError>
-    <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }} </NotifyError>
+    <NotifyError v-if="error" class="mt-5">
+      Uh oh something went wrong - {{ error }}. See console for more details.</NotifyError
+    >
     <NotifyInfo v-if="isLoading" class="mt-5">Sit tight...</NotifyInfo>
     <NotifySuccess v-if="mintResult" class="mt-5">
       <p>Mint successful! 🎉</p>
-      <LoadingIcon align="left" class="mt-5" v-if="!newNFT">Loading your new NFT...</LoadingIcon>
-      <NFTViewCard v-else :n="newNFT" class="text-black" />
+      <LoadingIcon align="left" class="mt-5" v-if="!newNFT"
+        >Loading your new NFT... (might take a min or two)</LoadingIcon
+      >
+      <div v-else>
+        <ExplorerLink :tx-id="mintResult.txId" />
+        <NFTViewCard :n="newNFT" class="text-black" />
+      </div>
     </NotifySuccess>
 
     <!--modals-->
@@ -130,6 +137,7 @@ import useModal from '@/composables/modal';
 import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipArweave from '@/components/content/tooltip/ContentTooltipArweave.vue';
 import useError from '@/composables/error';
+import ExplorerLink from '@/components/ExplorerLink.vue';
 
 interface IMintResult {
   txId: string;
@@ -140,6 +148,7 @@ interface IMintResult {
 
 export default defineComponent({
   components: {
+    ExplorerLink,
     ContentTooltipArweave,
     ModalWindow,
     NFTViewCard,
@@ -159,6 +168,13 @@ export default defineComponent({
     const mintResult = ref<IMintResult | null>(null);
     const newNFT = ref<INFT | null>(null);
 
+    const clearPreviousResults = () => {
+      isLoading.value = false;
+      mintResult.value = null;
+      newNFT.value = null;
+      clearError();
+    };
+
     const fetchNewNFT = async () => {
       // this will keep failing, while the network updates, for a while so keep retrying
       try {
@@ -167,13 +183,6 @@ export default defineComponent({
       } catch (e) {
         await fetchNewNFT();
       }
-    };
-
-    const clearPreviousResults = () => {
-      isLoading.value = false;
-      mintResult.value = null;
-      newNFT.value = null;
-      clearError();
     };
 
     // --------------------------------------- master
@@ -199,6 +208,7 @@ export default defineComponent({
     // --------------------------------------- print
     const masterEditionMint = ref<string | null>('711qX1LxMT3x7Ti8i4JJ5jrX8a4WWnZ6dfTAWyB8SBq5');
     const updateAuthority = ref<string | null>();
+
     const mintNewPrint = async () => {
       clearPreviousResults();
       isLoading.value = true;
