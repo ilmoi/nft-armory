@@ -1,17 +1,6 @@
-import {
-  Account,
-  actions,
-  Connection,
-  MetadataJson,
-  programs,
-  utils,
-  Wallet,
-} from '@metaplex/js';
+import { actions, Connection, programs, Wallet } from '@metaplex/js';
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
-import { CONN } from './helpers/constants';
-import { editionMintDevnet, LocalWallet } from './mint_v1';
-import { prepNewMetadataData } from './update_v1';
 import { stringifyPubkeysInObject } from './helpers/util';
 
 // NOTE: requires the edition mint to have 0 decimals. At this stage ATA / single token not required.
@@ -89,21 +78,21 @@ export async function createMasterEdition(
   return x;
 }
 
-// --------------------------------------- play
-
-async function play() {
-  const tokenMint = new PublicKey(
-    '3zLq4GrccYVAb9JqBQ8cVv3i17fvJo4YATa4i6b47mR3'
-  );
-  const data = await prepNewMetadataData(
-    'https://ipfs.io/ipfs/QmNQh8noRHn7e7zt9oYNfGWuxHgKWkNPducMZs1SiZaYw4',
-    new LocalWallet()
-  );
-
-  await createMetadata(CONN, new LocalWallet(), tokenMint, data);
-
-  // if you don't give it a couple seconds to propage, the 2nd one will fail
-  await createMasterEdition(CONN, new LocalWallet(), tokenMint);
-}
-
-// play()
+// // --------------------------------------- play
+//
+// async function play() {
+//   const tokenMint = new PublicKey(
+//     '3zLq4GrccYVAb9JqBQ8cVv3i17fvJo4YATa4i6b47mR3'
+//   );
+//   const data = await prepNewMetadataData(
+//     'https://ipfs.io/ipfs/QmNQh8noRHn7e7zt9oYNfGWuxHgKWkNPducMZs1SiZaYw4',
+//     new LocalWallet()
+//   );
+//
+//   await createMetadata(CONN, new LocalWallet(), tokenMint, data);
+//
+//   // if you don't give it a couple seconds to propage, the 2nd one will fail
+//   await createMasterEdition(CONN, new LocalWallet(), tokenMint);
+// }
+//
+// // play()

@@ -55,13 +55,7 @@
     </form>
 
     <!--notifications-->
-    <NotifyError v-if="!isConnected" class="mt-5">
-      Connect your wallet above to update an NFT.
-    </NotifyError>
-    <NotifyError v-if="error" class="mt-5">
-      Uh oh something went wrong - {{ error }}. See console for more details.</NotifyError
-    >
-    <NotifyInfo v-if="isLoading" class="mt-5">Sit tight...</NotifyInfo>
+    <StdNotifications :is-connected="isConnected" :is-loading="isLoading" :error="error" />
     <NotifySuccess v-if="txId" class="mt-5">
       <p>Update successful! 🎉</p>
       <LoadingIcon align="left" class="mt-5" v-if="!updatedNFT"
@@ -88,9 +82,7 @@
 import { defineComponent, ref } from 'vue';
 import { PublicKey } from '@solana/web3.js';
 import QuestionMark from '@/components/QuestionMark.vue';
-import NotifyError from '@/components/content/notifications/NotifyError.vue';
 import NotifySuccess from '@/components/content/notifications/NotifySuccess.vue';
-import NotifyInfo from '@/components/content/notifications/NotifyInfo.vue';
 import LoadingIcon from '@/components/LoadingIcon.vue';
 import NFTViewCard from '@/components/NFTViewCard.vue';
 import ModalWindow from '@/components/ModalWindow.vue';
@@ -103,17 +95,17 @@ import useModal from '@/composables/modal';
 import ExplorerLink from '@/components/ExplorerLink.vue';
 import { objectOneInsideObjectTwo } from '@/common/helpers/util';
 import ContentTooltipMetadata from '@/components/content/tooltip/ContentTooltipMetadata.vue';
+import StdNotifications from '@/components/StdNotifications.vue';
 
 export default defineComponent({
   components: {
+    StdNotifications,
     ContentTooltipMetadata,
     ExplorerLink,
     ModalWindow,
     NFTViewCard,
     LoadingIcon,
-    NotifyInfo,
     NotifySuccess,
-    NotifyError,
     QuestionMark,
   },
   setup() {

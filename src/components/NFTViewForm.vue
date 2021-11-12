@@ -124,7 +124,7 @@ export default defineComponent({
   },
   emits: ['submit-form'],
   setup(props, ctx) {
-    const { error, clearError, setError, tryConvertToPk } = useError();
+    const { error, clearError, tryConvertToPk } = useError();
 
     // --------------------------------------- params
     const owner = ref('AGsJu1jZmFcVDPdm6bbaP54S3sMEinxmdiYWhaBBDNVX');

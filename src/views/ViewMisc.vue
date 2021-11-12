@@ -1,16 +1,17 @@
 <template>
   <div>
     <ConfigPane />
-    <div>misc</div>
+    <NFTMiscForm />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import ConfigPane from '@/components/ConfigPane.vue';
+import NFTMiscForm from '@/components/NFTMiscForm.vue';
 
 export default defineComponent({
-  components: { ConfigPane },
+  components: { NFTMiscForm, ConfigPane },
   setup() {
     return {};
   },

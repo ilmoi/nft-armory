@@ -90,13 +90,7 @@
     </form>
 
     <!--notifications-->
-    <NotifyError v-if="!isConnected" class="mt-5">
-      Connect your wallet above to mint new NFTs.
-    </NotifyError>
-    <NotifyError v-if="error" class="mt-5">
-      Uh oh something went wrong - {{ error }}. See console for more details.</NotifyError
-    >
-    <NotifyInfo v-if="isLoading" class="mt-5">Sit tight...</NotifyInfo>
+    <StdNotifications :is-connected="isConnected" :is-loading="isLoading" :error="error" />
     <NotifySuccess v-if="mintResult" class="mt-5">
       <p>Mint successful! 🎉</p>
       <LoadingIcon align="left" class="mt-5" v-if="!newNFT"
@@ -125,9 +119,7 @@ import { PublicKey } from '@solana/web3.js';
 import QuestionMark from '@/components/QuestionMark.vue';
 import { mintEditionNFTFromMaster, mintNewNFT } from '@/common/NFTmint';
 import useWallet from '@/composables/wallet';
-import NotifyError from '@/components/content/notifications/NotifyError.vue';
 import NotifyWarning from '@/components/content/notifications/NotifyWarning.vue';
-import NotifyInfo from '@/components/content/notifications/NotifyInfo.vue';
 import NotifySuccess from '@/components/content/notifications/NotifySuccess.vue';
 import { INFT } from '@/common/helpers/types';
 import LoadingIcon from '@/components/LoadingIcon.vue';
@@ -138,6 +130,7 @@ import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipArweave from '@/components/content/tooltip/ContentTooltipArweave.vue';
 import useError from '@/composables/error';
 import ExplorerLink from '@/components/ExplorerLink.vue';
+import StdNotifications from '@/components/StdNotifications.vue';
 
 interface IMintResult {
   txId: string;
@@ -148,15 +141,14 @@ interface IMintResult {
 
 export default defineComponent({
   components: {
+    StdNotifications,
     ExplorerLink,
     ContentTooltipArweave,
     ModalWindow,
     NFTViewCard,
     LoadingIcon,
     NotifySuccess,
-    NotifyInfo,
     NotifyWarning,
-    NotifyError,
     QuestionMark,
   },
   setup() {
