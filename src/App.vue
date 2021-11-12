@@ -16,20 +16,33 @@
     <!--cat + footer-->
     <TheCat />
     <TheFooter />
+
+    <!-- no mobile -->
+    <TheMobileCover v-if="windowWidth < 800" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import TheLogo from '@/components/TheLogo.vue';
 import TheNavBar from '@/components/TheNavBar.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import TheCat from '@/components/TheCat.vue';
+import TheMobileCover from '@/components/TheMobileCover.vue';
 
 export default defineComponent({
-  components: { TheCat, TheFooter, TheLogo, TheNavBar },
+  components: { TheMobileCover, TheCat, TheFooter, TheLogo, TheNavBar },
   setup() {
-    return {};
+    const windowWidth = ref(window.innerWidth);
+    const onWidthChange = () => {
+      windowWidth.value = window.innerWidth;
+    };
+    onMounted(() => window.addEventListener('resize', onWidthChange));
+    onUnmounted(() => window.removeEventListener('resize', onWidthChange));
+
+    return {
+      windowWidth,
+    };
   },
 });
 </script>
