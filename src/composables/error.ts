@@ -1,5 +1,6 @@
 import { readonly, ref } from 'vue';
-import { PublicKey } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
+import { programs } from '@metaplex/js';
 
 export default function useError() {
   const error = ref<Error | null>(null);
@@ -23,10 +24,48 @@ export default function useError() {
     return null;
   };
 
+  const tryParseJSON = (strJSON: string | null): any => {
+    if (strJSON) {
+      try {
+        return JSON.parse(strJSON);
+      } catch (e) {
+        error.value = new Error('Failed to parse JSON. Did you format it correctly?');
+      }
+    }
+    return null;
+  };
+
+  const tryParseMetadataData = (jsonMetadata: any): programs.metadata.MetadataDataData | null => {
+    if (jsonMetadata) {
+      try {
+        return new programs.metadata.MetadataDataData({
+          name: jsonMetadata.name,
+          symbol: jsonMetadata.symbol,
+          uri: jsonMetadata.uri,
+          sellerFeeBasisPoints: jsonMetadata.sellerFeeBasisPoints,
+          creators: jsonMetadata.creators.map(
+            (c: any) =>
+              new programs.metadata.Creator({
+                address: c.address,
+                verified: c.verified,
+                share: c.share,
+              })
+          ),
+        });
+      } catch (e) {
+        console.log(e);
+        error.value = new Error('Failed to parse Metadata. Did you enter all the required fields?');
+      }
+    }
+    return null;
+  };
+
   return {
     error: readonly(error),
     clearError,
     setError,
     tryConvertToPk,
+    tryParseJSON,
+    tryParseMetadataData,
   };
 }

@@ -14,7 +14,7 @@
       <div class="nes-field mt-5">
         <div>
           <label for="newMetadataData">New Metadata as JSON (optional):</label>
-          <QuestionMark />
+          <QuestionMark @click="showModal('tooltipMetadata')" />
         </div>
         <textarea
           rows="5"
@@ -79,6 +79,7 @@
       title="How to format Metadata?"
       @hide-modal="hideModal('tooltipMetadata')"
     >
+      <ContentTooltipMetadata />
     </ModalWindow>
   </div>
 </template>
@@ -100,9 +101,12 @@ import { getNFTs } from '@/common/NFTget';
 import { updateNFT } from '@/common/NFTupdate';
 import useModal from '@/composables/modal';
 import ExplorerLink from '@/components/ExplorerLink.vue';
+import { objectOneInsideObjectTwo } from '@/common/helpers/util';
+import ContentTooltipMetadata from '@/components/content/tooltip/ContentTooltipMetadata.vue';
 
 export default defineComponent({
   components: {
+    ContentTooltipMetadata,
     ExplorerLink,
     ModalWindow,
     NFTViewCard,
@@ -114,7 +118,8 @@ export default defineComponent({
   },
   setup() {
     const { isConnected, getWallet } = useWallet();
-    const { error, clearError, setError, tryConvertToPk } = useError();
+    const { error, clearError, setError, tryConvertToPk, tryParseJSON, tryParseMetadataData } =
+      useError();
 
     const isLoading = ref<boolean>(false);
     const txId = ref<string | null>(null);
@@ -128,7 +133,7 @@ export default defineComponent({
     };
 
     // --------------------------------------- update nft
-    const editionMint = ref<string | null>('59NgveNYgXMsP5SJw7Fw7e3ah7EacaoskxX3PXEV1TFT');
+    const editionMint = ref<string | null>('49GGYd6PyascDX5rb12s8oP5XNhjfF2bvaMteFxLeEud');
     const newMetadataData = ref<any>(null);
     const newUpdateAuthority = ref<string | null>(null);
     const primarySaleHappened = ref<boolean | null>(null);
@@ -138,8 +143,13 @@ export default defineComponent({
       try {
         // eslint-disable-next-line prefer-destructuring
         const fetchedNFT = (await getNFTs({ mint: new PublicKey(editionMint.value!) }))[0];
+        // if any of the below conditions fail, then we need to fetch again
         if (
-          // (newMetadataData && ) //todo
+          (newMetadataData.value &&
+            !objectOneInsideObjectTwo(
+              tryParseMetadataData(tryParseJSON(newMetadataData.value)),
+              fetchedNFT.metadataOnchain.data
+            )) ||
           (newUpdateAuthority.value &&
             newUpdateAuthority.value !== fetchedNFT.metadataOnchain.updateAuthority) ||
           // primary sale can only be set to "true" = the only use case we're checking
@@ -159,18 +169,11 @@ export default defineComponent({
       clearPreviousResults();
       isLoading.value = true;
 
-      console.log(
-        'params',
-        newMetadataData.value,
-        newUpdateAuthority.value,
-        primarySaleHappened.value
-      );
-
-      // todo need to error check the json provided metadata - what's the right format there even?
-
-      // if PKs don't deserialize, we don't want to call the rest of the function
-      const editionPk = tryConvertToPk(editionMint.value!);
-      const updatePk = tryConvertToPk(newUpdateAuthority.value!);
+      const parsedJSON = tryParseJSON(newMetadataData.value);
+      let parsedMetadata;
+      if (parsedJSON) parsedMetadata = tryParseMetadataData(parsedJSON);
+      const editionPk = tryConvertToPk(editionMint.value);
+      const updatePk = tryConvertToPk(newUpdateAuthority.value);
       if (error.value) {
         return;
       }
@@ -178,7 +181,7 @@ export default defineComponent({
       updateNFT(
         getWallet() as any,
         editionPk!,
-        newMetadataData.value,
+        parsedMetadata as any, // null-undefined conflict
         updatePk as any, // null-undefined conflict
         primarySaleHappened.value as any // null-undefined conflict
       )

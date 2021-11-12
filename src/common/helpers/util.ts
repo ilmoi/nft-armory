@@ -118,3 +118,36 @@ export async function pause(ms: number) {
     }, ms)
   );
 }
+
+export function objectOneInsideObjectTwo(o1: any, o2: any): boolean {
+  const jsonObj1 = { ...o1 };
+  const jsonObj2 = { ...o2 };
+  return Object.keys(jsonObj1).every((k1) => {
+    if (parseType(jsonObj1[k1]) === 'boolean') {
+      jsonObj1[k1] = +jsonObj1[k1];
+    }
+    if (parseType(jsonObj1[k1]) === 'dict') {
+      return objectOneInsideObjectTwo(jsonObj1[k1], jsonObj2[k1]);
+    }
+    if (parseType(jsonObj1[k1]) === 'array') {
+      const results: boolean[] = [];
+      jsonObj1[k1].forEach((o: any, i: number) => {
+        if (parseType(o) === 'boolean') {
+          o = +o;
+        }
+        if (parseType(o) === 'dict') {
+          results.push(objectOneInsideObjectTwo(o, jsonObj2[k1][i]));
+        } else {
+          results.push(o === jsonObj2[k1][i]);
+        }
+      });
+      return results.every((r) => r);
+    }
+    return Object.keys(jsonObj2).some((k2) => {
+      if (parseType(jsonObj2[k2]) === 'boolean') {
+        jsonObj2[k2] = +jsonObj2[k2];
+      }
+      return jsonObj1[k1] === jsonObj2[k2];
+    });
+  });
+}

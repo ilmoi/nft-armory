@@ -38,7 +38,9 @@
       </div>
     </div>
     <div v-if="fullJSON" class="bg-gray-200 mt-5 copy-father">
-      <button class="nes-btn is-primary copy" @click="doCopy">{{ copyText }}</button>
+      <button class="nes-btn is-primary copy" @click="doCopyJSON(n)">
+        {{ copyText }}
+      </button>
       <vue-json-pretty class="text-xs" :data="stringifyPubkeysAndBNsInObject(n)"></vue-json-pretty>
     </div>
 
@@ -55,12 +57,12 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import VueJsonPretty from 'vue-json-pretty';
-import useClipboard from 'vue-clipboard3';
 import { stringifyPubkeysAndBNsInObject } from '@/common/helpers/util';
 import useModal from '@/composables/modal';
 import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipJSON from '@/components/content/tooltip/ContentTooltipJSON.vue';
 import QuestionMark from '@/components/QuestionMark.vue';
+import useCopy from '@/composables/copy';
 
 export default defineComponent({
   props: {
@@ -72,7 +74,7 @@ export default defineComponent({
     ModalWindow,
     VueJsonPretty,
   },
-  setup(props) {
+  setup() {
     const isMaster = (editionType: string) => editionType.toLowerCase().includes('master');
     const fullJSON = ref(false);
     const NOT_FOUND = 'Not found:(';
@@ -81,20 +83,8 @@ export default defineComponent({
       fullJSON.value = !fullJSON.value;
     };
 
-    // clipboard
-    const copyText = ref('copy');
-    const { toClipboard } = useClipboard();
-    const doCopy = async () => {
-      try {
-        await toClipboard(JSON.stringify(stringifyPubkeysAndBNsInObject(props.n)));
-        copyText.value = 'done!';
-        setTimeout(() => {
-          copyText.value = 'copy';
-        }, 1000);
-      } catch (e) {
-        console.error(`Error when copying to clipboard - ${e}`);
-      }
-    };
+    // --------------------------------------- clipboard
+    const { copyText, doCopyJSON } = useCopy();
 
     // --------------------------------------- modal
     const { registerModal, isModalVisible, showModal, hideModal } = useModal();
@@ -105,8 +95,9 @@ export default defineComponent({
       fullJSON,
       toggleJSON,
       stringifyPubkeysAndBNsInObject,
-      doCopy,
+      // clipboard
       copyText,
+      doCopyJSON,
       // modal
       isModalVisible,
       showModal,
