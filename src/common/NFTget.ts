@@ -172,7 +172,7 @@ async function turnMetadatasIntoNFTs(metadatas: programs.metadata.Metadata[]): P
 
 // --------------------------------------- exported
 
-export async function getNFTs(
+export async function NFTGet(
   { owner, creators, mint, updateAuthority } = {} as INFTParams
 ): Promise<INFT[]> {
   const t1 = performance.now();

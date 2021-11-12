@@ -22,11 +22,11 @@
       class="mt-5"
       v-if="chosenAction === 'createMetadata' || chosenAction === 'createMaster'"
     >
-      (!) NOTE: Only use this if you know what you're doing. If all you want is to mint a new NFT,
-      go to mint tab, all PDAs will be created for you.
+      (!) Only use this if you know what you're doing. If all you want is to mint a new NFT, go to
+      mint tab, all PDAs will be created for you.
     </NotifyWarning>
     <NotifyWarning class="mt-5" v-if="chosenAction === 'createMaster'">
-      (!) NOTE: You will need to have created a Metadata PDA first.
+      (!) You will need to have created a Metadata PDA first.
     </NotifyWarning>
 
     <!--sign-->
@@ -47,14 +47,21 @@
         :disabled="isLoading || !isConnected"
         type="submit"
       >
-        Sign an NFT
+        Sign Metadata
       </button>
     </form>
 
     <!--create meta-->
-    <form v-else-if="chosenAction === 'createMetadata'" @submit.prevent="createMetadata">
+    <form
+      v-else-if="chosenAction === 'createMetadata'"
+      class="mt-5"
+      @submit.prevent="createMetadata"
+    >
       <div class="nes-field">
-        <div><label for="editionMint2">NFT Mint:</label></div>
+        <div>
+          <label for="editionMint2">New SPL Token Mint:</label>
+          <QuestionMark @click="showModal('nftToken')" />
+        </div>
         <input
           type="text"
           id="editionMint2"
@@ -97,9 +104,12 @@
     </form>
 
     <!--create master-->
-    <form v-else-if="chosenAction === 'createMaster'" @submit.prevent="createMaster">
+    <form v-else-if="chosenAction === 'createMaster'" class="mt-5" @submit.prevent="createMaster">
       <div class="nes-field">
-        <div><label for="editionMint3">NFT Mint:</label></div>
+        <div>
+          <label for="editionMint3">New SPL Token Mint:</label>
+          <QuestionMark @click="showModal('nftToken')" />
+        </div>
         <input
           type="text"
           id="editionMint3"
@@ -134,7 +144,7 @@
         :disabled="isLoading || !isConnected"
         type="submit"
       >
-        Create Metadata PDA
+        Create Master PDA
       </button>
     </form>
 
@@ -142,11 +152,11 @@
     <StdNotifications :is-connected="isConnected" :is-loading="isLoading" :error="error" />
     <NotifySuccess v-if="txId" class="mt-5">
       <p>Done! 🎉</p>
-      <LoadingIcon align="left" class="mt-5" v-if="!result"
-        >Waiting for transaction to confirm... (might take a min or two)</LoadingIcon
+      <LoadingIcon align="left" class="mt-5" v-if="!confirmed"
+        >Waiting for transaction to confirm... (might take a few sec)</LoadingIcon
       >
       <div v-else>
-        <div>{{ result }}</div>
+        <div v-if="pda">Newly created PDA: {{ pda }}</div>
         <ExplorerLink :tx-id="txId" />
       </div>
     </NotifySuccess>
@@ -158,6 +168,13 @@
       @hide-modal="hideModal('tooltipMetadata')"
     >
       <ContentTooltipMetadata />
+    </ModalWindow>
+    <ModalWindow
+      v-if="isModalVisible('nftToken')"
+      title="What token is this?"
+      @hide-modal="hideModal('nftToken')"
+    >
+      <ContentTooltipNftToken />
     </ModalWindow>
   </div>
 </template>
@@ -175,9 +192,15 @@ import useWallet from '@/composables/wallet';
 import useError from '@/composables/error';
 import useModal from '@/composables/modal';
 import QuestionMark from '@/components/QuestionMark.vue';
+import { NFTSignMetadata } from '@/common/NFTsign';
+import useCluster from '@/composables/cluster';
+import { pause } from '@/common/helpers/util';
+import ContentTooltipNftToken from '@/components/content/tooltip/ContentTooltipNftToken.vue';
+import { NFTCreateMaster, NFTCreateMetadata } from '@/common/NFTcreate';
 
 export default defineComponent({
   components: {
+    ContentTooltipNftToken,
     QuestionMark,
     ContentTooltipMetadata,
     ModalWindow,
@@ -191,38 +214,127 @@ export default defineComponent({
     const { isConnected, getWallet } = useWallet();
     const { error, clearError, setError, tryConvertToPk, tryParseJSON, tryParseMetadataData } =
       useError();
+    const { getConnection } = useCluster();
 
     const chosenAction = ref<string>('signMetadata');
     const isLoading = ref<boolean>(false);
     const txId = ref<string | null>(null);
-    const result = ref<string | null>(null);
+    const pda = ref<string | null>(null);
+    const confirmed = ref<boolean>(false);
 
     const clearPreviousResults = () => {
       isLoading.value = false;
       txId.value = null;
-      const result = null;
+      pda.value = null;
+      confirmed.value = false;
       clearError();
+    };
+
+    const checkConfirmed = async (sig: string) => {
+      const conn = getConnection('confirmed');
+      const tx = await conn.getConfirmedTransaction(sig);
+      if (!tx) {
+        await pause(1000);
+        await checkConfirmed(sig);
+        return;
+      }
+      confirmed.value = true;
     };
 
     // --------------------------------------- sign metadata
     const editionMint = ref<string | null>('49GGYd6PyascDX5rb12s8oP5XNhjfF2bvaMteFxLeEud');
 
-    const signMetadata = () => {};
+    const signMetadata = async () => {
+      clearPreviousResults();
+      isLoading.value = true;
+
+      const editionPk = tryConvertToPk(editionMint.value);
+      if (error.value) {
+        return;
+      }
+
+      NFTSignMetadata(getWallet() as any, editionPk!)
+        .then(async (result: string) => {
+          txId.value = result;
+          isLoading.value = false;
+          await checkConfirmed(txId.value!);
+        })
+        .catch((e) => {
+          setError(e);
+          isLoading.value = false;
+        });
+    };
 
     // --------------------------------------- create metadata
     const newMetadataData = ref<any>(null);
     const newUpdateAuthority = ref<string | null>(null);
 
-    const createMetadata = () => {};
+    const createMetadata = async () => {
+      clearPreviousResults();
+      isLoading.value = true;
+
+      const parsedJSON = tryParseJSON(newMetadataData.value);
+      let parsedMetadata;
+      if (parsedJSON) parsedMetadata = tryParseMetadataData(parsedJSON);
+      const editionPk = tryConvertToPk(editionMint.value);
+      const updatePk = tryConvertToPk(newUpdateAuthority.value);
+      if (error.value) {
+        return;
+      }
+
+      NFTCreateMetadata(
+        getWallet() as any,
+        editionPk!,
+        parsedMetadata as any, // null-undefined conflict
+        updatePk as any // null-undefined conflict
+      )
+        .then(async (result: any) => {
+          txId.value = result.txId;
+          pda.value = result.metadata;
+          isLoading.value = false;
+          await checkConfirmed(txId.value!);
+        })
+        .catch((e) => {
+          setError(e);
+          isLoading.value = false;
+        });
+    };
 
     // --------------------------------------- create master
     const maxSupply = ref<number | null>(123);
 
-    const createMaster = () => {};
+    const createMaster = async () => {
+      clearPreviousResults();
+      isLoading.value = true;
+
+      const editionPk = tryConvertToPk(editionMint.value);
+      const updatePk = tryConvertToPk(newUpdateAuthority.value);
+      if (error.value) {
+        return;
+      }
+
+      NFTCreateMaster(
+        getWallet() as any,
+        editionPk!,
+        updatePk as any, // null-undefined conflict
+        maxSupply.value as any // null-undefined conflict
+      )
+        .then(async (result: any) => {
+          txId.value = result.txId;
+          pda.value = result.edition;
+          isLoading.value = false;
+          await checkConfirmed(txId.value!);
+        })
+        .catch((e) => {
+          setError(e);
+          isLoading.value = false;
+        });
+    };
 
     // --------------------------------------- modals
     const { registerModal, isModalVisible, showModal, hideModal } = useModal();
     registerModal('tooltipMetadata');
+    registerModal('nftToken');
 
     return {
       isConnected,
@@ -230,7 +342,8 @@ export default defineComponent({
       chosenAction,
       isLoading,
       txId,
-      result,
+      pda,
+      confirmed,
       // sign
       editionMint,
       signMetadata,

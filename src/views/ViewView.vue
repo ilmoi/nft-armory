@@ -39,7 +39,7 @@ import InfiniteLoading from 'vue-infinite-loading';
 import 'vue-json-pretty/lib/styles.css';
 import ConfigPane from '@/components/ConfigPane.vue';
 import LoadingBar from '@/components/LoadingBar.vue';
-import { getNFTs } from '@/common/NFTget';
+import { NFTGet } from '@/common/NFTget';
 import NFTViewCard from '@/components/NFTViewCard.vue';
 import useLoading, { LoadStatus } from '@/composables/loading';
 import { EE, ERR_NO_NFTS } from '@/globals';
@@ -97,7 +97,7 @@ export default defineComponent({
       displayedNFTs.value = [];
       allFetchedNFTs.value = [];
 
-      getNFTs(params)
+      NFTGet(params)
         .then((fetchedNFTs) => {
           if (fetchedNFTs.length) {
             allFetchedNFTs.value = fetchedNFTs;

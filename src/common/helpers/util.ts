@@ -114,6 +114,7 @@ export async function pause(ms: number) {
   // taken from https://stackoverflow.com/questions/46077176/jest-settimeout-not-pausing-test
   await new Promise((response) =>
     setTimeout(() => {
+      console.log(`pausing for ${ms / 1000}s`);
       response(0);
     }, ms)
   );

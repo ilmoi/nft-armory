@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="updateTheNFT">
+    <form @submit.prevent="updateNFT">
       <div class="nes-field">
         <div><label for="editionMint">NFT Mint:</label></div>
         <input
@@ -89,8 +89,8 @@ import ModalWindow from '@/components/ModalWindow.vue';
 import useWallet from '@/composables/wallet';
 import useError from '@/composables/error';
 import { INFT } from '@/common/helpers/types';
-import { getNFTs } from '@/common/NFTget';
-import { updateNFT } from '@/common/NFTupdate';
+import { NFTGet } from '@/common/NFTget';
+import { NFTUpdate } from '@/common/NFTupdate';
 import useModal from '@/composables/modal';
 import ExplorerLink from '@/components/ExplorerLink.vue';
 import { objectOneInsideObjectTwo } from '@/common/helpers/util';
@@ -134,7 +134,7 @@ export default defineComponent({
       // retry recursively until new attributes confirmed on the network
       try {
         // eslint-disable-next-line prefer-destructuring
-        const fetchedNFT = (await getNFTs({ mint: new PublicKey(editionMint.value!) }))[0];
+        const fetchedNFT = (await NFTGet({ mint: new PublicKey(editionMint.value!) }))[0];
         // if any of the below conditions fail, then we need to fetch again
         if (
           (newMetadataData.value &&
@@ -157,7 +157,7 @@ export default defineComponent({
       }
     };
 
-    const updateTheNFT = async () => {
+    const updateNFT = async () => {
       clearPreviousResults();
       isLoading.value = true;
 
@@ -170,7 +170,7 @@ export default defineComponent({
         return;
       }
 
-      updateNFT(
+      NFTUpdate(
         getWallet() as any,
         editionPk!,
         parsedMetadata as any, // null-undefined conflict
@@ -203,7 +203,7 @@ export default defineComponent({
       newMetadataData,
       newUpdateAuthority,
       primarySaleHappened,
-      updateTheNFT,
+      updateNFT,
       // modal
       isModalVisible,
       showModal,

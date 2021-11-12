@@ -18,8 +18,8 @@
     </div>
 
     <NotifyWarning class="mt-5" v-if="chosenNFTType === 'print'">
-      (!) NOTE: minting Standard Editions requires 1) that you have the Master Edition in your
-      wallet and 2) that the max supply cap isn't hit. Read more
+      (!) Minting Standard Editions requires 1) that you have the Master Edition in your wallet and
+      2) that the max supply cap isn't hit. Read more
       <a
         href="https://docs.metaplex.com/about/terminology#master-edition"
         target="_blank"
@@ -117,14 +117,14 @@
 import { defineComponent, ref } from 'vue';
 import { PublicKey } from '@solana/web3.js';
 import QuestionMark from '@/components/QuestionMark.vue';
-import { mintEditionNFTFromMaster, mintNewNFT } from '@/common/NFTmint';
+import { NFTMintEditionFromMaster, NFTMintMaster } from '@/common/NFTmint';
 import useWallet from '@/composables/wallet';
 import NotifyWarning from '@/components/content/notifications/NotifyWarning.vue';
 import NotifySuccess from '@/components/content/notifications/NotifySuccess.vue';
 import { INFT } from '@/common/helpers/types';
 import LoadingIcon from '@/components/LoadingIcon.vue';
 import NFTViewCard from '@/components/NFTViewCard.vue';
-import { getNFTs } from '@/common/NFTget';
+import { NFTGet } from '@/common/NFTget';
 import useModal from '@/composables/modal';
 import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipArweave from '@/components/content/tooltip/ContentTooltipArweave.vue';
@@ -171,7 +171,7 @@ export default defineComponent({
       // this will keep failing, while the network updates, for a while so keep retrying
       try {
         // eslint-disable-next-line prefer-destructuring
-        newNFT.value = (await getNFTs({ mint: new PublicKey(mintResult.value!.mint) }))[0];
+        newNFT.value = (await NFTGet({ mint: new PublicKey(mintResult.value!.mint) }))[0];
       } catch (e) {
         await fetchNewNFT();
       }
@@ -185,7 +185,7 @@ export default defineComponent({
     const mintNewMaster = async () => {
       clearPreviousResults();
       isLoading.value = true;
-      mintNewNFT(getWallet() as any, uri.value, maxSupply.value!)
+      NFTMintMaster(getWallet() as any, uri.value, maxSupply.value!)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
           isLoading.value = false;
@@ -212,7 +212,7 @@ export default defineComponent({
         return;
       }
 
-      mintEditionNFTFromMaster(getWallet() as any, masterPk!, updatePk as any)
+      NFTMintEditionFromMaster(getWallet() as any, masterPk!, updatePk as any)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
           isLoading.value = false;

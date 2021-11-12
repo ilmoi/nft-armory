@@ -6,7 +6,7 @@ import { updateMetadata } from '@/TEMP/update_v1';
 const { getConnection } = useCluster();
 
 // todo import from actual lib when PR accepted
-export async function updateNFT(
+export async function NFTUpdate(
   wallet: Wallet,
   editionMint: PublicKey,
   newMetadataData?: any,

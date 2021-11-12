@@ -36,7 +36,7 @@ export async function createMetadata(
   };
 
   console.log(stringifyPubkeysInObject(x));
-  return x;
+  return txId;
 }
 
 // NOTE 1: a metadata account must already exist or this will fail
@@ -75,7 +75,7 @@ export async function createMasterEdition(
   };
 
   console.log(stringifyPubkeysInObject(x));
-  return x;
+  return txId;
 }
 
 // // --------------------------------------- play

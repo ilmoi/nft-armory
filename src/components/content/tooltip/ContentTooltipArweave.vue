@@ -37,7 +37,7 @@
       is the same.
     </p>
     <NotifyWarning class="mt-5"
-      >(!) NOTE: you must pass the minter wallet as one of the creators, or the transaction will
+      >(!) You must pass the minter wallet as one of the creators, or the transaction will
       fail.</NotifyWarning
     >
   </div>
