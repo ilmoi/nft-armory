@@ -178,6 +178,7 @@ export default defineComponent({
     // --------------------------------------- sharing links
     onMounted(() => {
       const route = useRoute();
+      console.log();
       const {
         address: goAddress,
         creator: goCreator,

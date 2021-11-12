@@ -174,18 +174,15 @@ export default defineComponent({
     setCopyText('Share Link');
 
     const copyShareLink = async () => {
+      const host = window.location.origin;
       if (fetchParams.value!.owner) {
-        await doCopy(`https://nftarmory.me/view/address/${fetchParams.value!.owner.toBase58()}`);
+        await doCopy(`${host}/view/address/${fetchParams.value!.owner.toBase58()}`);
       } else if (fetchParams.value!.creators && fetchParams.value!.creators.length) {
-        await doCopy(
-          `https://nftarmory.me/view/creator/${fetchParams.value!.creators[0].toBase58()}`
-        );
+        await doCopy(`${host}/view/creator/${fetchParams.value!.creators[0].toBase58()}`);
       } else if (fetchParams.value!.updateAuthority) {
-        await doCopy(
-          `https://nftarmory.me/view/authority/${fetchParams.value!.updateAuthority.toBase58()}`
-        );
+        await doCopy(`${host}/view/authority/${fetchParams.value!.updateAuthority.toBase58()}`);
       } else if (fetchParams.value!.mint) {
-        await doCopy(`https://nftarmory.me/view/mint/${fetchParams.value!.mint.toBase58()}`);
+        await doCopy(`${host}/view/mint/${fetchParams.value!.mint.toBase58()}`);
       }
     };
 
