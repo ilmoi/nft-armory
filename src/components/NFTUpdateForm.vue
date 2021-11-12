@@ -59,7 +59,7 @@
     <NotifySuccess v-if="txId" class="mt-5">
       <p>Update successful! 🎉</p>
       <LoadingIcon align="left" class="mt-5" v-if="!updatedNFT"
-        >Loading your updated NFT... (might take a few sec)</LoadingIcon
+        >Loading your updated NFT... (might take a min or two)</LoadingIcon
       >
       <div v-else>
         <ExplorerLink :tx-id="txId" />

@@ -85,7 +85,7 @@
         :disabled="isLoading || !isConnected"
         type="submit"
       >
-        Mint new Master NFT
+        Mint new Print NFT
       </button>
     </form>
 
@@ -94,7 +94,7 @@
     <NotifySuccess v-if="mintResult" class="mt-5">
       <p>Mint successful! 🎉</p>
       <LoadingIcon align="left" class="mt-5" v-if="!newNFT"
-        >Loading your new NFT... (might take a few sec)</LoadingIcon
+        >Loading your new NFT... (might take a min or two)</LoadingIcon
       >
       <div v-else>
         <ExplorerLink :tx-id="mintResult.txId" />
