@@ -4,7 +4,6 @@
 You can access a live version at www.nftarmory.me.
 
 # What is it
-
 ![armory](./misc/armory.png)
 
 NFT Armory was imagined as the developer's / artist's best friend for experimenting with Metaplex NFTs on Solana.
@@ -40,9 +39,9 @@ A few other notes:
 4) 42
 
 # Play with it
-
 You can try entering the following addresses to ge a feel for the tool:
 
+Viewing
 - Creators:
   - Solanauts creator: `BDYYJ1VzPDXwJoARMZNnN4MX4cZNjVvc5DfFaKzgrruz` (500)
   - Aurory creator: `9vwYtcJsH1MskNaixcjgNBnvBDkTBhyg25umod1rgMQL` (10k)
@@ -55,8 +54,11 @@ You can try entering the following addresses to ge a feel for the tool:
   - Go on https://digitaleyes.market/, click any NFT you like, and you'll find "Mint ID" in the bottom left-hand corner. Copy that into the mint field:)
     - Btw you can also find more creators / authorities this way. Once you paste the Mint ID and get back the full NFT, you'll get all the metadata. Open it up and look for creators / update authority in there.
 
-# Deploy your own version
+Minting
+- Use this URI to mint test NFTs: https://gateway.pinata.cloud/ipfs/Qmawjub6LNBQUZ9KnVLMobf3bUiKwjusKpb52p86k5SAZG
+- I've left plenty of tooltips / hints around the app that should help you figure out what to put where
 
+# Deploy your own version
 The entire app is open source, so you can deploy locally and it should just work. Follow these steps:
 
 Install the dependencies: 💽
@@ -75,9 +77,9 @@ yarn build
 Note you'll need to have [vue-cli](https://cli.vuejs.org/guide/installation.html) installed.
 
 # License
-
 MIT
 
-# Contributions
+# Feedback & Contributions
+If you find stuff that's missing that you wish was there - please [let me know](https://twitter.com/_ilmoi) 🙏 I'll keep working on the app as I venture through Solana NFT land:)
 
-Always welcome. I'll keep working on the app / adding whatever I find missing in Solana NFT land:)
+Otherwise feel free to PR directly. Contributions always welcome.
