@@ -6,7 +6,7 @@ export const EE = new events.EventEmitter.EventEmitter();
 
 export const ERR_NO_NFTS = new Error('No NFTs Found:( Are you on the right network?');
 
-// --------------------------------------- defaults
+// ---------------------------------------  defaults
 
 export const DEFAULTS = {
   CLUSTER: 'mainnet',
