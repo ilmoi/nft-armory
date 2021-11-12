@@ -26,6 +26,7 @@
     "jszip": "^3.7.1",
     "vue": "^3.0.0",
     "vue-clipboard3": "^1.0.1",
+    "vue-gtag": "^2.0.1",
     "vue-infinite-loading": "^3.0.0-alpha.0-0",
     "vue-json-pretty": "^2.0.4",
     "vue-router": "^4.0.0-0"
