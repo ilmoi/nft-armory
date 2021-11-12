@@ -133,8 +133,7 @@ export default defineComponent({
     const fetchUpdatedNFT = async (): Promise<void> => {
       // retry recursively until new attributes confirmed on the network
       try {
-        // eslint-disable-next-line prefer-destructuring
-        const fetchedNFT = (await NFTGet({ mint: new PublicKey(editionMint.value!) }))[0];
+        const [fetchedNFT] = await NFTGet({ mint: new PublicKey(editionMint.value!) });
         // if any of the below conditions fail, then we need to fetch again
         if (
           (newMetadataData.value &&

@@ -3,16 +3,20 @@
     <!--all the config stuff-->
     <ConfigPane />
     <NFTViewForm :is-loading="isLoading" @submit-form="handleSubmitForm">
-      <button
-        v-if="NFTs.length"
-        type="button"
-        class="nes-btn"
-        :class="{ 'is-disabled': disableExport }"
-        @click="exportNFTs"
-        :disabled="disableExport"
-      >
-        {{ exportBtnText }}
-      </button>
+      <div v-if="NFTs.length" class="flex">
+        <button type="button" class="nes-btn mr-2" @click="copyShareLink">
+          {{ copyText }}
+        </button>
+        <button
+          type="button"
+          class="nes-btn"
+          :class="{ 'is-disabled': disableExport }"
+          @click="exportNFTs"
+          :disabled="disableExport"
+        >
+          {{ exportBtnText }}
+        </button>
+      </div>
     </NFTViewForm>
 
     <!--per NFT display-->
@@ -47,6 +51,7 @@ import ErrorNotice from '@/components/ErrorNotice.vue';
 import { INFT, INFTParams } from '@/common/helpers/types';
 import NFTViewForm from '@/components/NFTViewForm.vue';
 import useDownload from '@/composables/download';
+import useCopy from '@/composables/copy';
 
 export default defineComponent({
   components: {
@@ -164,6 +169,26 @@ export default defineComponent({
       exportJSONZip(allNFTs, 'mint', `${k}-${v}-${now}`, doneExportingCallback);
     };
 
+    // --------------------------------------- sharing
+    const { copyText, setCopyText, doCopy } = useCopy();
+    setCopyText('Share Link');
+
+    const copyShareLink = async () => {
+      if (fetchParams.value!.owner) {
+        await doCopy(`https://nftarmory.me/view/address/${fetchParams.value!.owner.toBase58()}`);
+      } else if (fetchParams.value!.creators && fetchParams.value!.creators.length) {
+        await doCopy(
+          `https://nftarmory.me/view/creator/${fetchParams.value!.creators[0].toBase58()}`
+        );
+      } else if (fetchParams.value!.updateAuthority) {
+        await doCopy(
+          `https://nftarmory.me/view/authority/${fetchParams.value!.updateAuthority.toBase58()}`
+        );
+      } else if (fetchParams.value!.mint) {
+        await doCopy(`https://nftarmory.me/view/mint/${fetchParams.value!.mint.toBase58()}`);
+      }
+    };
+
     return {
       NFTs: displayedNFTs,
       progress,
@@ -173,8 +198,13 @@ export default defineComponent({
       exportNFTs,
       handleSubmitForm,
       infiniteHandler,
+      // export
       exportBtnText,
       disableExport,
+      // share
+      copyText,
+      copyShareLink,
+      doCopy,
     };
   },
 });

@@ -106,8 +106,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import 'vue-json-pretty/lib/styles.css';
+import { useRoute } from 'vue-router';
 import { INFTParams } from '@/common/helpers/types';
 import useWallet from '@/composables/wallet';
 import QuestionMark from '@/components/QuestionMark.vue';
@@ -173,6 +174,35 @@ export default defineComponent({
     // --------------------------------------- modal
     const { registerModal, isModalVisible, showModal, hideModal } = useModal();
     registerModal('tooltipCreator');
+
+    // --------------------------------------- sharing links
+    onMounted(() => {
+      const route = useRoute();
+      const {
+        address: goAddress,
+        creator: goCreator,
+        authority: goAuthority,
+        mint: goMint,
+      } = route.params;
+
+      if (goAddress) {
+        chosenMethod.value = 'address';
+        owner.value = goAddress as any as string;
+        emitSubmitForm();
+      } else if (goCreator) {
+        chosenMethod.value = 'creator';
+        creator.value = goCreator as any as string;
+        emitSubmitForm();
+      } else if (goAuthority) {
+        chosenMethod.value = 'authority';
+        authority.value = goAuthority as any as string;
+        emitSubmitForm();
+      } else if (goMint) {
+        chosenMethod.value = 'mint';
+        mint.value = goMint as any as string;
+        emitSubmitForm();
+      }
+    });
 
     return {
       error,

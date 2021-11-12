@@ -170,8 +170,7 @@ export default defineComponent({
     const fetchNewNFT = async () => {
       // this will keep failing, while the network updates, for a while so keep retrying
       try {
-        // eslint-disable-next-line prefer-destructuring
-        newNFT.value = (await NFTGet({ mint: new PublicKey(mintResult.value!.mint) }))[0];
+        [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
       } catch (e) {
         await fetchNewNFT();
       }

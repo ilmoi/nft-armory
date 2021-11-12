@@ -17,6 +17,26 @@ const routes: Array<RouteRecordRaw> = [
     component: ViewView,
   },
   {
+    path: '/view/address/:address',
+    name: 'ViewAddress',
+    component: ViewView,
+  },
+  {
+    path: '/view/creator/:creator',
+    name: 'ViewCreator',
+    component: ViewView,
+  },
+  {
+    path: '/view/authority/:authority',
+    name: 'ViewAuthority',
+    component: ViewView,
+  },
+  {
+    path: '/view/mint/:mint',
+    name: 'ViewMint',
+    component: ViewView,
+  },
+  {
     path: '/mint',
     name: 'Mint',
     component: ViewMint,
