@@ -21,7 +21,7 @@
 
     <!--per NFT display-->
     <LoadingBar v-if="isLoading" :progress="progress" :text="text" class="my-5" />
-    <ErrorNotice v-else-if="isError" :text="text" />
+    <NotifyError v-else-if="isError" class="mt-5">{{ text }}</NotifyError>
     <div v-else>
       <NFTViewCard v-for="n in NFTs" :key="n.mint" :n="n"></NFTViewCard>
     </div>
@@ -47,16 +47,16 @@ import { NFTGet } from '@/common/NFTget';
 import NFTViewCard from '@/components/NFTViewCard.vue';
 import useLoading, { LoadStatus } from '@/composables/loading';
 import { EE, ERR_NO_NFTS } from '@/globals';
-import ErrorNotice from '@/components/ErrorNotice.vue';
 import { INFT, INFTParams } from '@/common/helpers/types';
 import NFTViewForm from '@/components/NFTViewForm.vue';
 import useDownload from '@/composables/download';
 import useCopy from '@/composables/copy';
+import NotifyError from '@/components/content/notifications/NotifyError.vue';
 
 export default defineComponent({
   components: {
+    NotifyError,
     NFTViewForm,
-    ErrorNotice,
     NFTViewCard,
     LoadingBar,
     ConfigPane,

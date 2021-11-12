@@ -1,0 +1,48 @@
+{
+   "name":"TESTOOR #1234",
+   "symbol":"TESTOOR",
+   "description":"tests the shit out of everything",
+   "seller_fee_basis_points":500,
+   "image":"https://ipfs.io/ipfs/QmcSdKMcJmkbY4J7EkNTUDbEPa6Tj2QM7tDZFATghXAU9k",
+   "external_url":"nftarmory.me",
+   "edition":"2021",
+   "attributes":[
+      {
+         "trait_type":"hair",
+         "value":"blue"
+      },
+      {
+         "trait_type":"background",
+         "value":"green"
+      },
+      {
+         "display_type":"number",
+         "trait_type":"generation",
+         "value":1
+      },
+      {
+         "display_type":"number",
+         "trait_type":" sequence",
+         "value":1234
+      }
+   ],
+   "properties":{
+      "category":"image",
+      "files":[
+         {
+            "uri":"https://ipfs.io/ipfs/QmcSdKMcJmkbY4J7EkNTUDbEPa6Tj2QM7tDZFATghXAU9k",
+            "type":"image/png"
+         }
+      ],
+      "creators":[
+         {
+            "address":"75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA",
+            "share":50
+         },
+         {
+            "address":"AGsJu1jZmFcVDPdm6bbaP54S3sMEinxmdiYWhaBBDNVX",
+            "share":50
+         }
+      ]
+   }
+}

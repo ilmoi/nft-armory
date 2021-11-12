@@ -34,13 +34,12 @@ export default function useLoading() {
     const counter = useInterval(1000);
     watchAtMost(
       counter,
-      (newVal) => {
+      () => {
         // if for some reason progress bar jumps above, we don't want to keep incrementing
         // also use versioning to stop old counters
         if (progress.value > max || passedVersion !== currentVersion) {
           return;
         }
-        // console.log(newVal);
         progress.value += 2;
       },
       // this ensures we stop after required number of times
@@ -51,7 +50,6 @@ export default function useLoading() {
   const updateLoading = (
     { newStatus, newProgress, maxProgress, newText } = {} as IUpdateLoadingParams
   ) => {
-    // console.log('received', newStatus, newProgress, maxProgress, newText);
     status.value = newStatus;
     progress.value = newProgress;
     text.value = newText;
@@ -64,7 +62,7 @@ export default function useLoading() {
       newStatus: LoadStatus.Error,
       newProgress: 0,
       maxProgress: 0,
-      newText: `Uh oh something went wrong: ${e}`,
+      newText: `Uh oh something went wrong - ${e}`,
     });
   };
 

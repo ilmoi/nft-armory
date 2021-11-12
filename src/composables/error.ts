@@ -10,6 +10,15 @@ export default function useError() {
   };
 
   const setError = (e: Error) => {
+    // todo temp hack before proper error-handling in place
+    if (e.message === "Cannot read properties of null (reading '_bn')") {
+      error.value = new Error('Missing a required field');
+      return;
+    }
+    if (e.message === 'unable to get metadata json from url null') {
+      error.value = new Error('Missing URI');
+      return;
+    }
     error.value = e;
   };
 
@@ -18,7 +27,7 @@ export default function useError() {
       try {
         return new PublicKey(strPk);
       } catch (e) {
-        error.value = new Error('Bad public key entry. Did you spell it correctly? ');
+        error.value = new Error('Bad public key entry. Did you spell it correctly?');
       }
     }
     return null;

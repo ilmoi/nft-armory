@@ -38,7 +38,7 @@
           id="editionMint"
           class="nes-input"
           v-model="editionMint"
-          :placeholder="editionMint"
+          :placeholder="DEFAULTS.MASTER_MINT"
         />
       </div>
       <button
@@ -67,7 +67,7 @@
           id="editionMint2"
           class="nes-input"
           v-model="editionMint"
-          :placeholder="editionMint"
+          :placeholder="DEFAULTS.MASTER_MINT"
         />
       </div>
       <div class="nes-field mt-5">
@@ -80,7 +80,7 @@
           id="newMetadataData"
           class="nes-input"
           v-model="newMetadataData"
-          :placeholder="newMetadataData"
+          :placeholder="DEFAULTS.METADATA"
         ></textarea>
       </div>
       <div class="nes-field mt-5">
@@ -90,7 +90,7 @@
           id="newUpdateAuthority"
           class="nes-input"
           v-model="newUpdateAuthority"
-          :placeholder="newUpdateAuthority"
+          :placeholder="DEFAULTS.UPDATE_AUTHORITY"
         />
       </div>
       <button
@@ -115,7 +115,7 @@
           id="editionMint3"
           class="nes-input"
           v-model="editionMint"
-          :placeholder="editionMint"
+          :placeholder="DEFAULTS.MASTER_MINT"
         />
       </div>
       <div class="nes-field mt-5">
@@ -125,7 +125,7 @@
           id="newUpdateAuthority2"
           class="nes-input"
           v-model="newUpdateAuthority"
-          :placeholder="newUpdateAuthority"
+          :placeholder="DEFAULTS.UPDATE_AUTHORITY"
         />
       </div>
       <div class="nes-field mt-5">
@@ -135,7 +135,7 @@
           id="maxSupply"
           class="nes-input"
           v-model="maxSupply"
-          :placeholder="maxSupply"
+          :placeholder="DEFAULTS.MAX_SUPPLY"
         />
       </div>
       <button
@@ -197,6 +197,7 @@ import useCluster from '@/composables/cluster';
 import { pause } from '@/common/helpers/util';
 import ContentTooltipNftToken from '@/components/content/tooltip/ContentTooltipNftToken.vue';
 import { NFTCreateMaster, NFTCreateMetadata } from '@/common/NFTcreate';
+import { DEFAULTS } from '@/globals';
 
 export default defineComponent({
   components: {
@@ -242,7 +243,7 @@ export default defineComponent({
     };
 
     // --------------------------------------- sign metadata
-    const editionMint = ref<string | null>('49GGYd6PyascDX5rb12s8oP5XNhjfF2bvaMteFxLeEud');
+    const editionMint = ref<string | null>(null);
 
     const signMetadata = async () => {
       clearPreviousResults();
@@ -301,7 +302,7 @@ export default defineComponent({
     };
 
     // --------------------------------------- create master
-    const maxSupply = ref<number | null>(123);
+    const maxSupply = ref<number | null>(null);
 
     const createMaster = async () => {
       clearPreviousResults();
@@ -337,6 +338,7 @@ export default defineComponent({
     registerModal('nftToken');
 
     return {
+      DEFAULTS,
       isConnected,
       error,
       chosenAction,

@@ -35,7 +35,7 @@
           <label for="uri">Arweave / IPFS URI:</label
           ><QuestionMark @click="showModal('tooltipArweave')" />
         </div>
-        <input type="text" id="uri" class="nes-input" v-model="uri" :placeholder="uri" />
+        <input type="text" id="uri" class="nes-input" v-model="uri" :placeholder="DEFAULTS.URI" />
       </div>
       <div class="nes-field mt-5">
         <div><label for="maxSupply">Max Supply (leave blank for uncapped):</label></div>
@@ -44,7 +44,7 @@
           id="maxSupply"
           class="nes-input"
           v-model="maxSupply"
-          :placeholder="maxSupply"
+          :placeholder="DEFAULTS.MAX_SUPPLY"
         />
       </div>
       <button
@@ -66,7 +66,7 @@
           id="masterEditionMint"
           class="nes-input"
           v-model="masterEditionMint"
-          :placeholder="masterEditionMint"
+          :placeholder="DEFAULTS.MASTER_MINT"
         />
       </div>
       <div class="nes-field mt-5">
@@ -76,7 +76,7 @@
           id="updateAuthority"
           class="nes-input"
           v-model="updateAuthority"
-          :placeholder="updateAuthority"
+          :placeholder="DEFAULTS.UPDATE_AUTHORITY"
         />
       </div>
       <button
@@ -94,7 +94,7 @@
     <NotifySuccess v-if="mintResult" class="mt-5">
       <p>Mint successful! 🎉</p>
       <LoadingIcon align="left" class="mt-5" v-if="!newNFT"
-        >Loading your new NFT... (might take a min or two)</LoadingIcon
+        >Loading your new NFT... (might take a few sec)</LoadingIcon
       >
       <div v-else>
         <ExplorerLink :tx-id="mintResult.txId" />
@@ -131,6 +131,7 @@ import ContentTooltipArweave from '@/components/content/tooltip/ContentTooltipAr
 import useError from '@/composables/error';
 import ExplorerLink from '@/components/ExplorerLink.vue';
 import StdNotifications from '@/components/StdNotifications.vue';
+import { DEFAULTS } from '@/globals';
 
 interface IMintResult {
   txId: string;
@@ -177,14 +178,12 @@ export default defineComponent({
     };
 
     // --------------------------------------- master
-    const uri = ref<string>(
-      'https://gateway.pinata.cloud/ipfs/QmNz2zB8AX15b4hp7JgkEMDLJh9ftwBZciCjo6z2TsxYi1'
-    );
-    const maxSupply = ref<number | null>(123);
+    const uri = ref<string | null>(null);
+    const maxSupply = ref<number | null>(null);
     const mintNewMaster = async () => {
       clearPreviousResults();
       isLoading.value = true;
-      NFTMintMaster(getWallet() as any, uri.value, maxSupply.value!)
+      NFTMintMaster(getWallet() as any, uri.value!, maxSupply.value as any)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
           isLoading.value = false;
@@ -197,7 +196,7 @@ export default defineComponent({
     };
 
     // --------------------------------------- print
-    const masterEditionMint = ref<string | null>('711qX1LxMT3x7Ti8i4JJ5jrX8a4WWnZ6dfTAWyB8SBq5');
+    const masterEditionMint = ref<string | null>(null);
     const updateAuthority = ref<string | null>();
 
     const mintNewPrint = async () => {
@@ -228,6 +227,7 @@ export default defineComponent({
     registerModal('tooltipArweave');
 
     return {
+      DEFAULTS,
       isConnected,
       error,
       chosenNFTType,

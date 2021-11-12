@@ -1,11 +1,9 @@
-import { Wallet } from '@metaplex/js';
+import { actions, Wallet } from '@metaplex/js';
 import { PublicKey } from '@solana/web3.js';
 import useCluster from '@/composables/cluster';
-import { updateMetadata } from '@/TEMP/update_v1';
 
 const { getConnection } = useCluster();
 
-// todo import from actual lib when PR accepted
 export async function NFTUpdate(
   wallet: Wallet,
   editionMint: PublicKey,
@@ -14,14 +12,14 @@ export async function NFTUpdate(
   primarySaleHappened?: boolean
 ) {
   const connection = getConnection();
-  const txId = await updateMetadata(
+  const txId = await actions.updateMetadata({
     connection,
     wallet,
     editionMint,
     newMetadataData,
     newUpdateAuthority,
-    primarySaleHappened
-  );
+    primarySaleHappened,
+  });
   console.log('Updated NFT:', txId);
   return txId;
 }

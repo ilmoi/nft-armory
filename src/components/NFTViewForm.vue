@@ -29,7 +29,13 @@
     <form @submit.prevent="emitSubmitForm" class="mt-10">
       <div v-if="byAddress" class="nes-field">
         <div><label for="addr">Wallet Address:</label></div>
-        <input type="text" id="addr" class="nes-input" v-model="owner" :placeholder="owner" />
+        <input
+          type="text"
+          id="addr"
+          class="nes-input"
+          v-model="owner"
+          :placeholder="DEFAULTS.OWNER"
+        />
       </div>
       <div v-else-if="byWallet && !missingWallet" class="nes-field">
         <div><label for="walletAddr">Your Wallet Address:</label></div>
@@ -38,7 +44,7 @@
           id="walletAddr"
           class="nes-input text-gray-400"
           v-model="owner"
-          :placeholder="owner"
+          :placeholder="DEFAULTS.OWNER"
           :disabled="true"
         />
       </div>
@@ -62,7 +68,7 @@
           id="creator"
           class="nes-input"
           v-model="creator"
-          :placeholder="creator"
+          :placeholder="DEFAULTS.CREATOR"
         />
       </div>
       <div v-else-if="byAuthority" class="nes-field">
@@ -72,12 +78,18 @@
           id="authority"
           class="nes-input"
           v-model="authority"
-          :placeholder="authority"
+          :placeholder="DEFAULTS.AUTHORITY"
         />
       </div>
       <div v-else-if="byMint" class="nes-field">
         <div><label for="mint">Mint Address:</label></div>
-        <input type="text" id="mint" class="nes-input" v-model="mint" :placeholder="mint" />
+        <input
+          type="text"
+          id="mint"
+          class="nes-input"
+          v-model="mint"
+          :placeholder="DEFAULTS.MINT"
+        />
       </div>
 
       <div class="flex justify-between mt-5">
@@ -93,7 +105,7 @@
       </div>
     </form>
 
-    <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }} </NotifyError>
+    <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }}</NotifyError>
 
     <ModalWindow
       v-if="isModalVisible('tooltipCreator')"
@@ -117,6 +129,7 @@ import ContentTooltipCreator from '@/components/content/tooltip/ContentTooltipCr
 import useModal from '@/composables/modal';
 import useError from '@/composables/error';
 import NotifyError from '@/components/content/notifications/NotifyError.vue';
+import { DEFAULTS } from '@/globals';
 
 export default defineComponent({
   components: { NotifyError, ContentTooltipCreator, ModalWindow, QuestionMark },
@@ -128,10 +141,10 @@ export default defineComponent({
     const { error, clearError, tryConvertToPk } = useError();
 
     // --------------------------------------- params
-    const owner = ref('AGsJu1jZmFcVDPdm6bbaP54S3sMEinxmdiYWhaBBDNVX');
-    const creator = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
-    const authority = ref('75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA');
-    const mint = ref('3dsmKsQD5fpmGeecg4AAhUMfVrhDGkXefrGHEk4aWpc6');
+    const owner = ref<string | null>(null);
+    const creator = ref<string | null>(null);
+    const authority = ref<string | null>(null);
+    const mint = ref<string | null>(null);
 
     // --------------------------------------- choosing a method
     const chosenMethod = ref<string>('address');
@@ -178,7 +191,6 @@ export default defineComponent({
     // --------------------------------------- sharing links
     onMounted(() => {
       const route = useRoute();
-      console.log();
       const {
         address: goAddress,
         creator: goCreator,
@@ -206,6 +218,7 @@ export default defineComponent({
     });
 
     return {
+      DEFAULTS,
       error,
       // params
       owner,

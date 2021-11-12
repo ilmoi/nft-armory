@@ -148,7 +148,7 @@ function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
 async function turnMetadatasIntoNFTs(metadatas: programs.metadata.Metadata[]): Promise<INFT[]> {
   let NFTs = deserializeMetadataOnchain(metadatas);
 
-  // todo temp
+  // todo useful for testing on mainnet, not to kill the node
   // NFTs = NFTs.slice(0, 100);
 
   const enrichedNFTs = await Promise.all(
@@ -180,7 +180,7 @@ export async function NFTGet(
   if (owner) {
     console.log('Time to get em NFTs by owner:', owner.toBase58());
     metadatas = await getMetadataByOwner(owner);
-  } else if (creators && creators.length > 0) {
+  } else if (creators && creators.length > 0 && creators[0] !== null) {
     console.log('Time to get em NFTs by creators:', stringifyPubkeysAndBNInArray(creators));
     metadatas = await getMetadataByCreators(creators);
   } else if (mint) {
@@ -190,7 +190,7 @@ export async function NFTGet(
     console.log('Time to get em NFTs by authority:', updateAuthority.toBase58());
     metadatas = await getMetadataByUpdateAuthority(updateAuthority);
   } else {
-    throw new Error('You must pass one of owner / creators / mint / updateAuthority');
+    throw new Error('You must pass one of owner / creator / authority / mint');
   }
   if (metadatas.length === 0) {
     throw ERR_NO_NFTS;

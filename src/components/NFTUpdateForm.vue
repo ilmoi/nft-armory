@@ -8,7 +8,7 @@
           id="editionMint"
           class="nes-input"
           v-model="editionMint"
-          :placeholder="editionMint"
+          :placeholder="DEFAULTS.MASTER_MINT"
         />
       </div>
       <div class="nes-field mt-5">
@@ -21,7 +21,7 @@
           id="newMetadataData"
           class="nes-input"
           v-model="newMetadataData"
-          :placeholder="newMetadataData"
+          :placeholder="DEFAULTS.METADATA"
         ></textarea>
       </div>
       <div class="nes-field mt-5">
@@ -31,7 +31,7 @@
           id="newUpdateAuthority"
           class="nes-input"
           v-model="newUpdateAuthority"
-          :placeholder="newUpdateAuthority"
+          :placeholder="DEFAULTS.UPDATE_AUTHORITY"
         />
       </div>
       <div>
@@ -59,7 +59,7 @@
     <NotifySuccess v-if="txId" class="mt-5">
       <p>Update successful! 🎉</p>
       <LoadingIcon align="left" class="mt-5" v-if="!updatedNFT"
-        >Loading your updated NFT... (might take a min or two)</LoadingIcon
+        >Loading your updated NFT... (might take a few sec)</LoadingIcon
       >
       <div v-else>
         <ExplorerLink :tx-id="txId" />
@@ -96,6 +96,7 @@ import ExplorerLink from '@/components/ExplorerLink.vue';
 import { objectOneInsideObjectTwo } from '@/common/helpers/util';
 import ContentTooltipMetadata from '@/components/content/tooltip/ContentTooltipMetadata.vue';
 import StdNotifications from '@/components/StdNotifications.vue';
+import { DEFAULTS } from '@/globals';
 
 export default defineComponent({
   components: {
@@ -125,7 +126,7 @@ export default defineComponent({
     };
 
     // --------------------------------------- update nft
-    const editionMint = ref<string | null>('49GGYd6PyascDX5rb12s8oP5XNhjfF2bvaMteFxLeEud');
+    const editionMint = ref<string | null>(null);
     const newMetadataData = ref<any>(null);
     const newUpdateAuthority = ref<string | null>(null);
     const primarySaleHappened = ref<boolean | null>(null);
@@ -192,6 +193,7 @@ export default defineComponent({
     registerModal('tooltipMetadata');
 
     return {
+      DEFAULTS,
       isConnected,
       error,
       isLoading,
