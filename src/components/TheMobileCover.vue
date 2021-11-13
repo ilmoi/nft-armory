@@ -1,7 +1,7 @@
 <template>
   <div class="cover">
     <img src="../assets/desktop6.gif" />
-    <p class="text-2xl text-white m-10">Sorry, currently desktop only.</p>
+    <p class="text-xl text-white m-10">Sorry, currently desktop only.</p>
   </div>
 </template>
 
