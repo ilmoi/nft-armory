@@ -7,6 +7,6 @@ import './index.css';
 createApp(App)
   .use(router)
   // .use(VueGtag, {
-  //   config: { id: 'G-6MN98MZZPL' },
+  //   config: { id: 'G-6MN98MZZPL'  },
   // })
   .mount('#app');
