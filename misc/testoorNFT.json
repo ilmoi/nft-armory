@@ -37,11 +37,15 @@
       "creators":[
          {
             "address":"75ErM1QcGjHiPMX7oLsf9meQdGSUs4ZrwS2X8tBpsZhA",
-            "share":50
+            "share":33
          },
          {
             "address":"AGsJu1jZmFcVDPdm6bbaP54S3sMEinxmdiYWhaBBDNVX",
-            "share":50
+            "share":33
+         },
+                 {
+            "address":"BwPppm3XfqyKho9xSvUCqHHiJyKTR8FnvH21XKpTDjSL",
+            "share":34
          }
       ]
    }
