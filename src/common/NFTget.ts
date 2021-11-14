@@ -13,6 +13,7 @@ import { INFT, INFTParams } from './helpers/types';
 import useCluster from '@/composables/cluster';
 import { EE, ERR_NO_NFTS } from '@/globals';
 import { LoadStatus, IUpdateLoadingParams, estimateNFTLoadTime } from '@/composables/loading';
+import { processRarity } from '@/common/rarity';
 
 const {
   metadata: { Metadata },
@@ -210,5 +211,18 @@ export async function NFTGet(
   console.log('Time to find NFTs:', (t2 - t1) / 1000);
   console.log('Time to fetch Metadata:', (t3 - t2) / 1000);
 
-  return filterOutIncompleteNFTs(NFTs);
+  const validNFTs = filterOutIncompleteNFTs(NFTs);
+
+  let finalNFts = validNFTs;
+
+  // creators only
+  if (creators && creators.length > 0 && creators[0] !== null) {
+    try {
+      finalNFts = processRarity(validNFTs);
+    } catch (e) {
+      console.log('Failed to calc rarity with error', e);
+    }
+  }
+
+  return finalNFts;
 }

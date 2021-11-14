@@ -26,7 +26,11 @@
       </div>
     </div>
 
-    <form @submit.prevent="emitSubmitForm" class="mt-10">
+    <NotifyInfo v-if="chosenMethod === 'creator'" class="mt-5">
+      💎 When searching by Creator you get automatic Rarity Scores / Ranking / Categories! 💎
+    </NotifyInfo>
+
+    <form @submit.prevent="emitSubmitForm" :class="chosenMethod === 'creator' ? 'mt-5' : 'mt-10'">
       <div v-if="byAddress" class="nes-field">
         <div><label for="addr">Wallet Address:</label></div>
         <input
@@ -130,9 +134,10 @@ import useModal from '@/composables/modal';
 import useError from '@/composables/error';
 import NotifyError from '@/components/notifications/NotifyError.vue';
 import { DEFAULTS } from '@/globals';
+import NotifyInfo from '@/components/notifications/NotifyInfo.vue';
 
 export default defineComponent({
-  components: { NotifyError, ContentTooltipCreator, ModalWindow, QuestionMark },
+  components: { NotifyInfo, NotifyError, ContentTooltipCreator, ModalWindow, QuestionMark },
   props: {
     isLoading: Boolean,
   },

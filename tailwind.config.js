@@ -16,6 +16,13 @@ module.exports = {
         threeh: '300px',
       },
       colors: {
+        rarity: {
+          legendary: '#fda219',
+          epic: '#d261ff',
+          rare: '#5cc2fc',
+          uncommon: '#63fa4c',
+          common: '#d7d7d7',
+        },
         solana: {
           verylightgreen: '#dcf2ea',
           lightgreen: '#7fe8c1',
