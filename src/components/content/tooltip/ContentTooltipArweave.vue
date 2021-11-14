@@ -43,7 +43,7 @@
   </div>
 </template>
 <script>
-import NotifyWarning from '@/components/content/notifications/NotifyWarning';
+import NotifyWarning from '@/components/notifications/NotifyWarning';
 
 export default {
   components: { NotifyWarning },

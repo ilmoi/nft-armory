@@ -128,7 +128,7 @@ import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipCreator from '@/components/content/tooltip/ContentTooltipCreator.vue';
 import useModal from '@/composables/modal';
 import useError from '@/composables/error';
-import NotifyError from '@/components/content/notifications/NotifyError.vue';
+import NotifyError from '@/components/notifications/NotifyError.vue';
 import { DEFAULTS } from '@/globals';
 
 export default defineComponent({

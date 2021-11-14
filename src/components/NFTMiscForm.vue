@@ -181,9 +181,9 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import NotifyWarning from './content/notifications/NotifyWarning.vue';
+import NotifyWarning from './notifications/NotifyWarning.vue';
 import StdNotifications from '@/components/StdNotifications.vue';
-import NotifySuccess from '@/components/content/notifications/NotifySuccess.vue';
+import NotifySuccess from '@/components/notifications/NotifySuccess.vue';
 import LoadingIcon from '@/components/LoadingIcon.vue';
 import ExplorerLink from '@/components/ExplorerLink.vue';
 import ModalWindow from '@/components/ModalWindow.vue';

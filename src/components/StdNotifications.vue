@@ -12,8 +12,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import NotifyError from './content/notifications/NotifyError.vue';
-import NotifyInfo from './content/notifications/NotifyInfo.vue';
+import NotifyError from './notifications/NotifyError.vue';
+import NotifyInfo from './notifications/NotifyInfo.vue';
 
 export default defineComponent({
   components: { NotifyInfo, NotifyError },
