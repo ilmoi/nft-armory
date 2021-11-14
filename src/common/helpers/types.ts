@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import { AccountInfo, MintInfo } from '@solana/spl-token';
 import { EditionData, MasterEditionData, MetadataData } from '@metaplex/js/lib/programs/metadata';
+import { RarityCategory } from '@/common/rarity';
 
 export interface INFT {
   // spl stuff
@@ -18,6 +19,10 @@ export interface INFT {
   editionData?: EditionData;
   masterEditionPDA?: PublicKey;
   masterEditionData?: MasterEditionData;
+  // rarity
+  rarityScore?: number;
+  rarityRank?: number;
+  rarityCategory?: RarityCategory;
 }
 
 export interface INFTParams {

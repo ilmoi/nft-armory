@@ -15,7 +15,8 @@ It lets you:
   - get NFT metadata as JSON
   - export NFTs as Zip
     - yes all 10k at aonce
-  - easily share a link to all NFTs by a specific owner / creator / authority, or a single speific NFT 
+  - easily share a link to all NFTs by a specific owner / creator / authority, or a single speific NFT
+  - BONUS: when searching by `Creator`, you get automatic rarity scores 💎 / ranking 💎 / categories 💎 
 - `Mint new NFTs`
   - Master editions / Prints
 - `Update NFTs`

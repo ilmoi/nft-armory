@@ -82,7 +82,7 @@
 import { defineComponent, ref } from 'vue';
 import { PublicKey } from '@solana/web3.js';
 import QuestionMark from '@/components/QuestionMark.vue';
-import NotifySuccess from '@/components/content/notifications/NotifySuccess.vue';
+import NotifySuccess from '@/components/notifications/NotifySuccess.vue';
 import LoadingIcon from '@/components/LoadingIcon.vue';
 import NFTViewCard from '@/components/NFTViewCard.vue';
 import ModalWindow from '@/components/ModalWindow.vue';

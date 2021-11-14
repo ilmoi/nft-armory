@@ -16,6 +16,7 @@
         >
           {{ exportBtnText }}
         </button>
+        <QuestionMark class="ml-1 mt-3" @click="showModal('tooltipExport')" />
       </div>
     </NFTViewForm>
 
@@ -25,6 +26,15 @@
     <div v-else>
       <NFTViewCard v-for="n in NFTs" :key="n.mint" :n="n"></NFTViewCard>
     </div>
+
+    <!--modals-->
+    <ModalWindow
+      v-if="isModalVisible('tooltipExport')"
+      title="Wen export??"
+      @hide-modal="hideModal('tooltipExport')"
+    >
+      <ContentTooltipExport />
+    </ModalWindow>
 
     <!--must sit at the very bottom-->
     <infinite-loading
@@ -51,10 +61,17 @@ import { INFT, INFTParams } from '@/common/helpers/types';
 import NFTViewForm from '@/components/NFTViewForm.vue';
 import useDownload from '@/composables/download';
 import useCopy from '@/composables/copy';
-import NotifyError from '@/components/content/notifications/NotifyError.vue';
+import NotifyError from '@/components/notifications/NotifyError.vue';
+import QuestionMark from '@/components/QuestionMark.vue';
+import ModalWindow from '@/components/ModalWindow.vue';
+import ContentTooltipExport from '@/components/content/tooltip/ContentTooltipExport.vue';
+import useModal from '@/composables/modal';
 
 export default defineComponent({
   components: {
+    ContentTooltipExport,
+    ModalWindow,
+    QuestionMark,
     NotifyError,
     NFTViewForm,
     NFTViewCard,
@@ -186,6 +203,10 @@ export default defineComponent({
       }
     };
 
+    // --------------------------------------- modal
+    const { registerModal, isModalVisible, showModal, hideModal } = useModal();
+    registerModal('tooltipExport');
+
     return {
       NFTs: displayedNFTs,
       progress,
@@ -202,6 +223,10 @@ export default defineComponent({
       copyText,
       copyShareLink,
       doCopy,
+      // modal
+      isModalVisible,
+      showModal,
+      hideModal,
     };
   },
 });
