@@ -2,7 +2,7 @@
   <div>
     <h1>GM anon 👋</h1>
     <p class="mt-5">
-      NFT armory is a simple tool to
+      NFT Armory is a simple tool to
       <router-link to="/view" class="nes-text is-primary">view</router-link>,
       <router-link to="/mint" class="nes-text is-primary">mint</router-link>, and
       <router-link to="/update" class="nes-text is-primary">update</router-link>
