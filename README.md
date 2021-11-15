@@ -48,6 +48,10 @@ Viewing
   - Aurory creator: `9vwYtcJsH1MskNaixcjgNBnvBDkTBhyg25umod1rgMQL` (10k)
   - Degen ape creator: `9BKWqDHfHZh9j39xakYVMdr6hXmCLHH5VfCpeq2idU9L` (10k)
   - Sneks creator: `AuTF3kgAyBzsfjGcNABTSzzXK4bVcZcyZJtpCrayxoVp` (10k)
+  - Thugbirds creator: `AvkbtawpmMSy571f71WsWEn41ATHg5iHw27LoYJdk8QA`
+  - Geckos creator: `FEg3mmpcrcRsVTuc2n3oghHpRvAtEJJau4KWjaPpLKcA`
+  - Boryoku Dragonz creator: `DRGNjvBvnXNiQz9dTppGk1tAsVxtJsvhEmojEfBU3ezf`
+  - The Tower creator: `6PTSaVPGLzzgAqw9veQUVKhW2ggsEaV5ghBeLsQn2GVN`
 - Authorities (sometimes the same as creators, but not always):
   - Playground waves authority: `Edy3xedybSQYAE6eboza5YEcoJan91nfSd3jUppHz7u1`
 - Mints:
