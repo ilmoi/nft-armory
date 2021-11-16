@@ -121,7 +121,7 @@ import { NFTMintEditionFromMaster, NFTMintMaster } from '@/common/NFTmint';
 import useWallet from '@/composables/wallet';
 import NotifyWarning from '@/components/notifications/NotifyWarning.vue';
 import NotifySuccess from '@/components/notifications/NotifySuccess.vue';
-import { INFT } from '@/common/helpers/types';
+import { IMintResult, INFT } from '@/common/helpers/types';
 import LoadingIcon from '@/components/LoadingIcon.vue';
 import NFTViewCard from '@/components/NFTViewCard.vue';
 import { NFTGet } from '@/common/NFTget';
@@ -132,13 +132,6 @@ import useError from '@/composables/error';
 import ExplorerLink from '@/components/ExplorerLink.vue';
 import StdNotifications from '@/components/StdNotifications.vue';
 import { DEFAULTS } from '@/globals';
-
-interface IMintResult {
-  txId: string;
-  mint: PublicKey;
-  metadata: PublicKey;
-  edition: PublicKey;
-}
 
 export default defineComponent({
   components: {

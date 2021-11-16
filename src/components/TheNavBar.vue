@@ -28,6 +28,7 @@ export default defineComponent({
       { name: 'MINT', url: '/mint' },
       { name: 'UPDATE', url: '/update' },
       { name: 'MISC', url: '/misc' },
+      { name: 'I WANT UR NFT', url: '/urnft' },
     ];
 
     return {
