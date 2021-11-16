@@ -31,3 +31,10 @@ export interface INFTParams {
   mint?: PublicKey;
   updateAuthority?: PublicKey;
 }
+
+export interface IMintResult {
+  txId: string;
+  mint: PublicKey;
+  metadata: PublicKey;
+  edition: PublicKey;
+}
