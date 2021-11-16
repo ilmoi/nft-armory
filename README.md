@@ -24,8 +24,10 @@ It lets you:
 - `Sign Metadata`
 - `Create Metadata PDAs`
 - `Create Master Edition PDAs`
+- `I WANT UR NFT`
+  - lets you send someone an NFT that looks like the below, in the hope that they contact you back. Useful if you want to buy an NFT from someone but don't know who they are.
 
-Basically it's an interface to every single instruction in Metaplex's token-metadata Program. All the optional params are supported as well :)
+![wtb_nft](./misc/wtb_nft.png)
 
 A few other notes:
 - Works on mainnet / devnet / testnet / localnet
