@@ -6,7 +6,9 @@
     </div>
 
     <div class="mt-10">
-      <a class="nes-text is-primary" @click="showModal('tooltipWant')">How does it work?</a>
+      <a href="#" class="nes-text is-primary" @click="showModal('tooltipWant')"
+        >How does it work?
+      </a>
     </div>
 
     <div class="flex mt-10">
