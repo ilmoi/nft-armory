@@ -81,11 +81,9 @@ import ContentTooltipIWantUrNFT from '@/components/content/tooltip/ContentToolti
 import useModal from '@/composables/modal';
 import { NFTMintMaster } from '@/common/NFTmint';
 import { NFTGet } from '@/common/NFTget';
-import NotifyInfo from '@/components/notifications/NotifyInfo.vue';
 
 export default defineComponent({
   components: {
-    NotifyInfo,
     ContentTooltipIWantUrNFT,
     ModalWindow,
     NFTViewCard,
