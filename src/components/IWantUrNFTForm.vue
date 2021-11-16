@@ -6,7 +6,9 @@
     </div>
 
     <div class="mt-10">
-      <a class="nes-text is-primary" @click="showModal('tooltipWant')">How does it work?</a>
+      <a href="#" class="nes-text is-primary" @click="showModal('tooltipWant')"
+        >How does it work?
+      </a>
     </div>
 
     <div class="flex mt-10">
@@ -79,9 +81,11 @@ import ContentTooltipIWantUrNFT from '@/components/content/tooltip/ContentToolti
 import useModal from '@/composables/modal';
 import { NFTMintMaster } from '@/common/NFTmint';
 import { NFTGet } from '@/common/NFTget';
+import NotifyInfo from '@/components/notifications/NotifyInfo.vue';
 
 export default defineComponent({
   components: {
+    NotifyInfo,
     ContentTooltipIWantUrNFT,
     ModalWindow,
     NFTViewCard,
