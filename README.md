@@ -54,6 +54,7 @@ Viewing
   - Geckos creator: `FEg3mmpcrcRsVTuc2n3oghHpRvAtEJJau4KWjaPpLKcA`
   - Boryoku Dragonz creator: `DRGNjvBvnXNiQz9dTppGk1tAsVxtJsvhEmojEfBU3ezf`
   - The Tower creator: `6PTSaVPGLzzgAqw9veQUVKhW2ggsEaV5ghBeLsQn2GVN`
+  - SMB creator: `9uBX3ASjxWvNBAD1xjbVaKA74mWGZys3RGSF7DdeDD3F`
 - Authorities (sometimes the same as creators, but not always):
   - Playground waves authority: `Edy3xedybSQYAE6eboza5YEcoJan91nfSd3jUppHz7u1`
 - Mints:
