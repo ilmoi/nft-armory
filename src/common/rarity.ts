@@ -1,3 +1,5 @@
+import { isIterable } from '@/common/helpers/util';
+
 function isPresent(dictKey: any, dict: any): boolean {
   return dictKey in dict;
 }
@@ -32,6 +34,10 @@ function countAttributes(files: any[]) {
   const counterDicts: any = {};
   for (const f of files) {
     const { attributes } = f.metadataExternal;
+    if (!isIterable(attributes)) {
+      continue;
+    }
+
     for (const attribute of attributes) {
       const dictName = attribute.trait_type;
       const dictEntry = attribute.value;
@@ -70,6 +76,10 @@ function rankFilesByRarity(files: any[], rarityDicts: any) {
   for (const f of scoredFiles) {
     f.rarityScore = 0;
     const { attributes } = f.metadataExternal;
+    if (!isIterable(attributes)) {
+      continue;
+    }
+
     for (const attribute of attributes) {
       f.rarityScore += rarityDicts[attribute.trait_type][attribute.value];
     }

@@ -152,3 +152,7 @@ export function objectOneInsideObjectTwo(o1: any, o2: any): boolean {
     });
   });
 }
+
+export function isIterable(value: any): boolean {
+  return Symbol.iterator in Object(value);
+}
