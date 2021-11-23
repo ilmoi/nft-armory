@@ -8,6 +8,7 @@
       :class="{ active: path === i.url }"
     />
     <a class="more" href="https://github.com/ilmoi/awesome-solana-nfts" target="_blank">🔗</a>
+    <a class="more" href="https://nftape.me/" target="_blank">🍌</a>
   </nav>
 </template>
 
