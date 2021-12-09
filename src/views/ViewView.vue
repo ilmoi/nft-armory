@@ -194,8 +194,8 @@ export default defineComponent({
       const host = window.location.origin;
       if (fetchParams.value!.owner) {
         await doCopy(`${host}/view/address/${fetchParams.value!.owner.toBase58()}`);
-      } else if (fetchParams.value!.creators && fetchParams.value!.creators.length) {
-        await doCopy(`${host}/view/creator/${fetchParams.value!.creators[0].toBase58()}`);
+      } else if (fetchParams.value!.creator) {
+        await doCopy(`${host}/view/creator/${fetchParams.value!.creator.toBase58()}`);
       } else if (fetchParams.value!.updateAuthority) {
         await doCopy(`${host}/view/authority/${fetchParams.value!.updateAuthority.toBase58()}`);
       } else if (fetchParams.value!.mint) {
