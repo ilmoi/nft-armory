@@ -27,7 +27,7 @@ export interface INFT {
 
 export interface INFTParams {
   owner?: PublicKey;
-  creators?: PublicKey[];
+  creator?: PublicKey;
   mint?: PublicKey;
   updateAuthority?: PublicKey;
 }

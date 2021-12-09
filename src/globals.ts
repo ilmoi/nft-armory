@@ -25,4 +25,6 @@ export const DEFAULTS = {
   NFT_MINT: 'A3wpue1mWdnfiU7VVLQeMAuVR4LcVrEsTtxysX1hPKLZ',
   METADATA: null,
   PRIMARY_SALE: null,
+
+  METADATA_PROGRAM_ID: 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s',
 };

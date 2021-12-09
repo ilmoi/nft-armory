@@ -2,7 +2,10 @@
   <div class="footer">
     <p class="px-3">Built with</p>
     <i class="nes-icon heart"></i>
-    <p class="px-3">by <a href="https://twitter.com/_ilmoi" target="_blank">@_ilmoi</a></p>
+    <p class="px-3">
+      by
+      <a class="nes-text is-primary" href="https://twitter.com/_ilmoi" target="_blank">@_ilmoi</a>
+    </p>
     <a href="https://twitter.com/_ilmoi" target="_blank"><i class="nes-icon twitter"></i></a>
   </div>
 </template>

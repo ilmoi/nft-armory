@@ -1,98 +1,162 @@
 import { PublicKey } from '@solana/web3.js';
-import { Account, AnyPublicKey, programs } from '@metaplex/js';
 import axios from 'axios';
-import { EditionData } from '@metaplex/js/lib/programs/metadata';
+import { Account, programs } from '@metaplex/js';
 import {
-  getEnumKeyByEnumValue,
-  joinArraysOnKey,
-  okToFailAsync,
-  stringifyPubkeysAndBNInArray,
-} from './helpers/util';
+  Edition,
+  EditionData,
+  MasterEdition,
+  Metadata,
+  MetadataData,
+  MetadataKey,
+} from '@metaplex-foundation/mpl-token-metadata';
+import bs58 from 'bs58';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { getEnumKeyByEnumValue, okToFailAsync } from './helpers/util';
 import { deserializeTokenAccount, deserializeTokenMint } from './helpers/spl-token';
 import { INFT, INFTParams } from './helpers/types';
 import useCluster from '@/composables/cluster';
-import { EE, ERR_NO_NFTS } from '@/globals';
-import { LoadStatus, IUpdateLoadingParams, estimateNFTLoadTime } from '@/composables/loading';
+import { DEFAULTS, EE, ERR_NO_NFTS } from '@/globals';
+import { estimateNFTLoadTime, IUpdateLoadingParams, LoadStatus } from '@/composables/loading';
 import { processRarity } from '@/common/rarity';
-
-const {
-  metadata: { Metadata },
-} = programs;
 
 const { getConnection } = useCluster();
 
-// --------------------------------------- getters
+// --------------------------------------- get tokens
 
-// todo implement
-// will fetch all the editions from master's PDA. Can be long!
-async function getEditionsFromMaster(masterPDA: AnyPublicKey) {
-  const masterInfo = await Account.getInfo(getConnection(), masterPDA);
-  const me = new programs.metadata.MasterEdition(masterPDA, masterInfo);
-  const foundEditions = await me.getEditions(getConnection());
-  console.log(`Found a total of ${foundEditions.length} Editions for ME: ${masterPDA}`);
-  return foundEditions;
+interface IToken {
+  mint: PublicKey;
+  address: PublicKey;
+  metadataPDA?: PublicKey;
+  metadataOnchain?: MetadataData;
 }
 
-// returns metadatas for all NFTs where EITHER of the creators is listed
-// so if one has 9 and other 2, total will be 11
-async function getMetadataByCreators(creators: AnyPublicKey[]) {
-  const nfts = await Metadata.findMany(getConnection(), {
-    creators,
-  });
-  console.log(`Found a total of ${nfts.length} NFTs for creators: ${creators}`);
-  return nfts;
-}
+const baseFilters = [
+  // Filter for MetadataV1 by key
+  {
+    memcmp: {
+      offset: 0,
+      bytes: bs58.encode(Buffer.from([MetadataKey.MetadataV1])),
+    },
+  },
+].filter(Boolean);
 
-async function getMetadataByUpdateAuthority(updateAuthority: AnyPublicKey) {
-  const nfts = await Metadata.findMany(getConnection(), {
-    updateAuthority,
-  });
-  console.log(`Found a total of ${nfts.length} NFTs for authority: ${updateAuthority}`);
-  return nfts;
-}
-
-async function getMetadataByMint(mint: AnyPublicKey) {
-  const nfts = await Metadata.findMany(getConnection(), {
-    mint,
-  });
-  console.log(`Found a total of ${nfts.length} NFTs for mint: ${mint}`);
-  return nfts;
-}
-
-async function getMetadataByOwner(owner: AnyPublicKey) {
-  const nfts = await Metadata.findByOwnerV2(getConnection(), owner);
-  console.log(`Found a total of ${nfts.length} NFTs for owner: ${owner}`);
-  return nfts;
-}
-
-async function getHolderByMint(mint: PublicKey) {
+async function getHolderByMint(mint: PublicKey): Promise<PublicKey> {
   const tokens = await getConnection().getTokenLargestAccounts(mint);
-  if (tokens && tokens.value.length > 0) {
-    return tokens.value[0].address; // since it's an NFT, we just grab the 1st account
-  }
+  return tokens.value[0].address; // since it's an NFT, we just grab the 1st account
 }
 
-async function getExternalMetadata(uri: string) {
-  const response = await axios.get(uri);
-  if (response) {
-    return response.data;
-  }
+function deserializeMetadata(rawMetadata: any) {
+  const acc = new Account(rawMetadata.pubkey, rawMetadata.account);
+  return Metadata.from(acc);
 }
 
-async function getParentEdition(editionData: EditionData) {
-  const masterEditionPDA = new PublicKey(editionData.parent);
-  const masterInfo = await Account.getInfo(getConnection(), masterEditionPDA);
-  const masterEditionData = new programs.metadata.MasterEdition(masterEditionPDA, masterInfo).data;
-  return { masterEditionPDA, masterEditionData };
+async function metadatasToTokens(rawMetadatas: any[]): Promise<IToken[]> {
+  const promises = await Promise.all(
+    rawMetadatas.map(async (m) => {
+      try {
+        const metadata = deserializeMetadata(m);
+        const mint = new PublicKey(metadata.data.mint);
+        const address = await getHolderByMint(mint);
+        return {
+          mint,
+          address,
+          metadataPDA: metadata.pubkey,
+          metadataOnchain: metadata.data,
+        } as IToken;
+      } catch (e) {
+        console.log('failed to deserialize one of the fetched metadatas');
+      }
+    })
+  );
+  return promises.filter((t) => !!t) as IToken[];
+}
+
+async function getTokensByCreator(creator: PublicKey): Promise<IToken[]> {
+  const rawMetadatas = await getConnection().getProgramAccounts(
+    new PublicKey(DEFAULTS.METADATA_PROGRAM_ID),
+    {
+      filters: [
+        ...baseFilters,
+        {
+          memcmp: {
+            offset: programs.metadata.computeCreatorOffset(0),
+            bytes: creator.toBase58(),
+          },
+        },
+      ],
+    }
+  );
+  return metadatasToTokens(rawMetadatas);
+}
+
+async function getTokensByUpdateAuthority(updateAuthority: PublicKey): Promise<IToken[]> {
+  const rawMetadatas = await getConnection().getProgramAccounts(
+    new PublicKey(DEFAULTS.METADATA_PROGRAM_ID),
+    {
+      filters: [
+        ...baseFilters,
+        {
+          memcmp: {
+            offset: 1,
+            bytes: updateAuthority.toBase58(),
+          },
+        },
+      ],
+    }
+  );
+  return metadatasToTokens(rawMetadatas);
+}
+
+async function getTokensByMint(mint: PublicKey): Promise<IToken[]> {
+  return [
+    {
+      mint,
+      address: await getHolderByMint(mint),
+    },
+  ];
+}
+
+async function getTokensByOwner(owner: PublicKey): Promise<IToken[]> {
+  const tokens = await getConnection().getParsedTokenAccountsByOwner(owner, {
+    programId: TOKEN_PROGRAM_ID,
+  });
+
+  // initial filter - only tokens with 0 decimals & of which 1 is present in the wallet
+  return tokens.value
+    .filter((t) => {
+      const amount = t.account.data.parsed.info.tokenAmount;
+      return amount.decimals === 0 && amount.uiAmount === 1;
+    })
+    .map((t) => ({
+      address: new PublicKey(t.pubkey),
+      mint: new PublicKey(t.account.data.parsed.info.mint),
+    }));
+}
+
+// --------------------------------------- enrich with useful stuff
+
+async function getMetadataByMint(
+  mint: PublicKey,
+  metadataPDA?: PublicKey,
+  metadataOnchain?: MetadataData
+) {
+  const pda = metadataPDA ?? (await Metadata.getPDA(mint));
+  const onchain = metadataOnchain ?? (await Metadata.load(getConnection(), pda)).data;
+  const metadataExternal = (await axios.get(onchain.data.uri)).data;
+  return {
+    metadataPDA: pda,
+    metadataOnchain: onchain,
+    metadataExternal,
+  };
 }
 
 async function getEditionInfoByMint(mint: PublicKey) {
   // untriaged
-  const pda = await programs.metadata.Edition.getPDA(mint);
+  const pda = await Edition.getPDA(mint);
   const info = await Account.getInfo(getConnection(), pda);
   const key = info?.data[0];
 
-  const editionType = getEnumKeyByEnumValue(programs.metadata.MetadataKey, key);
+  const editionType = getEnumKeyByEnumValue(MetadataKey, key);
   let editionPDA;
   let editionData;
   let masterEditionPDA;
@@ -100,17 +164,17 @@ async function getEditionInfoByMint(mint: PublicKey) {
 
   // triaged
   switch (key) {
-    case programs.metadata.MetadataKey.EditionV1:
+    case MetadataKey.EditionV1:
       editionPDA = pda;
-      editionData = new programs.metadata.Edition(pda, info).data;
+      editionData = new Edition(pda, info).data;
       // we can further get master edition info, since we know the parent
       ({ masterEditionPDA, masterEditionData } = await okToFailAsync(getParentEdition, [
         editionData,
       ]));
       break;
-    case programs.metadata.MetadataKey.MasterEditionV1:
-    case programs.metadata.MetadataKey.MasterEditionV2:
-      masterEditionData = new programs.metadata.MasterEdition(pda, info).data;
+    case MetadataKey.MasterEditionV1:
+    case MetadataKey.MasterEditionV2:
+      masterEditionData = new MasterEdition(pda, info).data;
       masterEditionPDA = pda;
       break;
   }
@@ -124,18 +188,34 @@ async function getEditionInfoByMint(mint: PublicKey) {
   };
 }
 
-// --------------------------------------- helpers
+async function getParentEdition(editionData: EditionData) {
+  const masterEditionPDA = new PublicKey(editionData.parent);
+  const masterInfo = await Account.getInfo(getConnection(), masterEditionPDA);
+  const masterEditionData = new MasterEdition(masterEditionPDA, masterInfo).data;
+  return { masterEditionPDA, masterEditionData };
+}
 
-function deserializeMetadataOnchain(metadatas: programs.metadata.Metadata[]): INFT[] {
-  return metadatas.map(
-    (m) =>
+async function tokensToEnrichedNFTs(tokens: IToken[]): Promise<INFT[]> {
+  return Promise.all(
+    tokens.map(async (t) =>
+      // console.log(`Processing Mint ${t.mint}`)
       ({
-        mint: new PublicKey(m.data.mint),
-        metadataPDA: m.pubkey,
-        metadataOnchain: m.data,
-      } as INFT)
+        mint: t.mint,
+        address: t.address,
+        splTokenInfo: await okToFailAsync(deserializeTokenAccount, [t.mint, t.address]),
+        splMintInfo: await okToFailAsync(deserializeTokenMint, [t.mint]),
+        ...(await okToFailAsync(
+          getMetadataByMint,
+          [t.mint, t.metadataPDA, t.metadataOnchain],
+          true
+        )),
+        ...(await okToFailAsync(getEditionInfoByMint, [t.mint], true)),
+      })
+    )
   );
 }
+
+// --------------------------------------- helpers
 
 function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
   return NFTs.filter(
@@ -146,77 +226,58 @@ function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
   );
 }
 
-async function turnMetadatasIntoNFTs(metadatas: programs.metadata.Metadata[]): Promise<INFT[]> {
-  let NFTs = deserializeMetadataOnchain(metadatas);
-
-  // todo useful for testing on mainnet, not to kill the node
-  // NFTs = NFTs.slice(0, 100);
-
-  const enrichedNFTs = await Promise.all(
-    NFTs.map(async (n) => {
-      console.log(`Processing NFT ${n.mint}`);
-      const address = await okToFailAsync(getHolderByMint, [new PublicKey(n.metadataOnchain.mint)]);
-      return {
-        mint: n.mint,
-        address,
-        splTokenInfo: await okToFailAsync(deserializeTokenAccount, [n.mint, address]),
-        splMintInfo: await okToFailAsync(deserializeTokenMint, [n.mint]),
-        metadataExternal: await okToFailAsync(getExternalMetadata, [n.metadataOnchain.data.uri]),
-        ...(await okToFailAsync(getEditionInfoByMint, [n.mint], true)),
-      };
-    })
-  );
-  NFTs = joinArraysOnKey(NFTs, enrichedNFTs, 'mint');
-  console.log(`Prepared a total of ${NFTs.length} NFTs`);
-  return NFTs;
-}
-
-// --------------------------------------- exported
+// --------------------------------------- interface
 
 export async function NFTGet(
-  { owner, creators, mint, updateAuthority } = {} as INFTParams
+  { owner, creator, mint, updateAuthority } = {} as INFTParams
 ): Promise<INFT[]> {
   const t1 = performance.now();
-  let metadatas;
+
+  let tokens: IToken[] = [];
   if (owner) {
     console.log('Time to get em NFTs by owner:', owner.toBase58());
-    metadatas = await getMetadataByOwner(owner);
-  } else if (creators && creators.length > 0 && creators[0] !== null) {
-    console.log('Time to get em NFTs by creators:', stringifyPubkeysAndBNInArray(creators));
-    metadatas = await getMetadataByCreators(creators);
+    tokens = await getTokensByOwner(owner);
+  } else if (creator) {
+    console.log('Time to get em NFTs by creator:', creator.toBase58());
+    tokens = await getTokensByCreator(creator);
   } else if (mint) {
     console.log('Time to get em NFTs by mint:', mint.toBase58());
-    metadatas = await getMetadataByMint(mint);
+    tokens = await getTokensByMint(mint);
   } else if (updateAuthority) {
     console.log('Time to get em NFTs by authority:', updateAuthority.toBase58());
-    metadatas = await getMetadataByUpdateAuthority(updateAuthority);
+    tokens = await getTokensByUpdateAuthority(updateAuthority);
   } else {
     throw new Error('You must pass one of owner / creator / authority / mint');
   }
-  if (metadatas.length === 0) {
+
+  if (tokens.length === 0) {
     throw ERR_NO_NFTS;
   }
+
   EE.emit('loading', {
     newStatus: LoadStatus.Loading,
     newProgress: 50,
     maxProgress: 90,
     newText: `Found ${
-      metadatas.length
-    } potential NFTs. Fetching metadata... ETA: <${estimateNFTLoadTime(metadatas.length)} min`,
+      tokens.length
+    } potential NFTs. Fetching metadata... ETA: <${estimateNFTLoadTime(tokens.length)} min`,
   } as IUpdateLoadingParams);
+
   const t2 = performance.now();
-  const NFTs = await turnMetadatasIntoNFTs(metadatas);
+  console.log(`Found ${tokens.length} tokens`);
+  console.log('Time:', (t2 - t1) / 1000);
+
+  const nfts = await tokensToEnrichedNFTs(tokens);
   const t3 = performance.now();
+  console.log(`Prepared a total ${nfts.length} NFTs`);
+  console.log('Time:', (t3 - t2) / 1000);
+  console.log('TOTAL time:', (t3 - t1) / 1000);
 
-  console.log('Time to find NFTs:', (t2 - t1) / 1000);
-  console.log('Time to fetch Metadata:', (t3 - t2) / 1000);
-
-  const validNFTs = filterOutIncompleteNFTs(NFTs);
-
+  const validNFTs = filterOutIncompleteNFTs(nfts);
   let finalNFts = validNFTs;
 
-  // creators only
-  if (creators && creators.length > 0 && creators[0] !== null) {
+  // process rarity - for creators / updateAuth only
+  if (creator || updateAuthority) {
     try {
       finalNFts = processRarity(validNFTs);
     } catch (e) {

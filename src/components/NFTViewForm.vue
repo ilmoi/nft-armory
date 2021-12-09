@@ -26,8 +26,8 @@
       </div>
     </div>
 
-    <NotifyInfo v-if="chosenMethod === 'creator'" class="mt-5">
-      💎 When searching by Creator you get automatic Rarity Scores / Ranking / Categories! 💎
+    <NotifyInfo v-if="chosenMethod === 'creator' || chosenMethod === 'authority'" class="mt-5">
+      💎 When searching by Creator / Authority you get automatic Rarity Ranking! 💎
     </NotifyInfo>
 
     <form @submit.prevent="emitSubmitForm" :class="chosenMethod === 'creator' ? 'mt-5' : 'mt-10'">
@@ -174,7 +174,7 @@ export default defineComponent({
       clearError();
       const params = {
         owner: byAddress.value || byWallet.value ? tryConvertToPk(owner.value) : undefined,
-        creators: byCreator.value ? [tryConvertToPk(creator.value)] : undefined,
+        creator: byCreator.value ? tryConvertToPk(creator.value) : undefined,
         updateAuthority: byAuthority.value ? tryConvertToPk(authority.value) : undefined,
         mint: byMint.value ? tryConvertToPk(mint.value) : undefined,
       } as INFTParams;
