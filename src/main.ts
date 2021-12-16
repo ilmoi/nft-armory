@@ -4,7 +4,7 @@ import router from './router';
 import './index.css';
 import VueGtag from 'vue-gtag';
 
-if (process.env.VUE_APP_MAINNET_URL!.includes('genesysgo')) {
+if (process.env.VUE_APP_MAINNET_URL && process.env.VUE_APP_MAINNET_URL!.includes('genesysgo')) {
   console.log('powered by gg');
 }
 
