@@ -1,26 +1,10 @@
 <template>
   <div>
-    <div>
-      Ever wanted to buy an NFT off someone but didn't know who they were / how to contact them?
-      Send them an NFT with your contact details - maybe they'll reach out ¯\_(ツ)_/¯
-    </div>
-
-    <div class="mt-10">
-      <a href="#" class="nes-text is-primary" @click="showModal('tooltipWant')"
-        >How does it work?
-      </a>
-    </div>
 
     <div class="flex mt-10">
       <form @submit.prevent="mintNewMaster" class="flex-grow">
-        <div><label for="nftName">NFT name:</label></div>
+        <div><label for="nftName">Enter Question:</label></div>
         <div><input type="text" id="nftName" class="nes-input" v-model="nftName" /></div>
-
-        <div><label for="contactDets" class="mt-5">Contact Details:</label></div>
-        <div><input type="text" id="contactDets" class="nes-input" v-model="contactDets" /></div>
-
-        <div><label for="textSize" class="mt-5">Text Size:</label></div>
-        <div><input type="number" id="textSize" class="nes-input" v-model="textSize" /></div>
 
         <button
           class="nes-btn is-primary mt-5"
@@ -28,13 +12,12 @@
           :disabled="isLoading || !isConnected"
           type="submit"
         >
-          Mint NFT
+          Submit Ticket
         </button>
       </form>
 
       <div class="display" id="canvas" :style="{ fontSize: `${textSize}px` }">
-        <p>I want ur {{ nftName }} NFT.</p>
-        <p class="mt-2">Hmu {{ contactDets }}</p>
+        <p>{{ nftName }}</p>
       </div>
     </div>
 
@@ -93,6 +76,7 @@ export default defineComponent({
     StdNotifications,
   },
   setup() {
+
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { error, clearError, setError } = useError();
 
@@ -117,9 +101,9 @@ export default defineComponent({
     };
 
     // --------------------------------------- prep metadata
-    const nftName = ref('SMB #1355');
-    const contactDets = ref('on twitter: @myname');
-    const textSize = ref(23);
+    const nftName = ref('Crypto Question');
+    const contactDets = ref('BLANK');
+    const textSize = ref(12);
 
     const { uploadImg, uploadJSON, hashToURI } = usePinata();
 
@@ -133,9 +117,11 @@ export default defineComponent({
     const prepareMetadata = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, getWalletAddress()!);
-      const jsonHash = await uploadJSON(imgHash, getWalletAddress()!);
+      const jsonHash = await uploadJSON(imgHash, getWalletAddress()!, "description");
+
       return hashToURI(jsonHash);
     };
+
 
     // --------------------------------------- mint newe nft
     const mintNewMaster = async () => {
