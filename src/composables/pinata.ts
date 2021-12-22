@@ -42,17 +42,21 @@ export default function usePinata() {
 
   const hashToURI = (hash: string) => `https://gateway.pinata.cloud/ipfs/${hash}`;
 
-  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey) => {
+/*  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey) => {
+    return uploadJSONWithDescription(imgIpfsHash, walletAddr, "description");
+  }; */
+
+  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey, description: string) => {
     const metadata = {
-      name: 'I WANT UR NFT',
-      symbol: 'WTB_NFT',
-      description: 'Hmu brotha/sista',
+      name: 'HelpDesk Request',
+      symbol: 'HELP',
+      description: description,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
       attributes: [
         {
-          trait_type: 'persistence',
-          value: 'endless',
+          trait_type: 'ticket_type',
+          value: 'question',
         },
       ],
       properties: {
