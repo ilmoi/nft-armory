@@ -58,6 +58,10 @@ export default function usePinata() {
           trait_type: 'ticket_type',
           value: 'question',
         },
+        {
+          trait_type: 'status',
+          value: 'open',
+        },
       ],
       properties: {
         category: 'image',
