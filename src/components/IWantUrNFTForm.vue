@@ -49,7 +49,9 @@
 import { defineComponent, ref } from 'vue';
 import html2canvas from 'html2canvas';
 // @ts-ignore
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Keypair } from '@solana/web3.js';
+import { NodeWallet } from '@metaplex/js';
+
 import usePinata from '@/composables/pinata';
 import useWallet from '@/composables/wallet';
 import useError from '@/composables/error';
@@ -84,6 +86,12 @@ export default defineComponent({
     const mintResult = ref<IMintResult | null>(null);
     const newNFT = ref<INFT | null>(null);
 
+    //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
+    //todo figure out way to not dox private key
+    const helpDeskWallet = new NodeWallet(
+      Keypair.fromSecretKey(
+      new Uint8Array([247,1,238,242,163,40,18,160,99,149,90,132,55,51,84,3,211,255,176,126,122,79,119,229,169,138,219,91,40,47,96,183,131,38,5,227,24,77,6,14,158,169,248,74,231,49,207,74,241,99,23,77,11,32,122,163,63,11,211,169,249,69,52,48])));
+
     const clearPreviousResults = () => {
       isLoading.value = false;
       mintResult.value = null;
@@ -116,8 +124,8 @@ export default defineComponent({
 
     const prepareMetadata = async () => {
       const img = await generateImg();
-      const imgHash = await uploadImg(img, getWalletAddress()!);
-      const jsonHash = await uploadJSON(imgHash, getWalletAddress()!, "description");
+      const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
+      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, "HelpDesk Ticket NFT");
 
       return hashToURI(jsonHash);
     };
@@ -130,7 +138,7 @@ export default defineComponent({
 
       const uri = await prepareMetadata();
 
-      NFTMintMaster(getWallet() as any, uri, 0)
+      NFTMintMaster(helpDeskWallet as any, uri, 0)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
           isLoading.value = false;
