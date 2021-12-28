@@ -12,8 +12,8 @@ export const DEFAULTS = {
   CLUSTER: 'mainnet',
 
   OWNER: 'AEahaRpDFzg74t7NtWoruabo2fPJQjKFM9kQJNjH7obK',
-  CREATOR: 'BDYYJ1VzPDXwJoARMZNnN4MX4cZNjVvc5DfFaKzgrruz',
-  AUTHORITY: 'Edy3xedybSQYAE6eboza5YEcoJan91nfSd3jUppHz7u1',
+  CREATOR: '2WJwPd4EG7wZmx2BjAASoMh1pfRYLLb1CHj4oMooPKb5',
+  AUTHORITY: "2WJwPd4EG7wZmx2BjAASoMh1pfRYLLb1CHj4oMooPKb5",
   MINT: 'A3wpue1mWdnfiU7VVLQeMAuVR4LcVrEsTtxysX1hPKLZ',
 
   URI: 'https://gateway.pinata.cloud/ipfs/Qmawjub6LNBQUZ9KnVLMobf3bUiKwjusKpb52p86k5SAZG',

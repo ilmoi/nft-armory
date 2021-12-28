@@ -47,6 +47,14 @@
 
         <!--the rest-->
         <p>
+          Ticket Type:
+          <span class="text-black">{{ n.metadataExternal.attributes[0].value ? n.metadataExternal.attributes[0].value : NOT_FOUND }}</span>
+        </p>
+        <p>
+          Ticket Status:
+          <span class="text-black">{{ n.metadataExternal.attributes.length >= 2 ? n.metadataExternal.attributes[1].value : NOT_FOUND }}</span>
+        </p>
+        <p>
           About:
           <span class="text-black">{{ n.metadataExternal.description }}</span>
         </p>

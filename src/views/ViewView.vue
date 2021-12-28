@@ -2,7 +2,7 @@
   <div>
     <!--all the config stuff-->
     <ConfigPane />
-    <NFTViewForm :is-loading="isLoading" @submit-form="handleSubmitForm">
+    <NFTViewForm :is-loading="isLoading" @submit-form="handleSubmitForm" @submit-list="handleSubmitForm">
       <div v-if="NFTs.length" class="flex">
         <button type="button" class="nes-btn mr-2" @click="copyShareLink">
           {{ copyText }}
