@@ -33,6 +33,8 @@ export default function usePinata() {
       headers: {
         // @ts-ignore
         'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
         pinata_api_key: apiKey,
         pinata_secret_api_key: apiSecret,
       },
@@ -42,9 +44,9 @@ export default function usePinata() {
 
   const hashToURI = (hash: string) => `https://gateway.pinata.cloud/ipfs/${hash}`;
 
-/*  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey) => {
-    return uploadJSONWithDescription(imgIpfsHash, walletAddr, "description");
-  }; */
+  /*  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey) => {
+      return uploadJSONWithDescription(imgIpfsHash, walletAddr, "description");
+    }; */
 
   const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey, description: string) => {
     const metadata = {

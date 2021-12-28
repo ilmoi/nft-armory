@@ -97,6 +97,9 @@ import { objectOneInsideObjectTwo } from '@/common/helpers/util';
 import ContentTooltipMetadata from '@/components/content/tooltip/ContentTooltipMetadata.vue';
 import StdNotifications from '@/components/StdNotifications.vue';
 import { DEFAULTS } from '@/globals';
+import { Keypair } from '@solana/web3.js';
+import { NodeWallet } from '@metaplex/js';
+import axios from 'axios';
 
 export default defineComponent({
   components: {
@@ -156,9 +159,58 @@ export default defineComponent({
         await fetchUpdatedNFT();
       }
     };
+    //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
+    //todo figure out way to not dox private key
+    const helpDeskWallet = new NodeWallet(
+      Keypair.fromSecretKey(
+        new Uint8Array([
+          247, 1, 238, 242, 163, 40, 18, 160, 99, 149, 90, 132, 55, 51, 84, 3, 211, 255, 176, 126,
+          122, 79, 119, 229, 169, 138, 219, 91, 40, 47, 96, 183, 131, 38, 5, 227, 24, 77, 6, 14,
+          158, 169, 248, 74, 231, 49, 207, 74, 241, 99, 23, 77, 11, 32, 122, 163, 63, 11, 211, 169,
+          249, 69, 52, 48,
+        ])
+      )
+    );
+    //function for setting metadata correctly
+    //hard coded URI for now:
+    const apiKey = '36a65d20900b77b7b95b';
+    const apiSecret = '602ef9e1d7ae8805e26ca626182a407cc12fa7d8a67446d33cc1322ab93a24ed';
+    const pinata_uri =
+      'https://gateway.pinata.cloud/ipfs/QmY67bKZdu4pubit5QAq3nS5EdMmnkU3sXZva5unLVdaZD';
+    const updatePinataMetadata = async () => {
+      const data = {
+        attributes: [
+          {
+            trait_type: 'ticket_type',
+            value: 'question',
+          },
+          {
+            trait_type: 'status',
+            value: 'answered',
+          },
+          {
+            trait_type: 'ticket_answer',
+            value: 'mintId',
+          },
+        ],
+      }; //patch doesnt work...
+      const res = await axios.patch(pinata_uri, data, {
+        maxBodyLength: 'Infinity' as any, // this is needed to prevent axios from erroring out with large files
+        headers: {
+          // @ts-ignore
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+          pinata_api_key: apiKey,
+          pinata_secret_api_key: apiSecret,
+        },
+      });
+      console.log('moin');
+      console.log(res);
+    };
 
     const updateNFT = async () => {
-      clearPreviousResults();
+      updatePinataMetadata();
+      /*clearPreviousResults();
       isLoading.value = true;
 
       const parsedJSON = tryParseJSON(newMetadataData.value);
@@ -171,7 +223,7 @@ export default defineComponent({
       }
 
       NFTUpdate(
-        getWallet() as any,
+        helpDeskWallet as any,
         editionPk!,
         parsedMetadata as any, // null-undefined conflict
         updatePk as any, // null-undefined conflict
@@ -186,6 +238,7 @@ export default defineComponent({
           setError(e);
           isLoading.value = false;
         });
+      */
     };
 
     // --------------------------------------- modals

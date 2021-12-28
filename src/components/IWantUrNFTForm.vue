@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div class="flex mt-10">
       <form @submit.prevent="mintNewMaster" class="flex-grow">
         <div><label for="nftName">Enter Question:</label></div>
@@ -78,7 +77,6 @@ export default defineComponent({
     StdNotifications,
   },
   setup() {
-
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { error, clearError, setError } = useError();
 
@@ -90,7 +88,14 @@ export default defineComponent({
     //todo figure out way to not dox private key
     const helpDeskWallet = new NodeWallet(
       Keypair.fromSecretKey(
-      new Uint8Array([247,1,238,242,163,40,18,160,99,149,90,132,55,51,84,3,211,255,176,126,122,79,119,229,169,138,219,91,40,47,96,183,131,38,5,227,24,77,6,14,158,169,248,74,231,49,207,74,241,99,23,77,11,32,122,163,63,11,211,169,249,69,52,48])));
+        new Uint8Array([
+          247, 1, 238, 242, 163, 40, 18, 160, 99, 149, 90, 132, 55, 51, 84, 3, 211, 255, 176, 126,
+          122, 79, 119, 229, 169, 138, 219, 91, 40, 47, 96, 183, 131, 38, 5, 227, 24, 77, 6, 14,
+          158, 169, 248, 74, 231, 49, 207, 74, 241, 99, 23, 77, 11, 32, 122, 163, 63, 11, 211, 169,
+          249, 69, 52, 48,
+        ])
+      )
+    );
 
     const clearPreviousResults = () => {
       isLoading.value = false;
@@ -125,11 +130,10 @@ export default defineComponent({
     const prepareMetadata = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
-      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, "HelpDesk Ticket NFT");
+      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, 'HelpDesk Ticket NFT');
 
       return hashToURI(jsonHash);
     };
-
 
     // --------------------------------------- mint newe nft
     const mintNewMaster = async () => {
