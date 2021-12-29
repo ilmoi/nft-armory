@@ -9,7 +9,7 @@ export const ERR_NO_NFTS = new Error('No NFTs Found:( Are you on the right netwo
 // ---------------------------------------  defaults
 
 export const DEFAULTS = {
-  CLUSTER: 'mainnet',
+  CLUSTER: 'devnet',
 
   OWNER: 'AEahaRpDFzg74t7NtWoruabo2fPJQjKFM9kQJNjH7obK',
   CREATOR: '2WJwPd4EG7wZmx2BjAASoMh1pfRYLLb1CHj4oMooPKb5',
