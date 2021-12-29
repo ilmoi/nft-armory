@@ -2,7 +2,7 @@
   <div>
     <div></div>
     <div></div>
-    <p class="title">List of NFTs by Platform Authority:</p>
+    <p class="title"> Open Questions</p>
 
     <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }}</NotifyError>
 

@@ -25,8 +25,7 @@
     <LoadingBar v-if="isLoading" :progress="progress" :text="text" class="my-5" />
     <NotifyError v-else-if="isError" class="mt-5">{{ text }}</NotifyError>
     <div v-else>
-      <title>Open Questions</title>
-      <NFTViewCard v-for="n in limitNFTs(NFTs)" :key="n.mint" :n="n">
+      <NFTViewCard v-for="n in NFTs" :key="n.mint" :n="n">
       </NFTViewCard>
     </div>
 
@@ -83,25 +82,6 @@ export default defineComponent({
     InfiniteLoading,
   },
 
-   methods:{
-     // temp experiment to limit NFTs to open ones
-     // todo: clean up function name & experiment with different 
-     // view plus total NFT count -> logic should ideally be moved
-     // for fetching NFTs + fixing rank 
-     limitNFTs (arr: Array<INFT>) {
-       let arr_keep: Array<INFT> = []
-       for (var n of arr){
-          if (n.metadataExternal.attributes.length >= 2){
-              if (n.metadataExternal.attributes[1].value == 'open'){
-                arr_keep.push(n)
-              }
-          }
-       }
-
-       return arr_keep
-  }
-  
-   },
   setup() {
     const {
       progress,
@@ -112,6 +92,24 @@ export default defineComponent({
       updateLoadingStdErr,
       updateLoadingStdWin,
     } = useLoading();
+     // temp experiment to limit NFTs to open ones
+     // todo: clean up function name & experiment with different 
+     // view plus total NFT count -> logic should ideally be moved
+     // for fetching NFTs + fixing rank 
+     function filterInOpenStatusNFT (arr: Array<INFT>) {
+       // takes in an array of all NFTs and filter to just "open" ones
+       let arr_keep: Array<INFT> = []
+       for (var n of arr){
+          if (n.metadataExternal.attributes.length >= 2){
+              if (n.metadataExternal.attributes[1].value == 'open'){
+                arr_keep.push(n)
+              }
+          }
+       }
+       return arr_keep
+    }
+  
+    
     const displayedNFTs = ref<INFT[]>([]); // this is what's shown on FE
     const allFetchedNFTs = ref<INFT[]>([]); // this is everything fetched in mem
     const fetchParams = ref<INFTParams | null>(null);
@@ -142,7 +140,7 @@ export default defineComponent({
       displayedNFTs.value = [];
       allFetchedNFTs.value = [];
 
-      NFTGet(params)
+      NFTGet(params, filterInOpenStatusNFT) 
         .then((fetchedNFTs) => {
           if (fetchedNFTs.length) {
             allFetchedNFTs.value = fetchedNFTs;
