@@ -46,6 +46,7 @@
         </div>
 
         <!--the rest-->
+        <!--Note: Ticket Type/Status set up with assumption they will be always fixed objects as 1st & 2nd indexes of attributes array -->
         <p>
           Ticket Type:
           <span class="text-black">{{ n.metadataExternal.attributes[0].value ? n.metadataExternal.attributes[0].value : NOT_FOUND }}</span>

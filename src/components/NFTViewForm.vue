@@ -30,7 +30,6 @@ import useError from '@/composables/error';
 import NotifyError from '@/components/notifications/NotifyError.vue';
 import { DEFAULTS } from '@/globals';
 import NotifyInfo from '@/components/notifications/NotifyInfo.vue';
-import useCluster from '@/composables/cluster';
 
 export default defineComponent({
   components: { NotifyInfo, NotifyError, ContentTooltipCreator, ModalWindow, QuestionMark },
@@ -66,6 +65,7 @@ export default defineComponent({
     const missingWallet = computed(() => getWalletAddress() === null);
     const missingWalletNotice = 'Please connect your wallet above.';
 
+    // Not used anymore; previously used with emitSubmitForm()
     const prepareParams = (): INFTParams | null => {
       clearError();
       const params = {
@@ -80,6 +80,7 @@ export default defineComponent({
       return params;
     };
 
+    // View page always shows list of NFTs by updateAuthority
     const emitSubmitList = (authority_value: string) => {
       const params = {
            updateAuthority : authority_value ? tryConvertToPk(authority_value) : undefined
@@ -101,8 +102,8 @@ export default defineComponent({
         mint: goMint,
       } = route.params;
 
-      // tried different lifecycle hooks; see if way to cache 
-      // in order to avoid loading bar? look into this
+      // TODO: tried different lifecycle hooks; see if way to cache
+      // TODO: consider standardizing naming with vue file name; previously submit form
        emitSubmitList(DEFAULTS.AUTHORITY);
     });
 

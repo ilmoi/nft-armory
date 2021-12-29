@@ -25,8 +25,7 @@
     <LoadingBar v-if="isLoading" :progress="progress" :text="text" class="my-5" />
     <NotifyError v-else-if="isError" class="mt-5">{{ text }}</NotifyError>
     <div v-else>
-      <NFTViewCard v-for="n in NFTs" :key="n.mint" :n="n">
-      </NFTViewCard>
+      <NFTViewCard v-for="n in NFTs" :key="n.mint" :n="n"></NFTViewCard>
     </div>
 
     <!--modals-->
@@ -92,12 +91,13 @@ export default defineComponent({
       updateLoadingStdErr,
       updateLoadingStdWin,
     } = useLoading();
-     // temp experiment to limit NFTs to open ones
-     // todo: clean up function name & experiment with different 
-     // view plus total NFT count -> logic should ideally be moved
-     // for fetching NFTs + fixing rank 
+
+
+     // TODO: generalize logic more + page to allow multiple calls/groups
+     // based on different values ('open', 'closed', etc.)
      function filterInOpenStatusNFT (arr: Array<INFT>) {
-       // takes in an array of all NFTs and filter to just "open" ones
+       // Takes in an array of NFTs & filters to just "open" ones
+       // Assumes metatadataExternal attributes are fixed where index 1 {} is trait-type status
        let arr_keep: Array<INFT> = []
        for (var n of arr){
           if (n.metadataExternal.attributes.length >= 2){
