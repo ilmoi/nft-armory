@@ -33,8 +33,6 @@ export default function usePinata() {
       headers: {
         // @ts-ignore
         'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
         pinata_api_key: apiKey,
         pinata_secret_api_key: apiSecret,
       },
