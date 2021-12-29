@@ -5,6 +5,7 @@ import ViewUpdate from '@/views/ViewUpdate.vue';
 import ViewMisc from '@/views/ViewMisc.vue';
 import ViewHome from '@/views/ViewHome.vue';
 import ViewIWantUrNFT from '@/views/ViewIWantUrNFT.vue';
+import ViewTicketDetail from '@/views/ViewTicketDetail.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -56,6 +57,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/urnft',
     name: 'I Want Ur NFT',
     component: ViewIWantUrNFT,
+  },
+  {
+    path: '/ticketdetail/:ticketID',
+    name: 'Ticket Details',
+    component: ViewTicketDetail,
   },
 ];
 

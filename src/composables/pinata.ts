@@ -49,7 +49,7 @@ export default function usePinata() {
   const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey, description: string) => {
     const metadata = {
       name: 'HelpDesk Request',
-      symbol: 'HELP',
+      symbol: 'HELPv1',
       description: description,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),

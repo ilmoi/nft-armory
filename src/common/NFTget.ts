@@ -222,7 +222,7 @@ function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
     (n) =>
       n.mint && // guaranteed
       n.metadataOnchain && // guaranteed
-      n.metadataExternal // requirement, otherwise no picture
+      n.metadataExternal      // requirement, otherwise no picture
   );
 }
 
@@ -282,6 +282,7 @@ export async function NFTGet(
     finalNFts = filterNFTFunc(validNFTs)
   }
   // process rarity - for creators / updateAuth only
+  /* 
   if (creator || updateAuthority) {
     try {
       finalNFts = processRarity(finalNFts);
@@ -289,6 +290,7 @@ export async function NFTGet(
       console.log('Failed to calc rarity with error', e);
     }
   }
+  */
 
   return finalNFts;
 }
