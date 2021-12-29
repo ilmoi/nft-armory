@@ -6,8 +6,8 @@ import { PublicKey } from '@solana/web3.js';
 // todo yes this is INTENTIONALLY LEAKED
 //  this is a burner Pinata acc with 1gb free storage I'm using for storing "I want ur NFTs"
 //  I'm hoping it won't be abused - if it does, just put in your own and run locally or let me know (twitter @_ilmoi)
-const apiKey = '36a65d20900b77b7b95b';
-const apiSecret = '602ef9e1d7ae8805e26ca626182a407cc12fa7d8a67446d33cc1322ab93a24ed';
+const apiKey = '7ed5a3f0849f19876a1e';
+const apiSecret = '3d79c1f0f2293450b9c949cacc293c22223eeb8a33b24124e2d750c86627cbc9';
 
 export default function usePinata() {
   const pinata = pinataSDK(apiKey, apiSecret);
