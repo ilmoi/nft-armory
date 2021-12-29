@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  nft-armory:
+    image: gyengus/nft-armory
+    container_name: nft-armory
+    restart: always
+    environment:
+      - PORT=80
+    expose:
+      - 80
+    ports:
+    - "8080:80"
