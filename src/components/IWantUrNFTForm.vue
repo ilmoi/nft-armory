@@ -135,11 +135,11 @@ export default defineComponent({
     };
 
     // --------------------------------------- prep metadata
-    const nftName = ref('Crypto Question');
+    const nftName = ref('Start Typing..');
     const contactDets = ref('BLANK');
     const textSize = ref(12);
 
-    const { uploadImg, uploadJSON, hashToURI } = usePinata();
+    const { uploadImg, uploadJSON, hashToURI, uploadJSONForAnswer } = usePinata();
 
     const generateImg = async () => {
       const canvas = await html2canvas(document.getElementById('canvas')!);
@@ -152,6 +152,15 @@ export default defineComponent({
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
       const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, 'HelpDesk Ticket NFT');
+
+      return hashToURI(jsonHash);
+    };
+
+
+    const prepareMetadataForAnswer = async () => {
+      const img = await generateImg();
+      const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
+      const jsonHash = await uploadJSONForAnswer(imgHash, helpDeskWallet.publicKey!, 'HelpDesk Ticket NFT', props.questionID!);
 
       return hashToURI(jsonHash);
     };
@@ -181,6 +190,22 @@ export default defineComponent({
       //@Karthik - TODO: need to plumb questionID (mintID of question NFT) 
       //to prepareMetadata() so that it will live in the metadata of the answer.
 
+      clearPreviousResults();
+      isLoading.value = true;
+
+      const answerUri = await prepareMetadataForAnswer();
+
+      NFTMintMaster(helpDeskWallet as any, answerUri, 0)
+        .then(async (result) => {
+          mintResult.value = result as IMintResult;
+          isLoading.value = false;
+          await fetchNewNFT();
+        })
+        .catch((e) => {
+          setError(e);
+          isLoading.value = false;
+        });
+
       //1. read question metadata from IPFS (this should work)
       const prevMetadata = await fetchJson.get(props.uri!);
 
@@ -209,6 +234,7 @@ export default defineComponent({
       textSize,
       // mint
       createTicket,
+      createAnswer,
       // modals
       isModalVisible,
       showModal,

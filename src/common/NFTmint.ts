@@ -25,7 +25,6 @@ export async function NFTMintMaster(wallet: Wallet, uri: string, maxSupply?: num
   });
 
   const strResult = stringifyPubkeysAndBNsInObject(result);
-  console.log('Minted a new master NFT:', strResult);
   
   //only transfer NFT to user if a wallet is connected
   //todo: move this into a separate function

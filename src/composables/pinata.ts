@@ -92,10 +92,58 @@ export default function usePinata() {
     return res.IpfsHash;
   };
 
+
+  const uploadJSONForAnswer = async (imgIpfsHash: string, walletAddr: PublicKey, description: string, questionID: string) => {
+    const metadata = {
+      name: 'HelpDesk Request',
+      symbol: 'HELPv1',
+      description: description,
+      seller_fee_basis_points: 0,
+      image: hashToURI(imgIpfsHash),
+      attributes: [
+        {
+          trait_type: 'ticket_type',
+          value: 'answer',
+        },
+        {
+          trait_type: 'question_id',
+          value: questionID,
+        },
+      ],
+      properties: {
+        category: 'image',
+        files: [
+          {
+            uri: hashToURI(imgIpfsHash),
+            type: 'image/png',
+          },
+        ],
+        creators: [
+          {
+            address: walletAddr.toBase58(),
+            share: 100,
+          },
+        ],
+      },
+    };
+
+    const options = {
+      pinataMetadata: {
+        name: `${walletAddr.toBase58()}.json`,
+      },
+      pinataOptions: {
+        cidVersion: 0,
+      },
+    };
+    const res = await pinata.pinJSONToIPFS(metadata, options as any);
+    return res.IpfsHash;
+  };
+
   return {
     uploadImg,
     uploadJSON,
     hashToURI,
+    uploadJSONForAnswer,
   };
 }
 
