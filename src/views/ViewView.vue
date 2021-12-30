@@ -2,7 +2,9 @@
   <div>
     <!--all the config stuff-->
     <ConfigPane />
-    <NFTViewForm :is-loading="isLoading" @submit-form="handleSubmitForm">
+    <p class="title"> Open Questions</p>
+    <NFTViewForm :is-loading="isLoading" @submit-list="handleSubmitForm" :class="{ 'is-disabled': isLoading }"
+            :disabled="isLoading">
       <div v-if="NFTs.length" class="flex">
         <button type="button" class="nes-btn mr-2" @click="copyShareLink">
           {{ copyText }}
@@ -79,6 +81,7 @@ export default defineComponent({
     ConfigPane,
     InfiniteLoading,
   },
+
   setup() {
     const {
       progress,
@@ -89,6 +92,16 @@ export default defineComponent({
       updateLoadingStdErr,
       updateLoadingStdWin,
     } = useLoading();
+
+
+     // TODO: generalize logic more + page to allow multiple calls/groups
+     // based on different values ('open', 'closed', etc.)
+     function filterForOpenTickets (tickets: Array<INFT>) {
+       // Takes in an array of NFTs & filters to just "open" ones
+       return tickets.filter(n => n.metadataExternal.attributes.some((tt: { trait_type: string, value: string; }) => tt.trait_type == 'status' && tt.value == 'open'))
+    }
+  
+    
     const displayedNFTs = ref<INFT[]>([]); // this is what's shown on FE
     const allFetchedNFTs = ref<INFT[]>([]); // this is everything fetched in mem
     const fetchParams = ref<INFTParams | null>(null);
@@ -119,7 +132,7 @@ export default defineComponent({
       displayedNFTs.value = [];
       allFetchedNFTs.value = [];
 
-      NFTGet(params)
+      NFTGet(params, filterForOpenTickets) 
         .then((fetchedNFTs) => {
           if (fetchedNFTs.length) {
             allFetchedNFTs.value = fetchedNFTs;

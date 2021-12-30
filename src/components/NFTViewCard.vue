@@ -47,6 +47,14 @@
 
         <!--the rest-->
         <p>
+          Ticket Type:
+            <span class="text-black">{{readTicketAttributeValue(n, "ticket_type")}}</span>
+        </p>
+        <p>
+          Ticket Status:
+            <span class="text-black">{{readTicketAttributeValue(n, "status")}}</span>
+        </p>
+        <p>
           About:
           <span class="text-black">{{ n.metadataExternal.description }}</span>
         </p>
@@ -101,6 +109,7 @@ import ContentTooltipJSON from '@/components/content/tooltip/ContentTooltipJSON.
 import QuestionMark from '@/components/QuestionMark.vue';
 import useCopy from '@/composables/copy';
 import ContentTooltipRarity from '@/components/content/tooltip/ContentTooltipRarity.vue';
+import { INFT} from '@/common/helpers/types';
 
 export default defineComponent({
   props: {
@@ -113,6 +122,15 @@ export default defineComponent({
     ModalWindow,
     VueJsonPretty,
   },
+
+  methods: {
+    readTicketAttributeValue (ticket: INFT, trait_type_item: string) {
+       // Takes in a ticket and returns a particular attribute trait type value
+       let attr = ticket.metadataExternal.attributes.find((tt: { trait_type: string, value: string; }) => tt.trait_type == trait_type_item)
+       return typeof attr != 'undefined' ? attr.value : "Attribute Not Set"
+    },
+  },
+
   setup() {
     const isMaster = (editionType: string) => editionType.toLowerCase().includes('master');
     const fullJSON = ref(false);

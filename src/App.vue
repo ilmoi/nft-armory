@@ -3,9 +3,10 @@
     <!--navbar + logo-->
     <TheNavBar />
     <div class="pt-10 px-10 flex justify-center align-middle">
-      <p class="text-4xl pt-3 px-1 text-black underline">NFT</p>
       <TheLogo />
-      <p class="text-4xl pt-3 px-2 text-black underline">ARMORY</p>
+      <p class="text-4xl pt-3 px-1"> 🤝</p>
+      <p class="text-4xl pt-3 px-1 text-black underline"> HelpDesk</p>
+      <p class="text-4xl pt-3 px-1"> 🤝</p>
     </div>
 
     <!--body-->
