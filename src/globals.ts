@@ -13,7 +13,7 @@ export const DEFAULTS = {
 
   OWNER: 'AEahaRpDFzg74t7NtWoruabo2fPJQjKFM9kQJNjH7obK',
   CREATOR: '9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb',
-  AUTHORITY: '2WJwPd4EG7wZmx2BjAASoMh1pfRYLLb1CHj4oMooPKb5',
+  AUTHORITY: '9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb',
   MINT: 'A3wpue1mWdnfiU7VVLQeMAuVR4LcVrEsTtxysX1hPKLZ',
 
   URI: 'https://gateway.pinata.cloud/ipfs/Qmawjub6LNBQUZ9KnVLMobf3bUiKwjusKpb52p86k5SAZG',

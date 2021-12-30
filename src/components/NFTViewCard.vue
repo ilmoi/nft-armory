@@ -127,10 +127,7 @@ export default defineComponent({
     readTicketAttributeValue (ticket: INFT, trait_type_item: string) {
        // Takes in a ticket and returns a particular attribute trait type value
        let attr = ticket.metadataExternal.attributes.find((tt: { trait_type: string, value: string; }) => tt.trait_type == trait_type_item)
-       if (attr){
-         return attr.value
-       }
-       return "Attribute Not Set"
+       return typeof attr != 'undefined' ? attr.value : "Attribute Not Set"
     },
   },
 
