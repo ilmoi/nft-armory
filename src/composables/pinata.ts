@@ -83,6 +83,10 @@ export default function usePinata() {
     const options = {
       pinataMetadata: {
         name: `${walletAddr.toBase58()}.json`,
+        keyvalues: {
+          'ticket_type': 'question',
+          'status': 'open'
+        }
       },
       pinataOptions: {
         cidVersion: 0,
@@ -129,7 +133,7 @@ export default function usePinata() {
 
     const options = {
       pinataMetadata: {
-        name: `${walletAddr.toBase58()}.json`,
+        name: `${walletAddr.toBase58()}.json`
       },
       pinataOptions: {
         cidVersion: 0,
@@ -139,11 +143,44 @@ export default function usePinata() {
     return res.IpfsHash;
   };
 
+
+  const searchForOpenTickets = async() => {
+    const metadataFilter = {
+      keyvalues: {
+        ticket_type: {
+              value: 'question',
+              op: 'eq'
+          },
+          status: {
+            value: 'open',
+            op: 'eq'
+        },
+      }
+  };
+  
+  const filters = {
+      status : 'pinned',
+      pageLimit: 25,
+      pageOffset: 0,
+      metadata: metadataFilter
+  };
+
+  pinata.pinList(filters).then((result) => {
+      //handle results here
+      console.log("search results from pinata: ", result);
+  }).catch((err) => {
+      //handle error here
+      console.log(err);
+  });
+
+  };
+
   return {
     uploadImg,
     uploadJSON,
     hashToURI,
     uploadJSONForAnswer,
+    searchForOpenTickets
   };
 }
 
