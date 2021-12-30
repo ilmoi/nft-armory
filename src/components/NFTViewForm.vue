@@ -1,116 +1,6 @@
 <template>
   <div>
-    <div class="nes-container with-title">
-      <p class="title">View NFTs by:</p>
-      <div class="text-gray-400 mt-2 flex justify-around">
-        <label>
-          <input type="radio" class="nes-radio" value="address" v-model="chosenMethod" />
-          <span>Address</span>
-        </label>
-        <label>
-          <input type="radio" class="nes-radio" value="wallet" v-model="chosenMethod" />
-          <span>Wallet</span>
-        </label>
-        <label>
-          <input type="radio" class="nes-radio" value="creator" v-model="chosenMethod" />
-          <span>Creator</span>
-        </label>
-        <label>
-          <input type="radio" class="nes-radio" value="authority" v-model="chosenMethod" />
-          <span>Authority</span>
-        </label>
-        <label>
-          <input type="radio" class="nes-radio" value="mint" v-model="chosenMethod" />
-          <span>Mint</span>
-        </label>
-      </div>
-    </div>
-
-    <NotifyInfo v-if="chosenMethod === 'creator' || chosenMethod === 'authority'" class="mt-5">
-      💎 When searching by Creator / Authority you get automatic Rarity Ranking! 💎
-    </NotifyInfo>
-
-    <form @submit.prevent="emitSubmitForm" :class="chosenMethod === 'creator' ? 'mt-5' : 'mt-10'">
-      <div v-if="byAddress" class="nes-field">
-        <div><label for="addr">Wallet Address:</label></div>
-        <input
-          type="text"
-          id="addr"
-          class="nes-input"
-          v-model="owner"
-          :placeholder="DEFAULTS.OWNER"
-        />
-      </div>
-      <div v-else-if="byWallet && !missingWallet" class="nes-field">
-        <div><label for="walletAddr">Your Wallet Address:</label></div>
-        <input
-          type="text"
-          id="walletAddr"
-          class="nes-input text-gray-400"
-          v-model="owner"
-          :placeholder="DEFAULTS.OWNER"
-          :disabled="true"
-        />
-      </div>
-      <div v-else-if="byWallet && missingWallet" class="nes-field">
-        <div><label for="missingWallet">Your Wallet Address:</label></div>
-        <input
-          type="text"
-          id="missingWallet"
-          class="nes-input nes-text is-error"
-          v-model="missingWalletNotice"
-          :disabled="true"
-        />
-      </div>
-      <div v-else-if="byCreator" class="nes-field">
-        <div class="flex">
-          <label for="creator"> Creator Address: </label>
-          <QuestionMark @click="showModal('tooltipCreator')" />
-        </div>
-        <input
-          type="text"
-          id="creator"
-          class="nes-input"
-          v-model="creator"
-          :placeholder="DEFAULTS.CREATOR"
-        />
-      </div>
-      <div v-else-if="byAuthority" class="nes-field">
-        <div><label for="authority">Update Authority Address:</label></div>
-        <input
-          type="text"
-          id="authority"
-          class="nes-input"
-          v-model="authority"
-          :placeholder="DEFAULTS.AUTHORITY"
-        />
-      </div>
-      <div v-else-if="byMint" class="nes-field">
-        <div><label for="mint">Mint Address:</label></div>
-        <input
-          type="text"
-          id="mint"
-          class="nes-input"
-          v-model="mint"
-          :placeholder="DEFAULTS.MINT"
-        />
-      </div>
-
-      <div class="flex justify-between mt-5">
-        <button
-          class="nes-btn is-primary"
-          :class="{ 'is-disabled': isLoading }"
-          :disabled="isLoading"
-          type="submit"
-        >
-          Load NFTs
-        </button>
-        <slot />
-      </div>
-    </form>
-
     <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }}</NotifyError>
-
     <ModalWindow
       v-if="isModalVisible('tooltipCreator')"
       title="What's a creator?"
@@ -141,7 +31,7 @@ export default defineComponent({
   props: {
     isLoading: Boolean,
   },
-  emits: ['submit-form'],
+  emits: ['submit-list'],
   setup(props, ctx) {
     const { error, clearError, tryConvertToPk } = useError();
 
@@ -170,6 +60,7 @@ export default defineComponent({
     const missingWallet = computed(() => getWalletAddress() === null);
     const missingWalletNotice = 'Please connect your wallet above.';
 
+    // Not used anymore; previously used with emitSubmitForm()
     const prepareParams = (): INFTParams | null => {
       clearError();
       const params = {
@@ -184,10 +75,13 @@ export default defineComponent({
       return params;
     };
 
-    const emitSubmitForm = () => {
-      const params = prepareParams();
-      if (params) ctx.emit('submit-form', params);
-    };
+    // View page always shows list of NFTs by updateAuthority
+    const emitSubmitList = (authority_value: string) => {
+      const params = {
+           updateAuthority : authority_value ? tryConvertToPk(authority_value) : undefined
+      }
+      ctx.emit('submit-list', params);
+    }
 
     // --------------------------------------- modal
     const { registerModal, isModalVisible, showModal, hideModal } = useModal();
@@ -203,23 +97,9 @@ export default defineComponent({
         mint: goMint,
       } = route.params;
 
-      if (goAddress) {
-        chosenMethod.value = 'address';
-        owner.value = goAddress as any as string;
-        emitSubmitForm();
-      } else if (goCreator) {
-        chosenMethod.value = 'creator';
-        creator.value = goCreator as any as string;
-        emitSubmitForm();
-      } else if (goAuthority) {
-        chosenMethod.value = 'authority';
-        authority.value = goAuthority as any as string;
-        emitSubmitForm();
-      } else if (goMint) {
-        chosenMethod.value = 'mint';
-        mint.value = goMint as any as string;
-        emitSubmitForm();
-      }
+      // TODO: tried different lifecycle hooks; see if way to cache
+      // TODO: consider standardizing naming with vue file name; previously submit form
+       emitSubmitList(DEFAULTS.AUTHORITY);
     });
 
     return {
@@ -241,7 +121,7 @@ export default defineComponent({
       missingWallet,
       missingWalletNotice,
       // event
-      emitSubmitForm,
+      emitSubmitList,
       // modal
       isModalVisible,
       showModal,
