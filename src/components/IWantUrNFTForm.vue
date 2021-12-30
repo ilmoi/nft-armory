@@ -186,10 +186,7 @@ export default defineComponent({
 
     const createAnswer = async () => {
 
-      //0. createAnswerNFT.
-      //@Karthik - TODO: need to plumb questionID (mintID of question NFT) 
-      //to prepareMetadata() so that it will live in the metadata of the answer.
-
+      //0. createAnswerNFT (DONE)
       clearPreviousResults();
       isLoading.value = true;
 
