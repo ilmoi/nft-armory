@@ -46,14 +46,13 @@
         </div>
 
         <!--the rest-->
-        <!--Note: Ticket Type/Status set up with assumption they will be always fixed objects as 1st & 2nd indexes of attributes array -->
         <p>
           Ticket Type:
-          <span class="text-black">{{ n.metadataExternal.attributes[0].value ? n.metadataExternal.attributes[0].value : NOT_FOUND }}</span>
+            <span class="text-black">{{readTicketAttributeValue(n, "ticket_type")}}</span>
         </p>
         <p>
           Ticket Status:
-          <span class="text-black">{{ n.metadataExternal.attributes.length >= 2 ? n.metadataExternal.attributes[1].value : NOT_FOUND }}</span>
+            <span class="text-black">{{readTicketAttributeValue(n, "status")}}</span>
         </p>
         <p>
           About:
@@ -110,6 +109,7 @@ import ContentTooltipJSON from '@/components/content/tooltip/ContentTooltipJSON.
 import QuestionMark from '@/components/QuestionMark.vue';
 import useCopy from '@/composables/copy';
 import ContentTooltipRarity from '@/components/content/tooltip/ContentTooltipRarity.vue';
+import { INFT} from '@/common/helpers/types';
 
 export default defineComponent({
   props: {
@@ -122,6 +122,18 @@ export default defineComponent({
     ModalWindow,
     VueJsonPretty,
   },
+
+  methods: {
+    readTicketAttributeValue (ticket: INFT, trait_type_item: string) {
+       // Takes in a ticket and returns a particular attribute trait type value
+       let attr = ticket.metadataExternal.attributes.find((tt: { trait_type: string, value: string; }) => tt.trait_type == trait_type_item)
+       if (attr){
+         return attr.value
+       }
+       return "Attribute Not Set"
+    },
+  },
+
   setup() {
     const isMaster = (editionType: string) => editionType.toLowerCase().includes('master');
     const fullJSON = ref(false);

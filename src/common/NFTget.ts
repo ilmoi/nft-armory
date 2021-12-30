@@ -230,7 +230,7 @@ function filterOutIncompleteNFTs(NFTs: INFT[]): INFT[] {
 
 export async function NFTGet(
   { owner, creator, mint, updateAuthority } = {} as INFTParams, 
-  filterNFTFunc?: Function // optional func: apply custom filter logic to all retrieved NFTs
+  mappedFilterTicketsFunc?: Function // optional func: apply custom filter logic to all retrieved NFTs
 ): Promise<INFT[]> {
   const t1 = performance.now();
 
@@ -277,9 +277,8 @@ export async function NFTGet(
   const validNFTs = filterOutIncompleteNFTs(nfts);
   let finalNFts = validNFTs;
 
-  if (filterNFTFunc){
-    // console.log("Applying custom filter function on validNFTs")
-    finalNFts = filterNFTFunc(validNFTs)
+  if (mappedFilterTicketsFunc){
+    finalNFts = mappedFilterTicketsFunc(validNFTs)
   }
   // process rarity - for creators / updateAuth only
   /* 

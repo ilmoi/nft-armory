@@ -1,11 +1,6 @@
 <template>
   <div>
-    <div></div>
-    <div></div>
-    <p class="title"> Open Questions</p>
-
     <NotifyError v-if="error" class="mt-5"> Uh oh something went wrong - {{ error }}</NotifyError>
-
     <ModalWindow
       v-if="isModalVisible('tooltipCreator')"
       title="What's a creator?"

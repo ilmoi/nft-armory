@@ -2,6 +2,7 @@
   <div>
     <!--all the config stuff-->
     <ConfigPane />
+    <p class="title"> Open Questions</p>
     <NFTViewForm :is-loading="isLoading" @submit-list="handleSubmitForm" :class="{ 'is-disabled': isLoading }"
             :disabled="isLoading">
       <div v-if="NFTs.length" class="flex">
@@ -95,18 +96,9 @@ export default defineComponent({
 
      // TODO: generalize logic more + page to allow multiple calls/groups
      // based on different values ('open', 'closed', etc.)
-     function filterInOpenStatusNFT (arr: Array<INFT>) {
+     function filterForOpenTickets (tickets: Array<INFT>) {
        // Takes in an array of NFTs & filters to just "open" ones
-       // Assumes metatadataExternal attributes are fixed where index 1 {} is trait-type status
-       let arr_keep: Array<INFT> = []
-       for (var n of arr){
-          if (n.metadataExternal.attributes.length >= 2){
-              if (n.metadataExternal.attributes[1].value == 'open'){
-                arr_keep.push(n)
-              }
-          }
-       }
-       return arr_keep
+       return tickets.filter(n => n.metadataExternal.attributes.some((tt: { trait_type: string, value: string; }) => tt.trait_type == 'status' && tt.value == 'open'))
     }
   
     
@@ -140,7 +132,7 @@ export default defineComponent({
       displayedNFTs.value = [];
       allFetchedNFTs.value = [];
 
-      NFTGet(params, filterInOpenStatusNFT) 
+      NFTGet(params, filterForOpenTickets) 
         .then((fetchedNFTs) => {
           if (fetchedNFTs.length) {
             allFetchedNFTs.value = fetchedNFTs;
