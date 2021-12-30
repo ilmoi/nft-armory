@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div class="flex mt-10">
-      <form @submit.prevent="mintNewMaster" class="flex-grow">
-        <div><label for="nftName">Enter Question:</label></div>
+      <div class="flex mt-10">
+      <form v-if="isQuestion" @submit.prevent="createTicket" class="flex-grow">
+        <div ><label for="nftName">Enter Question:</label></div>
+
         <div><input type="text" id="nftName" class="nes-input" v-model="nftName" /></div>
 
         <button
@@ -11,7 +12,21 @@
           :disabled="isLoading || !isConnected"
           type="submit"
         >
-          Submit Ticket
+          Create Ticket
+        </button>
+      </form>
+      <form v-else @submit.prevent="createAnswer" class="flex-grow">
+        <div ><label for="nftName">Enter Answer:</label></div>
+
+        <div><input type="text" id="nftName" class="nes-input" v-model="nftName" /></div>
+
+        <button
+          class="nes-btn is-primary mt-5"
+          :class="{ 'is-disabled': isLoading || !isConnected }"
+          :disabled="isLoading || !isConnected"
+          type="submit"
+        >
+          Respond to Ticket
         </button>
       </form>
 
@@ -65,6 +80,7 @@ import ContentTooltipIWantUrNFT from '@/components/content/tooltip/ContentToolti
 import useModal from '@/composables/modal';
 import { NFTMintMaster } from '@/common/NFTmint';
 import { NFTGet } from '@/common/NFTget';
+import { fetchJson } from 'fetch-json';
 
 export default defineComponent({
   components: {
@@ -76,7 +92,12 @@ export default defineComponent({
     NotifySuccess,
     StdNotifications,
   },
-  setup() {
+  props: {
+    isQuestion: String,
+    questionID: { type: String },
+    uri: { type: String },
+  },
+  setup(props) {
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { error, clearError, setError } = useError();
 
@@ -136,7 +157,7 @@ export default defineComponent({
     };
 
     // --------------------------------------- mint newe nft
-    const mintNewMaster = async () => {
+    const createTicket = async () => {
       clearPreviousResults();
       isLoading.value = true;
 
@@ -154,6 +175,25 @@ export default defineComponent({
         });
     };
 
+    const createAnswer = async () => {
+
+      //0. createAnswerNFT.
+      //@Karthik - TODO: need to plumb questionID (mintID of question NFT) 
+      //to prepareMetadata() so that it will live in the metadata of the answer.
+
+      //1. read question metadata from IPFS (this should work)
+      const prevMetadata = await fetchJson.get(props.uri!);
+
+      //2. todo: unpin 
+      //@Justin - for this, i would create an unpin function within pinata.ts 
+      //and then invoke it here (similar to how uploadJSON is done via usePinata())
+
+      //3. @Justin todo: uploadJSON
+
+      //4. @Justin todo: updateNFT
+
+    }
+
     // --------------------------------------- modals
     const { registerModal, isModalVisible, showModal, hideModal } = useModal();
     registerModal('tooltipWant');
@@ -168,7 +208,7 @@ export default defineComponent({
       contactDets,
       textSize,
       // mint
-      mintNewMaster,
+      createTicket,
       // modals
       isModalVisible,
       showModal,
