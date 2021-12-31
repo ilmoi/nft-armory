@@ -68,6 +68,7 @@ import QuestionMark from '@/components/QuestionMark.vue';
 import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipExport from '@/components/content/tooltip/ContentTooltipExport.vue';
 import useModal from '@/composables/modal';
+import usePinata from '@/composables/pinata';
 
 export default defineComponent({
   components: {
@@ -93,19 +94,24 @@ export default defineComponent({
       updateLoadingStdWin,
     } = useLoading();
 
+    const { uploadImg, uploadJSON, hashToURI, uploadJSONForAnswer, searchForOpenTickets } = usePinata();
+    searchForOpenTickets();
 
      // TODO: generalize logic more + page to allow multiple calls/groups
      // based on different values ('open', 'closed', etc.)
      function filterForOpenTickets (tickets: Array<INFT>) {
        // Takes in an array of NFTs & filters to just "open" ones
-       return tickets.filter(n => n.metadataExternal.attributes.some((tt: { trait_type: string, value: string; }) => tt.trait_type == 'status' && tt.value == 'open'))
-    }
+       //return tickets.filter(n => n.metadataExternal.attributes.some((tt: { trait_type: string, value: string; }) => tt.trait_type == 'status' && tt.value == 'open'))
+      return tickets;
+     }
   
     
     const displayedNFTs = ref<INFT[]>([]); // this is what's shown on FE
     const allFetchedNFTs = ref<INFT[]>([]); // this is everything fetched in mem
     const fetchParams = ref<INFTParams | null>(null);
     const NFTCount = computed(() => displayedNFTs.value.length + allFetchedNFTs.value.length);
+
+
 
     const getNextBatch = (size: number): INFT[] => {
       if (allFetchedNFTs.value.length === 0) {
