@@ -17,7 +17,7 @@
         :disabled="isLoading || !isConnected"
         type="submit"
       >
-        Mark as answered
+        Update NFT
       </button>
     </form>
 
