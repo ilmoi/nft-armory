@@ -64,14 +64,7 @@ import { objectOneInsideObjectTwo } from '@/common/helpers/util';
 import ContentTooltipMetadata from '@/components/content/tooltip/ContentTooltipMetadata.vue';
 import StdNotifications from '@/components/StdNotifications.vue';
 import { DEFAULTS } from '@/globals';
-import { Keypair } from '@solana/web3.js';
-import { NodeWallet } from '@metaplex/js';
-import axios from 'axios';
-import pinataSDK from '@pinata/sdk';
-import { fetchJson } from 'fetch-json';
-import usePinata from '@/composables/pinata';
 
-const { uploadImg, uploadJSON, hashToURI } = usePinata();
 export default defineComponent({
   components: {
     StdNotifications,
@@ -130,90 +123,24 @@ export default defineComponent({
         await fetchUpdatedNFT();
       }
     };
-    //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
-    //todo figure out way to not dox private key
-    const helpDeskWallet = new NodeWallet(
-      Keypair.fromSecretKey(
-        new Uint8Array([
-          247, 1, 238, 242, 163, 40, 18, 160, 99, 149, 90, 132, 55, 51, 84, 3, 211, 255, 176, 126,
-          122, 79, 119, 229, 169, 138, 219, 91, 40, 47, 96, 183, 131, 38, 5, 227, 24, 77, 6, 14,
-          158, 169, 248, 74, 231, 49, 207, 74, 241, 99, 23, 77, 11, 32, 122, 163, 63, 11, 211, 169,
-          249, 69, 52, 48,
-        ])
-      )
-    );
-    //function for setting metadata correctly
-    //hard coded URI for now:
-    const apiKey = '36a65d20900b77b7b95b';
-    const apiSecret = '602ef9e1d7ae8805e26ca626182a407cc12fa7d8a67446d33cc1322ab93a24ed';
-    const pinata = pinataSDK(apiKey, apiSecret);
-    const updateNFT = async () => {
-      const editionPk = tryConvertToPk('GzN8zQMe7qrympeyyzK7FhbBzpbxiPq6atsVYC8jLFb9'); //editionMint.value);
-      //1. Read NFT for editionPk
-      //@Karthik to add code
-      const nftmetadata = {
-        name: 'HelpDesk Request',
-        symbol: 'HELP',
-        uri: 'https://gateway.pinata.cloud/ipfs/QmY67bKZdu4pubit5QAq3nS5EdMmnkU3sXZva5unLVdaZD',
-        sellerFeeBasisPoints: 0,
-        creators: [
-          {
-            address: '9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb',
-            verified: 1,
-            share: 100,
-          },
-        ],
-      };
-      //2. Read IPFS
-      const url = nftmetadata.uri;
-      const prevMetadata = await fetchJson.get(url);
-      console.log(prevMetadata);
-      //3. unpin data
-      //currently doesnt work -> throws error "API KEY does not have required permissions for this endpoint"
-      console.log(nftmetadata.uri.split('/').at(-1));
-      pinata.unpin(nftmetadata.uri.split('/').at(-1) as string);
-      //4. upload new data - similiar to uploadJSON() in pinata.ts
-      const metadata = {
-        ...prevMetadata,
-        attributes: [
-          {
-            trait_type: 'ticket_type',
-            value: 'question',
-          },
-          {
-            trait_type: 'status',
-            value: 'answered',
-          },
-          {
-            trait_type: 'ticket_answer',
-            value: 'mintId',
-          },
-        ],
-      };
 
-      const options = {
-        pinataMetadata: {
-          name: `${helpDeskWallet.publicKey!.toBase58()}.json`,
-        },
-        pinataOptions: {
-          cidVersion: 0,
-        },
-      };
-      const res = await pinata.pinJSONToIPFS(metadata, options as any);
-      console.log('moin');
-      console.log(res);
-      //5. update NFT
+    const updateNFT = async () => {
+  
       clearPreviousResults();
       isLoading.value = true;
-      const newMetadata = { ...nftmetadata, uri: hashToURI(res.IpfsHash) };
-      console.log(res);
-      const parsedMetadata = tryParseMetadataData(newMetadata);
+
+      const parsedJSON = tryParseJSON(newMetadataData.value);
+      let parsedMetadata;
+      if (parsedJSON) parsedMetadata = tryParseMetadataData(parsedJSON);
+      const editionPk = tryConvertToPk(editionMint.value);
+      const updatePk = tryConvertToPk(newUpdateAuthority.value);
+
       if (error.value) {
         return;
       }
 
       NFTUpdate(
-        helpDeskWallet as any,
+        getWallet() as any,
         editionPk!,
         parsedMetadata as any // null-undefined conflict
       )
