@@ -58,6 +58,7 @@ export default defineComponent({
                  NFTGet({ mint: new PublicKey(ticketID) })
                 .then((fetchedNFT) => {
                     [ticket.value] = fetchedNFT;
+                    console.log("ticket: ", ticket);
                 });
             } catch (e) {
                 console.log("something went wrong when fetching the ticket", e);

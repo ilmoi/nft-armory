@@ -105,6 +105,9 @@ export default defineComponent({
     const mintResult = ref<IMintResult | null>(null);
     const newNFT = ref<INFT | null>(null);
 
+    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata } = usePinata();
+
+
     //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
     //todo figure out way to not dox private key
     const helpDeskWallet = new NodeWallet(
@@ -132,14 +135,49 @@ export default defineComponent({
       } catch (e) {
         await fetchNewNFT();
       }
+
+      //update IPFS metadata with mintId
+      const newMetadata = {
+        keyvalues: {
+          mintId: newNFT.value!.mint.toBase58(),
+        }
+      };
+
+      updatePinataMetadata(URIToHash(newNFT.value!.metadataOnchain.data.uri), newMetadata);
+    };
+
+    const fetchNewAnswer = async () => {
+      // this will keep failing, while the network updates, for a while so keep retrying
+      try {
+        [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
+      } catch (e) {
+        await fetchNewNFT();
+      }
+
+      //update IPFS metadata with mintId for answer
+      const newMetadata = {
+        keyvalues: {
+          mintId: newNFT.value!.mint.toBase58(),
+        }
+      };
+
+      updatePinataMetadata(URIToHash(newNFT.value!.metadataOnchain.data.uri), newMetadata);
+    
+      //update question NFT with answerMintID and update status to "answered"
+      const newMetadataForQuestion = {
+        keyvalues: {
+          answerMintId: newNFT.value!.mint.toBase58(),
+          status: 'answered',
+        }
+      };
+
+      updatePinataMetadata(URIToHash(props.uri!), newMetadataForQuestion);
     };
 
     // --------------------------------------- prep metadata
     const nftName = ref('Start Typing..');
     const contactDets = ref('BLANK');
     const textSize = ref(12);
-
-    const { uploadImg, uploadJSON, hashToURI, uploadJSONForAnswer } = usePinata();
 
     const generateImg = async () => {
       const canvas = await html2canvas(document.getElementById('canvas')!);
@@ -151,7 +189,7 @@ export default defineComponent({
     const prepareMetadata = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
-      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, 'HelpDesk Ticket NFT');
+      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, nftName.value!);
 
       return hashToURI(jsonHash);
     };
@@ -176,6 +214,7 @@ export default defineComponent({
         .then(async (result) => {
           mintResult.value = result as IMintResult;
           isLoading.value = false;
+          //FYI, fetchNewNFT updates metadata in IPFS with mintID of NFT
           await fetchNewNFT();
         })
         .catch((e) => {
@@ -185,8 +224,6 @@ export default defineComponent({
     };
 
     const createAnswer = async () => {
-
-      //0. createAnswerNFT (DONE)
       clearPreviousResults();
       isLoading.value = true;
 
@@ -196,23 +233,15 @@ export default defineComponent({
         .then(async (result) => {
           mintResult.value = result as IMintResult;
           isLoading.value = false;
-          await fetchNewNFT();
+          //FYI, fetchNewNFT updates 
+          //1. metadata in IPFS for answer with mintID of NFT
+          //2. metadata in IPFS for question with mintID of answer + update status
+          await fetchNewAnswer();
         })
         .catch((e) => {
           setError(e);
           isLoading.value = false;
         });
-
-      //1. read question metadata from IPFS (this should work)
-      const prevMetadata = await fetchJson.get(props.uri!);
-
-      //2. todo: unpin 
-      //@Justin - for this, i would create an unpin function within pinata.ts 
-      //and then invoke it here (similar to how uploadJSON is done via usePinata())
-
-      //3. @Justin todo: uploadJSON
-
-      //4. @Justin todo: updateNFT
 
     }
 

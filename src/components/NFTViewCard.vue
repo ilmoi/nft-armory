@@ -46,7 +46,8 @@
         </div>
 
         <!--the rest-->
-        <p>
+ <!--
+          <p>
           Ticket Type:
             <span class="text-black">{{readTicketAttributeValue(n, "ticket_type")}}</span>
         </p>
@@ -54,6 +55,7 @@
           Ticket Status:
             <span class="text-black">{{readTicketAttributeValue(n, "status")}}</span>
         </p>
+-->
         <p>
           About:
           <span class="text-black">{{ n.metadataExternal.description }}</span>

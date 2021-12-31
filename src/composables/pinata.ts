@@ -42,27 +42,19 @@ export default function usePinata() {
 
   const hashToURI = (hash: string) => `https://gateway.pinata.cloud/ipfs/${hash}`;
 
+  const URIToHash = (uri: string) => uri.substring(uri.lastIndexOf("/") + 1, uri.length);
+
   /*  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey) => {
       return uploadJSONWithDescription(imgIpfsHash, walletAddr, "description");
     }; */
 
-  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey, description: string) => {
+  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey, title: string) => {
     const metadata = {
-      name: 'HelpDesk Request',
+      name: 'HelpDesk Ticket',
       symbol: 'HELPv1',
-      description: description,
+      description: title,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
-      attributes: [
-        {
-          trait_type: 'ticket_type',
-          value: 'question',
-        },
-        {
-          trait_type: 'status',
-          value: 'open',
-        },
-      ],
       properties: {
         category: 'image',
         files: [
@@ -82,7 +74,7 @@ export default function usePinata() {
 
     const options = {
       pinataMetadata: {
-        name: `${walletAddr.toBase58()}.json`,
+        name: title,
         keyvalues: {
           'ticket_type': 'question',
           'status': 'open'
@@ -97,23 +89,13 @@ export default function usePinata() {
   };
 
 
-  const uploadJSONForAnswer = async (imgIpfsHash: string, walletAddr: PublicKey, description: string, questionID: string) => {
+  const uploadJSONForAnswer = async (imgIpfsHash: string, walletAddr: PublicKey, title: string, questionID: string) => {
     const metadata = {
-      name: 'HelpDesk Request',
+      name: 'HelpDesk Response',
       symbol: 'HELPv1',
-      description: description,
+      description: title,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
-      attributes: [
-        {
-          trait_type: 'ticket_type',
-          value: 'answer',
-        },
-        {
-          trait_type: 'question_id',
-          value: questionID,
-        },
-      ],
       properties: {
         category: 'image',
         files: [
@@ -133,7 +115,11 @@ export default function usePinata() {
 
     const options = {
       pinataMetadata: {
-        name: `${walletAddr.toBase58()}.json`
+        name: title,
+        keyvalues: {
+          'ticket_type': 'answer',
+          'questionMintId': questionID,
+        }
       },
       pinataOptions: {
         cidVersion: 0,
@@ -165,22 +151,36 @@ export default function usePinata() {
       metadata: metadataFilter
   };
 
+  //returns 25 latest questions
   pinata.pinList(filters).then((result) => {
       //handle results here
       console.log("search results from pinata: ", result);
-  }).catch((err) => {
+    }).catch((err) => {
       //handle error here
       console.log(err);
   });
 
   };
 
+  const updatePinataMetadata = async(ipfsHash: string, metaDataHash: {}) => {
+    
+    pinata.hashMetadata(ipfsHash, metaDataHash).then((result) => {
+      //handle results here
+        console.log(result);
+      }).catch((err) => {
+      //handle error here
+      console.log(err);
+    });
+  };
+
   return {
     uploadImg,
     uploadJSON,
     hashToURI,
+    URIToHash,
     uploadJSONForAnswer,
-    searchForOpenTickets
+    searchForOpenTickets,
+    updatePinataMetadata
   };
 }
 
