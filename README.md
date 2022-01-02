@@ -3,7 +3,7 @@
 
 You can access a live version at www.nftarmory.me.
 
-# What is it
+# What is itt
 ![armory](./misc/armory.png)
 
 NFT Armory was imagined as the developer's / artist's best friend for experimenting with Metaplex NFTs on Solana.

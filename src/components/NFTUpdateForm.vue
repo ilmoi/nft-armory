@@ -11,39 +11,6 @@
           :placeholder="DEFAULTS.MASTER_MINT"
         />
       </div>
-      <div class="nes-field mt-5">
-        <div>
-          <label for="newMetadataData">New Metadata as JSON (optional):</label>
-          <QuestionMark @click="showModal('tooltipMetadata')" />
-        </div>
-        <textarea
-          rows="5"
-          id="newMetadataData"
-          class="nes-input"
-          v-model="newMetadataData"
-          :placeholder="DEFAULTS.METADATA"
-        ></textarea>
-      </div>
-      <div class="nes-field mt-5">
-        <div><label for="newUpdateAuthority">New Update Authority (optional):</label></div>
-        <input
-          type="text"
-          id="newUpdateAuthority"
-          class="nes-input"
-          v-model="newUpdateAuthority"
-          :placeholder="DEFAULTS.UPDATE_AUTHORITY"
-        />
-      </div>
-      <div>
-        <label for="primarySaleHappened" class="mt-5">Primary Sale Happened? (optional):</label>
-        <QuestionMark external="https://docs.metaplex.com/nft-standard#token-metadata-program" />
-      </div>
-      <div class="nes-select">
-        <select required id="primarySaleHappened" v-model="primarySaleHappened">
-          <option :value="null">select</option>
-          <option :value="true">yes, it's over</option>
-        </select>
-      </div>
       <button
         class="nes-btn is-primary mt-5"
         :class="{ 'is-disabled': isLoading || !isConnected }"
@@ -158,6 +125,7 @@ export default defineComponent({
     };
 
     const updateNFT = async () => {
+  
       clearPreviousResults();
       isLoading.value = true;
 
@@ -166,6 +134,7 @@ export default defineComponent({
       if (parsedJSON) parsedMetadata = tryParseMetadataData(parsedJSON);
       const editionPk = tryConvertToPk(editionMint.value);
       const updatePk = tryConvertToPk(newUpdateAuthority.value);
+
       if (error.value) {
         return;
       }
@@ -173,9 +142,7 @@ export default defineComponent({
       NFTUpdate(
         getWallet() as any,
         editionPk!,
-        parsedMetadata as any, // null-undefined conflict
-        updatePk as any, // null-undefined conflict
-        primarySaleHappened.value as any // null-undefined conflict
+        parsedMetadata as any // null-undefined conflict
       )
         .then(async (result: string) => {
           txId.value = result;

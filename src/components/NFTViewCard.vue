@@ -46,7 +46,8 @@
         </div>
 
         <!--the rest-->
-        <p>
+ 
+          <p>
           Ticket Type:
             <span class="text-black">{{readTicketAttributeValue(n, "ticket_type")}}</span>
         </p>
@@ -54,6 +55,7 @@
           Ticket Status:
             <span class="text-black">{{readTicketAttributeValue(n, "status")}}</span>
         </p>
+
         <p>
           About:
           <span class="text-black">{{ n.metadataExternal.description }}</span>
@@ -126,7 +128,7 @@ export default defineComponent({
   methods: {
     readTicketAttributeValue (ticket: INFT, trait_type_item: string) {
        // Takes in a ticket and returns a particular attribute trait type value
-       let attr = ticket.metadataExternal.attributes.find((tt: { trait_type: string, value: string; }) => tt.trait_type == trait_type_item)
+       let attr = ticket.metadataExternal.hasOwnProperty("attributes") ? ticket.metadataExternal.attributes.find((tt: { trait_type: string, value: string; }) => tt.trait_type == trait_type_item) : undefined
        return typeof attr != 'undefined' ? attr.value : "Attribute Not Set"
     },
   },

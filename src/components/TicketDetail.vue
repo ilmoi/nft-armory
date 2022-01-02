@@ -2,6 +2,9 @@
     <div v-if="ticket" class="flex">
       <NFTViewCard :n="ticket" class="text-black" />
     </div>
+    <div v-if="isDataLoaded">
+      <IWantUrNFTForm :questionID="ticketID" :uri="ticket.metadataOnchain.data.uri"/>
+    </div>
 </template>
 
 
@@ -17,11 +20,20 @@ import { useRoute } from 'vue-router';
 import NFTViewCard from '@/components/NFTViewCard.vue';
 import { NFTGet } from '@/common/NFTget';
 import useCluster, { Cluster } from '@/composables/cluster';
+import IWantUrNFTForm from '@/components/IWantUrNFTForm.vue';
+
+const ticket = ref<INFT | null>(null);
+const ticketID = ref<string | null>(null);
 
 export default defineComponent({
   components: {
-    NFTViewCard, 
+    NFTViewCard, IWantUrNFTForm
   },
+  computed: {
+    isDataLoaded() {
+      return ticket.value;
+    }
+} ,
   setup() {
 
     //todo: temporary, but set to DEV for now
@@ -38,16 +50,16 @@ export default defineComponent({
 
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { error, clearError, setError } = useError();
-    const ticket = ref<INFT | null>(null);
-    const ticketID = ref<string | null>(null);
+
     
-    const fetchTicket = async (ticketID:string) => {
+    const fetchTicket =  (ticketID:string) => {
        if (ticketID != null) {
             try {
-                await NFTGet({ mint: new PublicKey(ticketID) })
+                 NFTGet({ mint: new PublicKey(ticketID) })
                 .then((fetchedNFT) => {
                     [ticket.value] = fetchedNFT;
-                });          
+                    console.log("ticket: ", ticket);
+                });
             } catch (e) {
                 console.log("something went wrong when fetching the ticket", e);
                 return null;    
@@ -66,11 +78,14 @@ export default defineComponent({
           ticketID.value = goTicketID as any as string;
           fetchTicket(ticketID.value);
       }
+
+      
     });
 
      return {
          isConnected,
         ticket: ticket,
+        ticketID: ticketID,
         };
   
   },

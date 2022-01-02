@@ -25,7 +25,6 @@ export async function NFTMintMaster(wallet: Wallet, uri: string, maxSupply?: num
   });
 
   const strResult = stringifyPubkeysAndBNsInObject(result);
-  console.log('Minted a new master NFT:', strResult);
   
   //only transfer NFT to user if a wallet is connected
   //todo: move this into a separate function
@@ -40,19 +39,20 @@ export async function NFTMintMaster(wallet: Wallet, uri: string, maxSupply?: num
       TOKEN_PROGRAM_ID,
       helpDeskWallet
     );
-
+    
+    try {
     // Create associated token accounts for my token if they don't exist yet
-    var fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
-      helpDeskWallet.publicKey
-    );
+      var fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+        helpDeskWallet.publicKey
+      );
 
-    var toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+      var toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
       getWalletAddress()!
-    );
+      );
 
-    // Add token transfer instructions to transaction 
-    var transaction = new Transaction()
-    .add(
+      // Add token transfer instructions to transaction 
+      var transaction = new Transaction()
+      .add(
       Token.createTransferInstruction(
         TOKEN_PROGRAM_ID,
         fromTokenAccount.address,
@@ -63,15 +63,17 @@ export async function NFTMintMaster(wallet: Wallet, uri: string, maxSupply?: num
         )
       );
 
-    // Sign transaction, broadcast, and confirm
+      // Sign transaction, broadcast, and confirm
       var signature = await sendAndConfirmTransaction(
       connection,
       transaction,
       [helpDeskWallet]
-    );
+      );
 
-    console.log("Successfully transferred newly created NFT to receipient wallet: ", getWalletAddress()?.toBase58());
-
+      console.log("Successfully transferred newly created NFT to receipient wallet: ", getWalletAddress()?.toBase58());
+    } catch(err) {
+      console.log("error transferring NFT back to user: ", err);
+    }
   }
 
   return strResult;

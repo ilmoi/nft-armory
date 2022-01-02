@@ -1,7 +1,7 @@
 <template>
   <div>
     <ConfigPane />
-    <IWantUrNFTForm />
+    <IWantUrNFTForm isQuestion="true" />
   </div>
 </template>
 

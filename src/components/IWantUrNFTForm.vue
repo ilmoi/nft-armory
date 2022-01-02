@@ -1,9 +1,9 @@
 <template>
   <div>
+      <div class="flex mt-10">
+      <form v-if="isQuestion" @submit.prevent="createTicket" class="flex-grow">
+        <div ><label for="nftName">Enter Question:</label></div>
 
-    <div class="flex mt-10">
-      <form @submit.prevent="mintNewMaster" class="flex-grow">
-        <div><label for="nftName">Enter Question:</label></div>
         <div><input type="text" id="nftName" class="nes-input" v-model="nftName" /></div>
 
         <button
@@ -12,7 +12,21 @@
           :disabled="isLoading || !isConnected"
           type="submit"
         >
-          Submit Ticket
+          Create Ticket
+        </button>
+      </form>
+      <form v-else @submit.prevent="createAnswer" class="flex-grow">
+        <div ><label for="nftName">Enter Answer:</label></div>
+
+        <div><input type="text" id="nftName" class="nes-input" v-model="nftName" /></div>
+
+        <button
+          class="nes-btn is-primary mt-5"
+          :class="{ 'is-disabled': isLoading || !isConnected }"
+          :disabled="isLoading || !isConnected"
+          type="submit"
+        >
+          Respond to Ticket
         </button>
       </form>
 
@@ -77,8 +91,12 @@ export default defineComponent({
     NotifySuccess,
     StdNotifications,
   },
-  setup() {
-
+  props: {
+    isQuestion: String,
+    questionID: { type: String },
+    uri: { type: String },
+  },
+  setup(props) {
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { error, clearError, setError } = useError();
 
@@ -86,11 +104,21 @@ export default defineComponent({
     const mintResult = ref<IMintResult | null>(null);
     const newNFT = ref<INFT | null>(null);
 
+    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata } = usePinata();
+
+
     //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
     //todo figure out way to not dox private key
     const helpDeskWallet = new NodeWallet(
       Keypair.fromSecretKey(
-      new Uint8Array([247,1,238,242,163,40,18,160,99,149,90,132,55,51,84,3,211,255,176,126,122,79,119,229,169,138,219,91,40,47,96,183,131,38,5,227,24,77,6,14,158,169,248,74,231,49,207,74,241,99,23,77,11,32,122,163,63,11,211,169,249,69,52,48])));
+        new Uint8Array([
+          247, 1, 238, 242, 163, 40, 18, 160, 99, 149, 90, 132, 55, 51, 84, 3, 211, 255, 176, 126,
+          122, 79, 119, 229, 169, 138, 219, 91, 40, 47, 96, 183, 131, 38, 5, 227, 24, 77, 6, 14,
+          158, 169, 248, 74, 231, 49, 207, 74, 241, 99, 23, 77, 11, 32, 122, 163, 63, 11, 211, 169,
+          249, 69, 52, 48,
+        ])
+      )
+    );
 
     const clearPreviousResults = () => {
       isLoading.value = false;
@@ -106,14 +134,49 @@ export default defineComponent({
       } catch (e) {
         await fetchNewNFT();
       }
+
+      //update IPFS metadata with mintId
+      const newMetadata = {
+        keyvalues: {
+          mintId: newNFT.value!.mint.toBase58(),
+        }
+      };
+
+      updatePinataMetadata(URIToHash(newNFT.value!.metadataOnchain.data.uri), newMetadata);
+    };
+
+    const fetchNewAnswer = async () => {
+      // this will keep failing, while the network updates, for a while so keep retrying
+      try {
+        [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
+      } catch (e) {
+        await fetchNewNFT();
+      }
+
+      //update IPFS metadata with mintId for answer
+      const newMetadata = {
+        keyvalues: {
+          mintId: newNFT.value!.mint.toBase58(),
+        }
+      };
+
+      updatePinataMetadata(URIToHash(newNFT.value!.metadataOnchain.data.uri), newMetadata);
+    
+      //update question NFT with answerMintID and update status to "answered"
+      const newMetadataForQuestion = {
+        keyvalues: {
+          answerMintId: newNFT.value!.mint.toBase58(),
+          status: 'answered',
+        }
+      };
+
+      updatePinataMetadata(URIToHash(props.uri!), newMetadataForQuestion);
     };
 
     // --------------------------------------- prep metadata
-    const nftName = ref('Crypto Question');
+    const nftName = ref('Start Typing..');
     const contactDets = ref('BLANK');
     const textSize = ref(12);
-
-    const { uploadImg, uploadJSON, hashToURI } = usePinata();
 
     const generateImg = async () => {
       const canvas = await html2canvas(document.getElementById('canvas')!);
@@ -125,14 +188,22 @@ export default defineComponent({
     const prepareMetadata = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
-      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, "HelpDesk Ticket NFT");
+      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, nftName.value!);
 
       return hashToURI(jsonHash);
     };
 
 
+    const prepareMetadataForAnswer = async () => {
+      const img = await generateImg();
+      const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
+      const jsonHash = await uploadJSONForAnswer(imgHash, helpDeskWallet.publicKey!, 'HelpDesk Ticket NFT', props.questionID!);
+
+      return hashToURI(jsonHash);
+    };
+
     // --------------------------------------- mint newe nft
-    const mintNewMaster = async () => {
+    const createTicket = async () => {
       clearPreviousResults();
       isLoading.value = true;
 
@@ -142,6 +213,7 @@ export default defineComponent({
         .then(async (result) => {
           mintResult.value = result as IMintResult;
           isLoading.value = false;
+          //FYI, fetchNewNFT updates metadata in IPFS with mintID of NFT
           await fetchNewNFT();
         })
         .catch((e) => {
@@ -149,6 +221,28 @@ export default defineComponent({
           isLoading.value = false;
         });
     };
+
+    const createAnswer = async () => {
+      clearPreviousResults();
+      isLoading.value = true;
+
+      const answerUri = await prepareMetadataForAnswer();
+
+      NFTMintMaster(helpDeskWallet as any, answerUri, 0)
+        .then(async (result) => {
+          mintResult.value = result as IMintResult;
+          isLoading.value = false;
+          //FYI, fetchNewNFT updates 
+          //1. metadata in IPFS for answer with mintID of NFT
+          //2. metadata in IPFS for question with mintID of answer + update status
+          await fetchNewAnswer();
+        })
+        .catch((e) => {
+          setError(e);
+          isLoading.value = false;
+        });
+
+    }
 
     // --------------------------------------- modals
     const { registerModal, isModalVisible, showModal, hideModal } = useModal();
@@ -164,7 +258,8 @@ export default defineComponent({
       contactDets,
       textSize,
       // mint
-      mintNewMaster,
+      createTicket,
+      createAnswer,
       // modals
       isModalVisible,
       showModal,
