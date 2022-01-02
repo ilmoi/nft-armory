@@ -101,8 +101,7 @@ export default defineComponent({
      // based on different values ('open', 'closed', etc.)
      function filterForOpenTickets (tickets: Array<INFT>) {
        // Takes in an array of NFTs & filters to just "open" ones
-       //return tickets.filter(n => n.metadataExternal.attributes.some((tt: { trait_type: string, value: string; }) => tt.trait_type == 'status' && tt.value == 'open'))
-      return tickets;
+      return tickets.filter(n => n.metadataExternal.hasOwnProperty("attributes") ?  n.metadataExternal.attributes.some((tt: { trait_type: string, value: string; }) => tt.trait_type == 'status' && tt.value == 'open'): undefined)      
      }
   
     
