@@ -13,6 +13,7 @@
     "@metaplex-foundation/mpl-token-metadata": "^0.0.2",
     "@metaplex/js": "^4.1.0",
     "@pinata/sdk": "^1.1.23",
+    "@popperjs/core": "^2.11.0",
     "@solana/spl-token": "^0.1.8",
     "@solana/wallet-adapter-base": "^0.7.0",
     "@solana/wallet-adapter-wallets": "^0.11.3",
