@@ -3,8 +3,8 @@ import App from './App.vue';
 import router from './router';
 import './index.css';
 import VueGtag from 'vue-gtag';
-import "bootstrap/dist/css/bootstrap.min.css"
-import "bootstrap"
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap'
 
 if (process.env.VUE_APP_MAINNET_URL && process.env.VUE_APP_MAINNET_URL!.includes('genesysgo')) {
   console.log('powered by gg');
