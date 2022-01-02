@@ -7,8 +7,6 @@
       :url="i.url"
       :class="{ active: path === i.url }"
     />
-    <a class="more" href="https://github.com/ilmoi/awesome-solana-nfts" target="_blank">🔗</a>
-    <a class="more" href="https://nftape.me/" target="_blank">🍌</a>
   </nav>
 </template>
 
@@ -24,12 +22,9 @@ export default defineComponent({
     const path = computed(() => route.path);
 
     const menu = [
-      { name: '/', url: '/' },
-      { name: 'VIEW', url: '/view' },
-      { name: 'MINT', url: '/mint' },
-      { name: 'UPDATE', url: '/update' },
-      { name: 'MISC', url: '/misc' },
-      { name: 'I WANT UR NFT', url: '/urnft' },
+      { name: 'Home', url: '/' },
+      { name: 'See Open Questions', url: '/view' },
+      { name: 'Ask Question', url: '/urnft' },
     ];
 
     return {

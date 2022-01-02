@@ -46,14 +46,14 @@
         </div>
 
         <!--the rest-->
- 
-          <p>
+
+        <p>
           Ticket Type:
-            <span class="text-black">{{readTicketAttributeValue(n, "ticket_type")}}</span>
+          <span class="text-black">{{ readTicketAttributeValue(n, 'ticket_type') }}</span>
         </p>
         <p>
           Ticket Status:
-            <span class="text-black">{{readTicketAttributeValue(n, "status")}}</span>
+          <span class="text-black">{{ readTicketAttributeValue(n, 'status') }}</span>
         </p>
 
         <p>
@@ -71,7 +71,9 @@
           <span class="text-black">{{ n.splTokenInfo ? n.splTokenInfo.owner : NOT_FOUND }}</span>
         </p>
         <div class="flex">
-          <button class="nes-btn is-primary" @click="toggleJSON">{ full JSON }</button>
+          <router-link class="nes-btn is-primary" :to="'/ticketdetail/' + n.mint"
+            >Answer</router-link
+          >
           <QuestionMark class="text-base ml-2 mt-2" @click="showModal('tooltipJSON')" />
         </div>
       </div>
@@ -111,7 +113,7 @@ import ContentTooltipJSON from '@/components/content/tooltip/ContentTooltipJSON.
 import QuestionMark from '@/components/QuestionMark.vue';
 import useCopy from '@/composables/copy';
 import ContentTooltipRarity from '@/components/content/tooltip/ContentTooltipRarity.vue';
-import { INFT} from '@/common/helpers/types';
+import { INFT } from '@/common/helpers/types';
 
 export default defineComponent({
   props: {
@@ -126,10 +128,14 @@ export default defineComponent({
   },
 
   methods: {
-    readTicketAttributeValue (ticket: INFT, trait_type_item: string) {
-       // Takes in a ticket and returns a particular attribute trait type value
-       let attr = ticket.metadataExternal.hasOwnProperty("attributes") ? ticket.metadataExternal.attributes.find((tt: { trait_type: string, value: string; }) => tt.trait_type == trait_type_item) : undefined
-       return typeof attr != 'undefined' ? attr.value : "Attribute Not Set"
+    readTicketAttributeValue(ticket: INFT, trait_type_item: string) {
+      // Takes in a ticket and returns a particular attribute trait type value
+      let attr = ticket.metadataExternal.hasOwnProperty('attributes')
+        ? ticket.metadataExternal.attributes.find(
+            (tt: { trait_type: string; value: string }) => tt.trait_type == trait_type_item
+          )
+        : undefined;
+      return typeof attr != 'undefined' ? attr.value : 'Attribute Not Set';
     },
   },
 
