@@ -16,7 +16,6 @@
     <div v-if="isConnected">
       <router-view />
     </div>
-    <TheFooter />
   </div>
 </template>
 
