@@ -1,19 +1,16 @@
 <template>
-  <div class="relative h-full min-h-screen">
+  <div class="relative h-full min-h-screen bg-black">
     <!--navbar + logo-->
-    <div v-if="isConnected">
+    <div>
       <TheNavBar />
     </div>
-    <div class="pt-10 px-10 flex justify-center align-middle">
+    <!--<div class="pt-10 px-10 flex justify-center align-middle">
       <TheLogo />
       <p class="text-4xl pt-3 px-1">🤝</p>
       <p class="text-4xl pt-3 px-1 text-black underline">HelpDesk</p>
       <p class="text-4xl pt-3 px-1">🤝</p>
-    </div>
-    <div v-if="!isConnected">
-      <ConfigPane />
-    </div>
-    <div v-else>
+    </div>-->
+    <div>
       <router-view />
     </div>
   </div>

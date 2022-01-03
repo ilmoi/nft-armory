@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center items-stretch content-center mb-10 max-w-xl">
+  <div class="flex justify-center content-center max-w-xl">
     <!--<div class="nes-select is-dark flex-1">
       <select required id="cluster" v-model="chosenCluster">
         <option :value="Cluster.Mainnet">Mainnet</option>
@@ -8,7 +8,7 @@
         <option :value="Cluster.Localnet">Localnet</option>
       </select>
     </div>-->
-    <select class="form-select" required id="wallet" v-model="chosenWallet">
+    <select class="form-select bg-black text-primary" required id="wallet" v-model="chosenWallet">
       <option :value="null">Connect wallet..</option>
       <option :value="WalletName.Phantom">Phantom</option>
       <option :value="WalletName.Sollet">Sollet</option>

@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="url" class="nav-button">
+  <router-link :to="url" class="nav-link">
     {{ title }}
   </router-link>
 </template>
@@ -17,11 +17,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.nav-button {
-  @apply px-10 py-3 text-white
-  hover:bg-white hover:text-black;
-  outline: none;
-}
-</style>
