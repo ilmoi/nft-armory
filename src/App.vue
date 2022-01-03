@@ -13,7 +13,7 @@
     <div v-if="!isConnected">
       <ConfigPane />
     </div>
-    <div v-if="isConnected">
+    <div v-else>
       <router-view />
     </div>
   </div>
@@ -52,7 +52,7 @@ export default defineComponent({
 
 <style>
 * {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Roboto', monospace;
 }
 input[type='radio']:checked + span {
   @apply text-black;
