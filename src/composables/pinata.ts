@@ -1,7 +1,8 @@
-import pinataSDK from '@pinata/sdk';
+import pinataSDK, { PinataClient, PinataPinListResponse, PinataPinListResponseRow } from '@pinata/sdk';
 import FormData from 'form-data';
 import axios from 'axios';
 import { PublicKey } from '@solana/web3.js';
+import { PNFT } from '@/common/helpers/types';
 
 // todo yes this is INTENTIONALLY LEAKED
 //  this is a burner Pinata acc with 1gb free storage I'm using for storing "I want ur NFTs"
@@ -128,9 +129,9 @@ export default function usePinata() {
     const res = await pinata.pinJSONToIPFS(metadata, options as any);
     return res.IpfsHash;
   };
-
-
-  const searchForOpenTickets = async() => {
+  
+  const searchForOpenTickets =  async() => {
+    // search Pinata account for open tickets
     const metadataFilter = {
       keyvalues: {
         ticket_type: {
@@ -141,26 +142,43 @@ export default function usePinata() {
             value: 'open',
             op: 'eq'
         },
-      }
-  };
+      },
+
+    
+    
+    };
   
-  const filters = {
-      status : 'pinned',
-      pageLimit: 25,
-      pageOffset: 0,
-      metadata: metadataFilter
+    const filters = {
+        status : 'pinned',
+        pageLimit: 25,
+        pageOffset: 0,
+        metadata: metadataFilter
+    };
+
+  //TODO: clean up & use separate function to coordinate search + token conversion
+  const res = (await pinata.pinList(filters))
+  // console.log("seeing", res.count, "rows; now running enrichment" )
+  // console.log(res)
+  const pnfts = (await tokensToEnrichedPNFTs(res.rows))
+  // console.log("seeing", res.count, "rows; now post enrichment" )
+  // console.log(pnfts)
+  return pnfts
   };
 
-  //returns 25 latest questions
-  pinata.pinList(filters).then((result) => {
-      //handle results here
-      console.log("search results from pinata: ", result);
-    }).catch((err) => {
-      //handle error here
-      console.log(err);
-  });
+  async function tokensToEnrichedPNFTs(tokens: PinataPinListResponseRow[]): Promise<PNFT[]> {
+    // function to convert PinataPinListResponseRow[] into object to save for display
+    console.log("calling tokens to enriched pnfts")
 
-  };
+    return Promise.all(tokens.map(async (t) =>
+        ({
+          id: t.id,
+          metadata: t.metadata,
+        })
+      )
+    
+    )
+  }
+
 
   const updatePinataMetadata = async(ipfsHash: string, metaDataHash: {}) => {
     
@@ -180,7 +198,8 @@ export default function usePinata() {
     URIToHash,
     uploadJSONForAnswer,
     searchForOpenTickets,
-    updatePinataMetadata
+    updatePinataMetadata,
+    tokensToEnrichedPNFTs
   };
 }
 

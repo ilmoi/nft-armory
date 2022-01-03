@@ -59,7 +59,7 @@ import { NFTGet } from '@/common/NFTget';
 import NFTViewCard from '@/components/NFTViewCard.vue';
 import useLoading, { LoadStatus } from '@/composables/loading';
 import { EE, ERR_NO_NFTS } from '@/globals';
-import { INFT, INFTParams } from '@/common/helpers/types';
+import { INFT, INFTParams, PNFT } from '@/common/helpers/types';
 import NFTViewForm from '@/components/NFTViewForm.vue';
 import useDownload from '@/composables/download';
 import useCopy from '@/composables/copy';
@@ -95,10 +95,29 @@ export default defineComponent({
     } = useLoading();
 
     const { uploadImg, uploadJSON, hashToURI, uploadJSONForAnswer, searchForOpenTickets } = usePinata();
-    searchForOpenTickets();
 
-     // TODO: generalize logic more + page to allow multiple calls/groups
-     // based on different values ('open', 'closed', etc.)
+    // TODO: adjust from INFT work
+    const allPinataTickets = ref<PNFT[]>([]); // this is everything fetched in mem
+
+    searchForOpenTickets() 
+      .then((pinataTickets) => {
+        if (pinataTickets.length) {
+          console.log("yasss")
+          allPinataTickets.value = pinataTickets
+              console.log("here are pinata tickets")
+          console.log(allPinataTickets.value)
+          console.log("see", allPinataTickets.value.length, "tickets ")
+
+        } else {
+          updateLoadingStdErr(ERR_NO_NFTS);
+        }
+      })
+      .catch(updateLoadingStdErr);
+
+
+
+    // TODO: generalize logic more + page to allow multiple calls/groups
+    // based on different values ('open', 'closed', etc.)
      function filterForOpenTickets (tickets: Array<INFT>) {
        // Takes in an array of NFTs & filters to just "open" ones
       return tickets.filter(n => n.metadataExternal.hasOwnProperty("attributes") ?  n.metadataExternal.attributes.some((tt: { trait_type: string, value: string; }) => tt.trait_type == 'status' && tt.value == 'open'): undefined)      
@@ -234,6 +253,7 @@ export default defineComponent({
       exportNFTs,
       handleSubmitForm,
       infiniteHandler,
+      searchForOpenTickets,
       // export
       exportBtnText,
       disableExport,
