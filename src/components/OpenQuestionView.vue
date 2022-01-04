@@ -5,10 +5,6 @@
     <div class="flex flex-row">
       <div class="ml-5 text-gray-400">
         <p>
-          <span v-if=generateTicketDetailLink(n) class="text-gray-400"><a :href='generateTicketDetailLink(n)'>Ticket Detail: View</a></span>
-          <span v-else class="text-gray-400">Ticket Detail: NA</span>   
-        </p>
-        <p>
           Date Pinned:
             <span class="text-black">{{readDatePinned(n)}}</span>
         </p>
@@ -28,7 +24,11 @@
           Ticket Status:
             <span class="text-black">{{readTicketStatus(n)}}</span>
         </p>
-        <div class="flex">
+        <div></div>
+        <div>
+          <span v-if=generateTicketDetailLink(n) class="text-gray-400"><a class='nes-btn is-primary' :href='generateTicketDetailLink(n)'>Answer</a></span>
+          <!-- NOTE: show no 'Answer' button if a ticket has no mintID (some PNFTs are missing this & thus ticketdetail view can't work) -->
+          <span v-else class="text-gray-400"></span>
           <button class="nes-btn is-primary" @click="toggleJSON">{ full JSON }</button>
           <QuestionMark class="text-base ml-2 mt-2" @click="showModal('tooltipJSON')" />
         </div>
@@ -84,54 +84,58 @@ export default defineComponent({
   },
 
   methods: {
-    readTicketAttributeValue (ticket: INFT, trait_type_item: string) {
-       // Takes in a ticket and returns a particular attribute trait type value
-       let attr = ticket.metadataExternal.hasOwnProperty("attributes") ? ticket.metadataExternal.attributes.find((tt: { trait_type: string, value: string; }) => tt.trait_type == trait_type_item) : undefined
-       return typeof attr != 'undefined' ? attr.value : "Attribute Not Set"
-    },
     generateTicketDetailLink (ticket: PNFT) {
-      // generates ticket detail link
-       const prefix = "ticketdetail/"
+      /* Input: Takes in a ticket (pinata NFT metadata)
+         Output: link to ticket detail page using mintID or undefined (some tickets may not have mintID)
+      */
+       const ticket_detail_url_prefix = "ticketdetail/"
        let attr = ticket.metadata.keyvalues.hasOwnProperty('mintId') ? ticket.metadata.keyvalues.mintId : undefined
-       console.log("attr is ", attr)
-       return typeof attr != 'undefined' ? prefix + attr : undefined
+       return typeof attr != 'undefined' ? ticket_detail_url_prefix + attr : undefined
 
     },
 
     readTicketName (ticket: PNFT) {
-       // Takes in a ticket and returns a particular attribute trait type value
+      /* Input: Takes in a ticket (pinata NFT metadata)
+         Output: reads ticket name from metadata or undefined (some tickets may not have a name)
+      */
+
        let attr = ticket.metadata.hasOwnProperty('name') ? ticket.metadata.name : undefined
-        console.log("attr is ", attr)
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
+
     readTicketStatus (ticket: PNFT) {
-       // Takes in a ticket and returns a particular attribute trait type value
+      /* Input: Takes in a ticket (pinata NFT metadata)
+         Output: reads ticket status from metadata or undefined
+      */
        let attr = ticket.metadata.keyvalues.hasOwnProperty('status') ? ticket.metadata.keyvalues.status : undefined
-        console.log("attr is ", attr)
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
     readTicketType (ticket: PNFT) {
-       // Takes in a ticket and returns a particular attribute trait type value
+      /* Input: Takes in a ticket (pinata NFT metadata)
+         Output: reads ticket status from metadata or undefined
+      */
        let attr = ticket.metadata.keyvalues.hasOwnProperty('ticket_type') ? ticket.metadata.keyvalues.ticket_type : undefined
-       console.log("attr is ", attr)
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
     readMintID (ticket: PNFT) {
-       // Takes in a ticket and returns a particular attribute trait type value
+      /* Input: Takes in a ticket (pinata NFT metadata)
+         Output: reads ticket mint ID from metadata or undefined
+      */
        let attr = ticket.metadata.keyvalues.hasOwnProperty('mintId') ? ticket.metadata.keyvalues.mintId : undefined
-       console.log("attr is ", attr)
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
     readUserID (ticket: PNFT) {
-       // Takes in a ticket and returns a particular attribute trait type value
+      /* Input: Takes in a ticket (pinata NFT metadata)
+         Output: reads ticket user ID from metadata or undefined
+      */
        let attr = ticket.hasOwnProperty('user_id') ? ticket.user_id : undefined
-       console.log("attr is ", attr)
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
     readDatePinned (ticket: PNFT) {
-       // Takes in a ticket and returns a particular attribute trait type value
+      /* Input: Takes in a ticket (pinata NFT metadata)
+         Output: reads ticket date pinned to pinata from metadata or undefined
+      */
        let attr = ticket.hasOwnProperty('date_pinned') ? ticket.date_pinned : undefined
-       console.log("attr is ", attr)
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
   },
