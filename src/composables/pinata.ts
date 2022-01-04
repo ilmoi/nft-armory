@@ -129,7 +129,21 @@ export default function usePinata() {
     const res = await pinata.pinJSONToIPFS(metadata, options as any);
     return res.IpfsHash;
   };
-  
+
+  const retrieveOpenTickets =  async() => {
+    // search Pinata account for open tickets &
+    // preprocess to save as PNFT object
+    const t1 = performance.now();
+    const pinata_results = await searchForOpenTickets()
+    const pnfts = (await tokensToEnrichedPNFTs(pinata_results))
+    // console.log("seeing", res.count, "rows; now post enrichment" )
+    // console.log(pnfts)
+    const t2 = performance.now();
+    console.log('Time:', (t2 - t1) / 1000);
+
+    return pnfts
+  };
+
   const searchForOpenTickets =  async() => {
     // search Pinata account for open tickets
     const metadataFilter = {
@@ -155,23 +169,20 @@ export default function usePinata() {
         metadata: metadataFilter
     };
 
-  //TODO: clean up & use separate function to coordinate search + token conversion
-  const res = (await pinata.pinList(filters))
-  // console.log("seeing", res.count, "rows; now running enrichment" )
-  // console.log(res)
-  const pnfts = (await tokensToEnrichedPNFTs(res.rows))
-  // console.log("seeing", res.count, "rows; now post enrichment" )
-  // console.log(pnfts)
-  return pnfts
+    const res = (await pinata.pinList(filters))
+    return res.rows
   };
 
   async function tokensToEnrichedPNFTs(tokens: PinataPinListResponseRow[]): Promise<PNFT[]> {
     // function to convert PinataPinListResponseRow[] into object to save for display
     console.log("calling tokens to enriched pnfts")
-
     return Promise.all(tokens.map(async (t) =>
         ({
           id: t.id,
+          user_id: t.user_id,
+          size: t.size,
+          ipfs_pin_hash: t.ipfs_pin_hash,
+          date_pinned: t.date_pinned,
           metadata: t.metadata,
         })
       )
@@ -199,7 +210,8 @@ export default function usePinata() {
     uploadJSONForAnswer,
     searchForOpenTickets,
     updatePinataMetadata,
-    tokensToEnrichedPNFTs
+    tokensToEnrichedPNFTs,
+    retrieveOpenTickets
   };
 }
 
