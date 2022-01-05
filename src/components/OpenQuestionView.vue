@@ -89,7 +89,8 @@ export default defineComponent({
          Output: link to ticket detail page using mintID or undefined (some tickets may not have mintID)
       */
        const ticket_detail_url_prefix = "ticketdetail/"
-       let attr = ticket.metadata.keyvalues.hasOwnProperty('mintId') ? ticket.metadata.keyvalues.mintId : undefined
+       const attr_key = "mintId"
+       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
        return typeof attr != 'undefined' ? ticket_detail_url_prefix + attr : undefined
 
     },
@@ -98,8 +99,8 @@ export default defineComponent({
       /* Input: Takes in a ticket (pinata NFT metadata)
          Output: reads ticket name from metadata or undefined (some tickets may not have a name)
       */
-
-       let attr = ticket.metadata.hasOwnProperty('name') ? ticket.metadata.name : undefined
+       const attr_key = 'name'
+       let attr = ticket.metadata.hasOwnProperty(attr_key) ? ticket.metadata[attr_key] : undefined
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
 
@@ -107,35 +108,40 @@ export default defineComponent({
       /* Input: Takes in a ticket (pinata NFT metadata)
          Output: reads ticket status from metadata or undefined
       */
-       let attr = ticket.metadata.keyvalues.hasOwnProperty('status') ? ticket.metadata.keyvalues.status : undefined
+       const attr_key = 'status'
+       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
     readTicketType (ticket: PNFT) {
       /* Input: Takes in a ticket (pinata NFT metadata)
          Output: reads ticket status from metadata or undefined
       */
-       let attr = ticket.metadata.keyvalues.hasOwnProperty('ticket_type') ? ticket.metadata.keyvalues.ticket_type : undefined
+       const attr_key = 'ticket_type'
+       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
     readMintID (ticket: PNFT) {
       /* Input: Takes in a ticket (pinata NFT metadata)
          Output: reads ticket mint ID from metadata or undefined
       */
-       let attr = ticket.metadata.keyvalues.hasOwnProperty('mintId') ? ticket.metadata.keyvalues.mintId : undefined
+       const attr_key = 'mintId'
+       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
     readUserID (ticket: PNFT) {
       /* Input: Takes in a ticket (pinata NFT metadata)
          Output: reads ticket user ID from metadata or undefined
       */
-       let attr = ticket.hasOwnProperty('user_id') ? ticket.user_id : undefined
+       const attr_key = 'user_id'
+       let attr = ticket.hasOwnProperty(attr_key) ? ticket[attr_key] : undefined
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
     readDatePinned (ticket: PNFT) {
       /* Input: Takes in a ticket (pinata NFT metadata)
          Output: reads ticket date pinned to pinata from metadata or undefined
       */
-       let attr = ticket.hasOwnProperty('date_pinned') ? ticket.date_pinned : undefined
+       const attr_key = 'date_pinned'
+       let attr = ticket.hasOwnProperty(attr_key) ? ticket[attr_key] : undefined
        return typeof attr != 'undefined' ? attr : "Attribute Not Set"
     },
   },
