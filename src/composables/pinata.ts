@@ -1,7 +1,8 @@
-import pinataSDK from '@pinata/sdk';
+import pinataSDK, { PinataClient, PinataPinListResponse, PinataPinListResponseRow } from '@pinata/sdk';
 import FormData from 'form-data';
 import axios from 'axios';
 import { PublicKey } from '@solana/web3.js';
+import { PNFT } from '@/common/helpers/types';
 
 // todo yes this is INTENTIONALLY LEAKED
 //  this is a burner Pinata acc with 1gb free storage I'm using for storing "I want ur NFTs"
@@ -129,8 +130,19 @@ export default function usePinata() {
     return res.IpfsHash;
   };
 
+  const retrieveOpenTickets =  async() => {
+    /* Search Pinata account for open NTF tickets & 
+       preprocess retrieved metadata by saving as PNFT objects
+    */
 
-  const searchForOpenTickets = async() => {
+    const pinata_results = await searchForOpenTickets()
+    const pnfts = (await convertTicketsToPNFTs(pinata_results))
+    return pnfts
+  };
+
+  const searchForOpenTickets =  async() => {
+    /* Search Pinata account for open NTF tickets using metadata filter
+    */
     const metadataFilter = {
       keyvalues: {
         ticket_type: {
@@ -141,26 +153,40 @@ export default function usePinata() {
             value: 'open',
             op: 'eq'
         },
-      }
-  };
+      },
+
+    
+    
+    };
   
-  const filters = {
-      status : 'pinned',
-      pageLimit: 25,
-      pageOffset: 0,
-      metadata: metadataFilter
+    const filters = {
+        status : 'pinned',
+        pageLimit: 25,
+        pageOffset: 0,
+        metadata: metadataFilter
+    };
+
+    const res = (await pinata.pinList(filters))
+    return res.rows
   };
 
-  //returns 25 latest questions
-  pinata.pinList(filters).then((result) => {
-      //handle results here
-      console.log("search results from pinata: ", result);
-    }).catch((err) => {
-      //handle error here
-      console.log(err);
-  });
-
-  };
+  async function convertTicketsToPNFTs(tokens: PinataPinListResponseRow[]): Promise<PNFT[]> {
+    /* Convert tickets from Pinata search by cross-mapping data to new objects in memory
+       Takes PinataPinListResponseRow[] ----> PNFT
+    */
+    return Promise.all(tokens.map(async (t) =>
+        ({
+          id: t.id,
+          user_id: t.user_id,
+          size: t.size,
+          ipfs_pin_hash: t.ipfs_pin_hash,
+          date_pinned: t.date_pinned,
+          metadata: t.metadata,
+        })
+      )
+    
+    )
+  }
 
   const updatePinataMetadata = async(ipfsHash: string, metaDataHash: {}) => {
     
@@ -180,7 +206,9 @@ export default function usePinata() {
     URIToHash,
     uploadJSONForAnswer,
     searchForOpenTickets,
-    updatePinataMetadata
+    updatePinataMetadata,
+    convertTicketsToPNFTs,
+    retrieveOpenTickets
   };
 }
 

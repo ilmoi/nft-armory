@@ -2,6 +2,18 @@ import { PublicKey } from '@solana/web3.js';
 import { AccountInfo, MintInfo } from '@solana/spl-token';
 import { EditionData, MasterEditionData, MetadataData } from '@metaplex/js/lib/programs/metadata';
 import { RarityCategory } from '@/common/rarity';
+import { PinataMetadata } from '@pinata/sdk';
+
+export interface PNFT {
+  id: string | number;
+  user_id: string | number;
+  size: number;
+  ipfs_pin_hash: string;
+  date_pinned: string;
+  metadata: PinataMetadata | any;
+  // Note: regions/hashPinPolicy is not currently stored
+
+}
 
 export interface INFT {
   // spl stuff
