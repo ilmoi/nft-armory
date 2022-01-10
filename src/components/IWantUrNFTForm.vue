@@ -1,6 +1,6 @@
 <template>
   <div>
-      <div class="flex mt-10">
+      <div class="flex mt-10 text-white">
       <form v-if="isQuestion" @submit.prevent="createTicket" class="flex-grow">
         <div ><label for="nftName">Enter Question:</label></div>
 

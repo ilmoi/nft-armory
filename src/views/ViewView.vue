@@ -2,7 +2,7 @@
   <div>
     <!--all the config stuff-->
     <ConfigPane />
-    <p class="title"> Open Questions</p>
+    <p class="title text-white"> Open Questions</p>
 
     <!--per NFT display-->
     <LoadingBar v-if="isLoading" :progress="progress" :text="text" class="my-5" />

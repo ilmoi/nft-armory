@@ -28,10 +28,10 @@
           <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">See Open Questions</a>
+          <a class="nav-link" href="/view">See Open Questions</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Ask Question</a>
+          <a class="nav-link" href="/urnft">Ask Question</a>
         </li>
         <li class="nav-item">
           <ConfigPane />

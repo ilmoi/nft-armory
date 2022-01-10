@@ -4,7 +4,7 @@
       {{ n.metadataExternal.name }} {{ n.metadataExternal.symbol ? '/' : '' }}
       {{ n.metadataExternal.symbol }}
     </p>
-    <div class="flex flex-row">
+    <div class="flex flex-row" style="background-color: white">
       <img :alt="n.mint" :src="n.metadataExternal.image" />
 
       <div class="ml-5 text-gray-400">
@@ -72,9 +72,8 @@
         </p>
         <div class="flex">
           <router-link class="nes-btn is-primary" :to="'/ticketdetail/' + n.mint"
-            >Answer</router-link
+            >View Answers</router-link
           >
-          <QuestionMark class="text-base ml-2 mt-2" @click="showModal('tooltipJSON')" />
         </div>
       </div>
     </div>
