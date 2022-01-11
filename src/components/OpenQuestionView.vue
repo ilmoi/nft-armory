@@ -75,7 +75,7 @@ import QuestionMark from '@/components/QuestionMark.vue';
 import useCopy from '@/composables/copy';
 import ContentTooltipRarity from '@/components/content/tooltip/ContentTooltipRarity.vue';
 import { INFT, PNFT} from '@/common/helpers/types';
-
+import {generateTicketDetailLink, readTicketName, readTicketStatus, readTicketType, readMintID, readUserID, readDatePinned} from '@/composables/pinata'
 export default defineComponent({
   props: {
     n: Object,
@@ -88,67 +88,29 @@ export default defineComponent({
     VueJsonPretty,
   },
 
+  // by referencing methods here, have access through Vue componet + for other needs
   methods: {
-    generateTicketDetailLink (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: link to ticket detail page using mintID or undefined (some tickets may not have mintID)
-      */
-       const ticket_detail_url_prefix = "/ticketdetail/"
-       const attr_key = "mintId"
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? ticket_detail_url_prefix + attr : undefined
-
+    generateTicketDetailLink: function(ticket: PNFT) {
+      return generateTicketDetailLink(ticket)
     },
-
-    readTicketName (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket name from metadata or undefined (some tickets may not have a name)
-      */
-       const attr_key = 'name'
-       let attr = ticket.metadata.hasOwnProperty(attr_key) ? ticket.metadata[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readTicketName: function(ticket: PNFT) {
+      return readTicketName(ticket)
     },
-
-    readTicketStatus (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket status from metadata or undefined
-      */
-       const attr_key = 'status'
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readTicketStatus: function(ticket: PNFT) {
+      return readTicketStatus(ticket)
     },
-    readTicketType (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket status from metadata or undefined
-      */
-       const attr_key = 'ticket_type'
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readMintID: function(ticket: PNFT) {
+      return readMintID(ticket)
     },
-    readMintID (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket mint ID from metadata or undefined
-      */
-       const attr_key = 'mintId'
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readUserID: function(ticket: PNFT) {
+      return readUserID(ticket)
     },
-    readUserID (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket user ID from metadata or undefined
-      */
-       const attr_key = 'user_id'
-       let attr = ticket.hasOwnProperty(attr_key) ? ticket[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readDatePinned: function(ticket: PNFT) {
+      return readDatePinned(ticket)
     },
-    readDatePinned (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket date pinned to pinata from metadata or undefined
-      */
-       const attr_key = 'date_pinned'
-       let attr = ticket.hasOwnProperty(attr_key) ? ticket[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
-    },
+    readTicketType: function(ticket: PNFT){
+      return readTicketType(ticket)
+    }
   },
 
   setup() {
@@ -160,6 +122,7 @@ export default defineComponent({
       fullJSON.value = !fullJSON.value;
     };
 
+   
     // --------------------------------------- clipboard
     const { copyText, doCopyJSON } = useCopy();
 
