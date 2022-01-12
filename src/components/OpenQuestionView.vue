@@ -75,7 +75,7 @@ import QuestionMark from '@/components/QuestionMark.vue';
 import useCopy from '@/composables/copy';
 import ContentTooltipRarity from '@/components/content/tooltip/ContentTooltipRarity.vue';
 import { INFT, PNFT} from '@/common/helpers/types';
-import {generateTicketDetailLink, readTicketName, readTicketStatus, readTicketType, readMintID, readUserID, readDatePinned} from '@/composables/pinata'
+import * as pnftInteractions from '@/composables/pnftInteractions'
 export default defineComponent({
   props: {
     n: Object,
@@ -91,25 +91,25 @@ export default defineComponent({
   // by referencing methods here, have access through Vue componet + for other needs
   methods: {
     generateTicketDetailLink: function(ticket: PNFT) {
-      return generateTicketDetailLink(ticket)
+      return pnftInteractions.generateTicketDetailLink(ticket)
     },
     readTicketName: function(ticket: PNFT) {
-      return readTicketName(ticket)
+      return pnftInteractions.readTicketName(ticket)
     },
     readTicketStatus: function(ticket: PNFT) {
-      return readTicketStatus(ticket)
+      return pnftInteractions.readTicketStatus(ticket)
     },
     readMintID: function(ticket: PNFT) {
-      return readMintID(ticket)
+      return pnftInteractions.readMintID(ticket)
     },
     readUserID: function(ticket: PNFT) {
-      return readUserID(ticket)
+      return pnftInteractions.readUserID(ticket)
     },
     readDatePinned: function(ticket: PNFT) {
-      return readDatePinned(ticket)
+      return pnftInteractions.readDatePinned(ticket)
     },
     readTicketType: function(ticket: PNFT){
-      return readTicketType(ticket)
+      return pnftInteractions.readTicketType(ticket)
     }
   },
 
