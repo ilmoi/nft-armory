@@ -9,6 +9,7 @@ import { PNFT } from '@/common/helpers/types';
 //  I'm hoping it won't be abused - if it does, just put in your own and run locally or let me know (twitter @_ilmoi)
 const apiKey = '7ed5a3f0849f19876a1e';
 const apiSecret = '3d79c1f0f2293450b9c949cacc293c22223eeb8a33b24124e2d750c86627cbc9';
+ 
 
 export default function usePinata() {
   const pinata = pinataSDK(apiKey, apiSecret);
@@ -198,6 +199,9 @@ export default function usePinata() {
       console.log(err);
     });
   };
+
+
+
 
   return {
     uploadImg,
