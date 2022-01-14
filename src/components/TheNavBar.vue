@@ -1,14 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-black py-30 px-30">
     <a class="navbar-brand ml-200" href="#">
-      <img
-        src="https://www.clipartmax.com/png/full/17-170016_pre-post-training-support-helping-hands-clip-art.png"
-        width="30"
-        height="30"
-        class="d-inline-block align-top"
-        alt=""
-      />
-      HelpDesk
+      GMneedhelp
     </a>
     <button
       class="navbar-toggler"
@@ -21,16 +14,14 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
+    <ConnectWalletButton />
 
     <div class="collapse navbar-collapse justify-end flex" id="navbarSupportedContent">
       <ul class="navbar-nav justify-end align-items-end">
-        <li class="nav-item active justify-end">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
+        <li v-if="isConnected" class="nav-item">
           <a class="nav-link" href="/view">See Open Questions</a>
         </li>
-        <li class="nav-item">
+        <li v-if="isConnected" class="nav-item">
           <a class="nav-link" href="/urnft">Ask Question</a>
         </li>
         <li class="nav-item">
@@ -57,15 +48,17 @@ import { defineComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import NavButton from '@/components/NavButton.vue';
 import ConfigPane from './ConfigPane.vue';
+import useWallet from '../composables/wallet';
 
 export default defineComponent({
   components: { NavButton, ConfigPane },
   setup() {
     const route = useRoute();
     const path = computed(() => route.path);
+    const { isConnected, getWallet, getWalletAddress } = useWallet();
+
 
     const menu = [
-      { name: 'Home', url: '/' },
       { name: 'See Open Questions', url: '/view' },
       { name: 'Ask Question', url: '/urnft' },
     ];
@@ -73,6 +66,7 @@ export default defineComponent({
     return {
       menu,
       path,
+      isConnected,
     };
   },
 });

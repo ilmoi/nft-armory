@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div>Put generic text here</div>
   </div>
 </template>
 
