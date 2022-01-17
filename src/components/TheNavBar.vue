@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-black py-30 px-30">
+  <nav class="navbar navbar-expand-lg navbar-dark py-30 px-30 gmnh-navbar">
     <a class="navbar-brand ml-200" href="#">
       GMneedhelp
     </a>
@@ -81,5 +81,16 @@ export default defineComponent({
   @apply px-10 py-3 text-green-500
   hover:text-green-500;
   outline: none;
+}
+
+.gmnh-navbar {
+  position: absolute;
+  width: 100%;
+height: 64px;
+left: 0px;
+right: 0px;
+top: 0px;
+
+background: #15191B;
 }
 </style>

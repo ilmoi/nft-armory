@@ -10,7 +10,7 @@
       <p class="text-4xl pt-3 px-1 text-black underline">HelpDesk</p>
       <p class="text-4xl pt-3 px-1">🤝</p>
     </div>-->
-    <div>
+    <div class="gmnh-body">
       <router-view />
     </div>
   </div>
@@ -53,5 +53,8 @@ export default defineComponent({
 }
 input[type='radio']:checked + span {
   @apply text-black;
+}
+
+.gmnh-body {
 }
 </style>
