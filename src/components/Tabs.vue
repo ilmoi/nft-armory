@@ -187,7 +187,7 @@ export default defineComponent({
       justify-content: flex-end;
     }
     &__item {
-      padding: 8px 0px;
+      padding: 8px 8px;
       cursor: pointer;
       user-select: none;
       transition: border 0.3s ease-in-out;
@@ -204,6 +204,10 @@ export default defineComponent({
         border-bottom: 2px solid var(--primary-color);
         font-weight: 700;
         color: var(--primary-color);
+      }
+      &[aria-selected="false"] {
+        font-weight: 700;
+        color: var(--disabled-text-color);
       }
       &[aria-disabled="true"] {
         cursor: not-allowed;

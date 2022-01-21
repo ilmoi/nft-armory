@@ -12,11 +12,11 @@ const clusterPostfixMapping = {
 export default function useExplorer() {
   const getClusterPostfix = () => clusterPostfixMapping[cluster.value];
 
-  const buildTxURI = (txId: string) =>
-    `https://explorer.solana.com/tx/${txId}${getClusterPostfix()}`;
+  const buildMintUrl = (mintId: string) =>
+    `https://explorer.solana.com/address/${mintId}${getClusterPostfix()}`;
 
   return {
     getClusterPostfix,
-    buildTxURI,
+    buildMintUrl,
   };
 }

@@ -8,7 +8,7 @@
       <div v-if="isConnected" class="container mt-3">
         <tabs>
           <tab title="Ask a Question">
-                  <section class="mt-3 gmnh-wallet-center">
+                  <section class="mt-3">
                     <IWantUrNFTForm  isQuestion="true" />
                     <!--  <router-view /> -->
                   </section>

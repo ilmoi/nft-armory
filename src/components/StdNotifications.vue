@@ -6,7 +6,7 @@
     <NotifyError v-if="error" class="mt-5">
       Uh oh something went wrong - {{ error }}. See console for more details.
     </NotifyError>
-    <NotifyInfo v-if="isLoading" class="mt-5">Sit tight...</NotifyInfo>
+    <NotifyInfo v-if="isLoading || isCreated" :mint-id="mintId" :is-loading="isLoading" :is-created="isCreated" class="mt-5"></NotifyInfo>
   </div>
 </template>
 
@@ -19,7 +19,9 @@ export default defineComponent({
   components: { NotifyInfo, NotifyError },
   props: {
     isConnected: Boolean,
+    isCreated: Boolean,
     error: String,
+    mintId: String,
     isLoading: Boolean,
   },
   setup() {

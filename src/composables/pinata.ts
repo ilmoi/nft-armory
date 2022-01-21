@@ -52,8 +52,8 @@ export default function usePinata() {
 
   const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey, title: string) => {
     const metadata = {
-      name: 'HelpDesk Ticket',
-      symbol: 'HELPv1',
+      name: 'GMNeedHelp Question',
+      symbol: 'HELP',
       description: title,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
@@ -79,7 +79,8 @@ export default function usePinata() {
         name: title,
         keyvalues: {
           'ticket_type': 'question',
-          'status': 'open'
+          'status': 'open',
+          'generation': 'GENESIS'
         }
       },
       pinataOptions: {
@@ -93,8 +94,8 @@ export default function usePinata() {
 
   const uploadJSONForAnswer = async (imgIpfsHash: string, walletAddr: PublicKey, title: string, questionID: string) => {
     const metadata = {
-      name: 'HelpDesk Response',
-      symbol: 'HELPv1',
+      name: 'GMNeedHelp Answer',
+      symbol: 'HELP',
       description: title,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
@@ -121,6 +122,7 @@ export default function usePinata() {
         keyvalues: {
           'ticket_type': 'answer',
           'questionMintId': questionID,
+          'generation': 'GENESIS'
         }
       },
       pinataOptions: {

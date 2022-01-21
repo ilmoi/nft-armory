@@ -1,7 +1,7 @@
 <template>
   <div>
-      <div class="flex mt-10 text-white" style="background: #343A3F">
-      <form v-if="isQuestion" @submit.prevent="createTicket" class="flex-grow">
+      <div class="flex mt-10 text-white" style="background: #343A3F; ">
+      <form v-if="isQuestion && !isLoading" @submit.prevent="createTicket" class="flex-grow">
 
         <input focus-visible type="text" id="nftName" placeholder="What's your question?" class="nes-input gmnh-question" v-model="nftName" />
 
@@ -14,7 +14,7 @@
           Submit Question
         </button>
       </form>
-      <form v-else @submit.prevent="createAnswer" class="flex-grow">
+      <form v-if="!isQuestion && !isLoading" @submit.prevent="createAnswer" class="flex-grow">
         <div ><label for="nftName">Enter Answer:</label></div>
 
         <div><input type="text" id="nftName" class="nes-input" v-model="nftName" /></div>
@@ -29,14 +29,13 @@
         </button>
       </form>
 
-      <div class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
-        <p>{{ nftName }}</p>
-      </div>
+       <!--notifications-->
+    
+    <div class="flex-grow">
+      <StdNotifications v-if="!mintResult" :is-connected="isConnected" :is-loading="isLoading" :is-created="isCreated" :error="error" />
+      <StdNotifications v-else :is-connected="isConnected" :is-loading="isLoading" :is-created="isCreated" :mint-id="mintResult.mint" :error="error" />
     </div>
-
-    <!--notifications-->
-    <StdNotifications :is-connected="isConnected" :is-loading="isLoading" :error="error" />
-    <NotifySuccess v-if="mintResult" class="mt-5">
+   <!-- <NotifySuccess v-if="mintResult" class="mt-5">
       <p>Mint successful! 🎉</p>
       <LoadingIcon align="left" class="mt-5" v-if="!newNFT"
         >Loading your new NFT... (might take a min or two)</LoadingIcon
@@ -45,16 +44,14 @@
         <ExplorerLink :tx-id="mintResult.txId" />
         <NFTViewCard :n="newNFT" class="text-black" />
       </div>
-    </NotifySuccess>
+    </NotifySuccess> -->
 
-    <!--modals-->
-    <ModalWindow
-      v-if="isModalVisible('tooltipWant')"
-      title="How does it work?"
-      @hide-modal="hideModal('tooltipWant')"
-    >
-      <ContentTooltipIWantUrNFT />
-    </ModalWindow>
+      <div class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
+        <p>{{ nftName }}</p>
+      </div>
+
+   
+  </div>
   </div>
 </template>
 
@@ -100,6 +97,7 @@ export default defineComponent({
     const { error, clearError, setError } = useError();
 
     const isLoading = ref<boolean>(false);
+    const isCreated = ref<boolean>(false);
     const mintResult = ref<IMintResult | null>(null);
     const newNFT = ref<INFT | null>(null);
 
@@ -121,6 +119,7 @@ export default defineComponent({
 
     const clearPreviousResults = () => {
       isLoading.value = false;
+      isCreated.value = false;
       mintResult.value = null;
       newNFT.value = null;
       clearError();
@@ -130,6 +129,7 @@ export default defineComponent({
       // this will keep failing, while the network updates, for a while so keep retrying
       try {
         [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
+        isCreated.value = true;
       } catch (e) {
         await fetchNewNFT();
       }
@@ -148,6 +148,7 @@ export default defineComponent({
       // this will keep failing, while the network updates, for a while so keep retrying
       try {
         [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
+        isCreated.value = true;
       } catch (e) {
         await fetchNewNFT();
       }
@@ -175,7 +176,7 @@ export default defineComponent({
     // --------------------------------------- prep metadata
     const nftName = ref('');
     const contactDets = ref('BLANK');
-    const textSize = ref(12);
+    const textSize = ref(16);
 
     const generateImg = async () => {
       const canvas = await html2canvas(document.getElementById('canvas')!);
@@ -211,13 +212,13 @@ export default defineComponent({
       NFTMintMaster(helpDeskWallet as any, uri, 0)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
-          isLoading.value = false;
+         // isLoading.value = false;
           //FYI, fetchNewNFT updates metadata in IPFS with mintID of NFT
           await fetchNewNFT();
         })
         .catch((e) => {
           setError(e);
-          isLoading.value = false;
+       //   isLoading.value = false;
         });
     };
 
@@ -249,6 +250,7 @@ export default defineComponent({
 
     return {
       isConnected,
+      isCreated,
       isLoading,
       mintResult,
       newNFT,
@@ -271,13 +273,10 @@ export default defineComponent({
 <style scoped>
 .display {
   @apply text-center flex flex-col justify-center align-middle ml-10 mt-2;
-  background-color: rgb(30, 255, 0);
+  background-color: #219653;
   width: 250px;
   height: 250px;
-}
-
-.display-canvas {
-  display:none;
+  margin: 16px;
 }
 
 .gmnh-question {
