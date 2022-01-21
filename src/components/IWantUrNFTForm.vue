@@ -2,17 +2,16 @@
   <div>
       <div class="flex mt-10 text-white" style="background: #343A3F">
       <form v-if="isQuestion" @submit.prevent="createTicket" class="flex-grow">
-        <div ><label for="nftName">Enter Question:</label></div>
 
-        <div><input type="text" id="nftName" class="nes-input" v-model="nftName" /></div>
+        <input focus-visible type="text" id="nftName" placeholder="What's your question?" class="nes-input gmnh-question" v-model="nftName" />
 
         <button
-          class="nes-btn is-primary mt-5"
+          class="gmnh-question-submit"
           :class="{ 'is-disabled': isLoading || !isConnected }"
           :disabled="isLoading || !isConnected"
           type="submit"
         >
-          Create Ticket
+          Submit Question
         </button>
       </form>
       <form v-else @submit.prevent="createAnswer" class="flex-grow">
@@ -174,7 +173,7 @@ export default defineComponent({
     };
 
     // --------------------------------------- prep metadata
-    const nftName = ref('Start Typing..');
+    const nftName = ref('');
     const contactDets = ref('BLANK');
     const textSize = ref(12);
 
@@ -279,5 +278,57 @@ export default defineComponent({
 
 .display-canvas {
   display:none;
+}
+
+.gmnh-question {
+  display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 16px;
+
+position: static;
+width: 816px;
+height: 57px;
+left: 0px;
+top: 0px;
+
+/* Gray-90 */
+
+background: #21272A;
+border-radius: 4px;
+
+/* Inside auto layout */
+
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+margin: 16px 16px;
+}
+
+.gmnh-question-submit {
+  display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 14px 20px;
+
+position: static;
+width: 169px;
+height: 47px;
+left: 0px;
+top: 73px;
+
+background: #082CAB;
+/* Gray-90 */
+border: 1px solid #21272A;
+box-sizing: border-box;
+border-radius: 4px;
+
+/* Inside auto layout */
+
+flex: none;
+order: 1;
+flex-grow: 0;
+margin: 16px 16px;
 }
 </style>
