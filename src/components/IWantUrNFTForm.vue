@@ -1,6 +1,6 @@
 <template>
   <div>
-      <div class="flex mt-10 text-white">
+      <div class="flex mt-10 text-white" style="background: #343A3F">
       <form v-if="isQuestion" @submit.prevent="createTicket" class="flex-grow">
         <div ><label for="nftName">Enter Question:</label></div>
 
@@ -30,7 +30,7 @@
         </button>
       </form>
 
-      <div class="display" id="canvas" :style="{ fontSize: `${textSize}px` }">
+      <div class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
         <p>{{ nftName }}</p>
       </div>
     </div>
@@ -275,5 +275,9 @@ export default defineComponent({
   background-color: rgb(30, 255, 0);
   width: 250px;
   height: 250px;
+}
+
+.display-canvas {
+  display:none;
 }
 </style>

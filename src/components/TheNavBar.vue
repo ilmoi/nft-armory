@@ -1,46 +1,25 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark py-30 px-30 gmnh-navbar">
-    <a class="navbar-brand ml-200" href="#">
-      GMneedhelp
-    </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <ConnectWalletButton />
-
-    <div class="collapse navbar-collapse justify-end flex" id="navbarSupportedContent">
-      <ul class="navbar-nav justify-end align-items-end">
-        <li v-if="isConnected" class="nav-item">
-          <a class="nav-link" href="/view">See Open Questions</a>
-        </li>
-        <li v-if="isConnected" class="nav-item">
-          <a class="nav-link" href="/urnft">Ask Question</a>
-        </li>
-        <li class="nav-item">
-          <ConfigPane />
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <!--
-  <nav class="navbar navbar-expand-lg justify-end">
-    <a class="navbar-brand" href="#">HelpDesk</a>
-    <NavButton
-      v-for="i in menu"
-      :key="i.name"
-      :title="i.name"
-      :url="i.url"
-      :class="'justify-end nav-item' + { active: path === i.url }"
-    />
-  </nav>-->
+  <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="fs-5 fw-bold text-decoration-none primary-color" href="#">GMneedhelp</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon">
+            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bars" class="svg-inline--fa fa-bars fa-w-14 primary-color" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path fill="currentColor" d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"></path>
+            </svg>
+          </span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+          <div class="d-flex">
+            <div class="d-flex align-items-center">
+              <div class="placeholder me-2"></div>
+              <ConfigPane />
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
 </template>
 
 <script lang="ts">
@@ -83,14 +62,4 @@ export default defineComponent({
   outline: none;
 }
 
-.gmnh-navbar {
-  position: absolute;
-  width: 100%;
-height: 64px;
-left: 0px;
-right: 0px;
-top: 0px;
-
-background: #15191B;
-}
 </style>
