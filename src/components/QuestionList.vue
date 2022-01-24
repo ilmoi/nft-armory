@@ -41,11 +41,9 @@ import { PNFT } from '@/common/helpers/types';
 import QuestionItem from '@/components/QuestionItem.vue';
 import usePinata from '@/composables/pinata';
 import * as pnftInteractions from '@/composables/pnftInteractions'
-import {MDBTabs, MDBTabNav, MDBTabContent, MDBTabItem, MDBTabPane} from 'mdb-vue-ui-kit';
 
 const { isConnected, getWallet, getWalletAddress } = useWallet();
 const allPinataTickets = ref<PNFT[]>([]); // this is everything fetched in mem
-
 
 export default defineComponent({
   data() {
@@ -54,7 +52,7 @@ export default defineComponent({
     };
   },
   components: {
-        QuestionItem,  Tabs, Tab, MDBTabs, MDBTabNav, MDBTabContent, MDBTabItem, MDBTabPane
+        QuestionItem, Tabs, Tab
   },
   computed: {
     doesArrayExist() {
@@ -72,7 +70,6 @@ export default defineComponent({
     
     const { retrieveMyQuestions} = usePinata();
 
-
     retrieveMyQuestions(getWalletAddress()!) 
       .then((pinataTickets) => {
         if (pinataTickets.length) {
@@ -83,7 +80,6 @@ export default defineComponent({
         //  updateLoadingStdErr(ERR_NO_NFTS);
         }
       })  
-
       
     return {
       PNFTs: allPinataTickets,
