@@ -188,7 +188,7 @@ export default defineComponent({
     const prepareMetadata = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
-      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, nftName.value!);
+      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, nftName.value!, getWalletAddress()!);
 
       return hashToURI(jsonHash);
     };
@@ -197,7 +197,7 @@ export default defineComponent({
     const prepareMetadataForAnswer = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
-      const jsonHash = await uploadJSONForAnswer(imgHash, helpDeskWallet.publicKey!, 'HelpDesk Ticket NFT', props.questionID!);
+      const jsonHash = await uploadJSONForAnswer(imgHash, helpDeskWallet.publicKey!, 'HelpDesk Ticket NFT', props.questionID!, getWalletAddress()!);
 
       return hashToURI(jsonHash);
     };

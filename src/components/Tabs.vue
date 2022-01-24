@@ -8,6 +8,8 @@ import {
   toRefs,
   h,
   VNode,
+  computed,
+  onBeforeUpdate,
 } from "vue";
 
 interface IProps {
@@ -40,7 +42,7 @@ export default defineComponent({
       type: String,
       default: "left",
       validator(value: string) {
-        return ["start", "end", "center"].includes(value);
+        return ["left", "start", "end", "center"].includes(value);
       },
     },
     reverse: {
@@ -60,7 +62,7 @@ export default defineComponent({
 
     const selectedIndex = ref(0);
     const tabs = ref<Array<any>>([]);
-    const _tabItems = ref([]);
+    const _tabItems = ref<any[]>([]);    
 
     const onTabKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
@@ -83,12 +85,59 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      getTabItems();
       document.addEventListener("keydown", onTabKeyDown);
     });
+
+    onBeforeUpdate(() => {
+      getTabItems();
+    })
 
     onBeforeUnmount(() => {
       document.removeEventListener("keydown", onTabKeyDown);
     });
+
+    const getTabItems = () => {
+      _tabItems.value.splice(0, _tabItems.value.length);
+      (slots as any).default().forEach((component: any) => {
+        if (component.type.name && component.type.name === "Tab") {
+          _tabItems.value.push(component);
+        } else {
+          component.children.forEach((cComp: any) => {
+            if (cComp.type.name && cComp.type.name === "Tab") {
+              _tabItems.value.push(cComp);
+            }
+          });
+        }
+      });
+    };
+
+    const getTitleSlotContent = (titleSlot: string): any => {
+      let slotContent: any = null;
+      let shouldSkip = false;
+      (slots as any).default().forEach((item: any) => {
+        if (shouldSkip) {
+          return;
+        }
+        if (item.type === "template" && item.props.name === titleSlot) {
+          slotContent = item.children;
+          shouldSkip = true;
+        } else {
+          if (item.children.length) {
+            item.children.forEach((cItem: any) => {
+              if (shouldSkip) {
+                return;
+              }
+              if (cItem.props.name === titleSlot) {
+                slotContent = cItem.children;
+                shouldSkip = true;
+              }
+            });
+          }
+        }
+      });
+      return slotContent === null ? [] : slotContent;
+    };
 
     watch(defaultIndex, (newValue, oldValue) => {
       if (newValue !== selectedIndex.value) {
@@ -100,11 +149,21 @@ export default defineComponent({
       if (newValue === true) reset();
     });
 
-    return () => {
-      _tabItems.value = (slots as any)
-        .default()
-        .filter((component: any) => component.type.name === "Tab");
+    const tabToDisplay = computed(() => {
+      return _tabItems.value.map((item, idx) => {
+        return h(
+          "div",
+          {
+            class: "tab",
+            style: `display: ${selectedIndex.value == idx ? "block" : "none"}`,
+          },
+          item
+        );
+      });
+      // return h("div", { class: "tab" }, _tabItems.value[selectedIndex.value]);
+    });
 
+    return () => {
       const tabList: Array<VNode> = [];
       _tabItems.value.forEach((tab: VNode, index: number) => {
         const _tabProps = tab.props as {
@@ -113,14 +172,8 @@ export default defineComponent({
           disabled?: boolean | string;
         };
 
-        const content = _tabProps["title-slot"]
-          ? (slots as any)
-              .default()
-              .filter(
-                (item: any) =>
-                  item.type === "template" &&
-                  item.props.name === _tabProps["title-slot"]
-              )[0].children
+        const titleContent = _tabProps["title-slot"]
+          ? getTitleSlotContent(_tabProps["title-slot"])
           : _tabProps.title;
         const isDisabled =
           _tabProps.disabled === true || _tabProps.disabled === "";
@@ -139,16 +192,10 @@ export default defineComponent({
                 switchTab(e, index, isDisabled);
               },
             },
-            content
+            titleContent
           )
         );
       });
-
-      const _tabsList = h(
-        "ul",
-        { class: `nav nav-tabs tab-list ${position.value}`, role: "tabList" },
-        tabList
-      );
 
       return h(
         "div",
@@ -157,8 +204,12 @@ export default defineComponent({
           role: "tabs",
         },
         [
-          _tabsList,
-          h("div", { class: "tab" }, _tabItems.value[selectedIndex.value]),
+          h(
+            "ul",
+            { class: `tab-list ${position.value}`, role: "tabList" },
+            tabList
+          ),
+          ...tabToDisplay.value,
         ]
       );
     };
@@ -190,7 +241,7 @@ export default defineComponent({
       padding: 8px 8px;
       cursor: pointer;
       user-select: none;
-      transition: border 0.3s ease-in-out;
+      //transition: border 0.3s ease-in-out;
       position: relative;
       bottom: -1px;
       text-transform: uppercase;
@@ -228,18 +279,33 @@ export default defineComponent({
   &.vertical {
     grid-template-columns: auto 1fr;
     gap: 1rem;
+
+    .tab {
+        background: #343A3F;
+        margin: 8px 0px;
+    }
+
     .tab-list {
       flex-direction: column;
       border-bottom: none;
-      border-right: 1px solid var(--border-color);
+      width: 416px;
+      height: 94px;
+      
+     // border-right: 1px solid var(--border-color);
 
       &__item {
         margin-left: 0;
         border-radius: 0;
+        background: #343A3F;
+        box-sizing: border-box;
+        align-self: stretch;
+        margin: 8px 0px;
 
         &[aria-selected="true"] {
           border: none;
-          border-left: 2px solid var(--primary-color);
+          border: 2px solid var(--primary-color);
+          border-radius: 4px;
+    
         }
       }
     }

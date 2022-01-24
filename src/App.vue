@@ -10,11 +10,10 @@
           <tab title="Ask a Question">
                   <section class="mt-3">
                     <IWantUrNFTForm  isQuestion="true" />
-                    <!--  <router-view /> -->
                   </section>
           </tab>
           <tab title="My Questions">
-           <h3>This is Tab 2</h3>
+            <QuestionList/>
           </tab>
         </tabs>
       </div>
@@ -47,15 +46,13 @@ import TheNavBar from '@/components/TheNavBar.vue';
 import ConfigPane from '@/components/ConfigPane.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import IWantUrNFTForm from '@/components/IWantUrNFTForm.vue';
+import QuestionList from '@/components/QuestionList.vue';
 import Tab from '@/components/Tab.vue';
 import Tabs from '@/components/Tabs.vue';
-import ViewHome from '@/views/ViewHome.vue';
-import TheCat from '@/components/TheCat.vue';
-import TheMobileCover from '@/components/TheMobileCover.vue';
 import useWallet from './composables/wallet';
 
 export default defineComponent({
-  components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm },
+  components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm, QuestionList },
 
   setup() {
     const { isConnected, getWallet, getWalletAddress } = useWallet();

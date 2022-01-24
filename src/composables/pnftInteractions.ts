@@ -44,6 +44,16 @@ export function generateTicketDetailLink(ticket: PNFT) {
      let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
      return typeof attr != 'undefined' ? attr : "Attribute Not Set"
   };
+
+  export function getImageURL (ticket: PNFT) {
+   /* Input: Takes in a ticket (pinata NFT metadata)
+      Output: URL of where image is stored in IPFS
+   */
+    const attr_key = 'imageURI'
+    let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
+    return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+ };
+
   export function readUserID (ticket: PNFT) {
     /* Input: Takes in a ticket (pinata NFT metadata)
        Output: reads ticket user ID from metadata or undefined

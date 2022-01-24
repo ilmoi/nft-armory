@@ -50,7 +50,7 @@ export default function usePinata() {
       return uploadJSONWithDescription(imgIpfsHash, walletAddr, "description");
     }; */
 
-  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey, title: string) => {
+  const uploadJSON = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, userWalletAddr: PublicKey) => {
     const metadata = {
       name: 'GMNeedHelp Question',
       symbol: 'HELP',
@@ -67,7 +67,7 @@ export default function usePinata() {
         ],
         creators: [
           {
-            address: walletAddr.toBase58(),
+            address: gmnhWalletAddr.toBase58(),
             share: 100,
           },
         ],
@@ -80,7 +80,9 @@ export default function usePinata() {
         keyvalues: {
           'ticket_type': 'question',
           'status': 'open',
-          'generation': 'GENESIS'
+          'generation': 'GENESIS',
+          'userWallet': userWalletAddr.toBase58(),
+          'imageURI': hashToURI(imgIpfsHash)
         }
       },
       pinataOptions: {
@@ -92,7 +94,7 @@ export default function usePinata() {
   };
 
 
-  const uploadJSONForAnswer = async (imgIpfsHash: string, walletAddr: PublicKey, title: string, questionID: string) => {
+  const uploadJSONForAnswer = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, questionID: string, userWalletAddr: PublicKey) => {
     const metadata = {
       name: 'GMNeedHelp Answer',
       symbol: 'HELP',
@@ -109,7 +111,7 @@ export default function usePinata() {
         ],
         creators: [
           {
-            address: walletAddr.toBase58(),
+            address: gmnhWalletAddr.toBase58(),
             share: 100,
           },
         ],
@@ -122,7 +124,9 @@ export default function usePinata() {
         keyvalues: {
           'ticket_type': 'answer',
           'questionMintId': questionID,
-          'generation': 'GENESIS'
+          'generation': 'GENESIS',
+          'userWallet': userWalletAddr.toBase58(),
+          'imageURI': hashToURI(imgIpfsHash)
         }
       },
       pinataOptions: {
@@ -139,8 +143,18 @@ export default function usePinata() {
     */
 
     const pinata_results = await searchForOpenTickets()
-    const pnfts = (await convertTicketsToPNFTs(pinata_results))
-    return pnfts
+    const pnfts = (await convertTicketsToPNFTs(pinata_results));
+    return pnfts;
+  };
+
+  const retrieveMyQuestions =  async(userWalletAddr: PublicKey) => {
+    /* Search Pinata account for open NTF tickets & 
+       preprocess retrieved metadata by saving as PNFT objects
+    */
+
+    const pinata_results = await searchForMyQuestions(userWalletAddr);
+    const pnfts = (await convertTicketsToPNFTs(pinata_results));
+    return pnfts;
   };
 
   const searchForOpenTickets =  async() => {
@@ -157,9 +171,6 @@ export default function usePinata() {
             op: 'eq'
         },
       },
-
-    
-    
     };
   
     const filters = {
@@ -170,6 +181,33 @@ export default function usePinata() {
     };
 
     const res = (await pinata.pinList(filters))
+    return res.rows
+  };
+
+  const searchForMyQuestions =  async(userWalletAddr: PublicKey) => {
+    /* Search Pinata account for user's open NTF tickets using metadata filter
+    */
+    const metadataFilter = {
+      keyvalues: {
+        ticket_type: {
+              value: 'question',
+              op: 'eq'
+          },
+        userWallet: {
+          value: userWalletAddr.toBase58(),
+          op: 'eq'
+        }
+      },
+    };
+  
+    const filters = {
+        status : 'pinned',
+        pageLimit: 25,
+        pageOffset: 0,
+        metadata: metadataFilter
+    };
+
+    const res = (await pinata.pinList(filters));
     return res.rows
   };
 
@@ -214,7 +252,8 @@ export default function usePinata() {
     searchForOpenTickets,
     updatePinataMetadata,
     convertTicketsToPNFTs,
-    retrieveOpenTickets
+    retrieveOpenTickets,
+    retrieveMyQuestions
   };
 }
 
