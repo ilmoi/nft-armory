@@ -2,24 +2,30 @@
   <div class="relative h-full min-h-screen">
     <!--navbar + logo-->
     <TheNavBar />
-    <div class="pt-10 px-10 flex justify-center align-middle">
-      <TheLogo />
-      <p class="text-4xl pt-3 px-1"> 🤝</p>
-      <p class="text-4xl pt-3 px-1 text-black underline"> HelpDesk</p>
-      <p class="text-4xl pt-3 px-1"> 🤝</p>
+      
+      <!-- tabs -->
+      <div v-if="isConnected" class="container mt-3">
+        <tabs>
+          <tab title="Ask a Question">
+                  <section class="mt-3">
+                    <IWantUrNFTForm :is-question=true />
+                  </section>
+          </tab>
+          <tab title="My Questions">
+            <QuestionList tabType="myQuestions"/>
+          </tab>
+          <tab title="Open Questions">
+            <QuestionList tabType="openQuestions"/>
+          </tab>
+        </tabs>
+      </div>
+
+    <div v-else> 
+      <div class="gmnh-wallet-center">
+        <span class="wallet-text">Connect your wallet to ask a question!</span>
+        <ConfigPane/>
+      </div>
     </div>
-
-    <!--body-->
-    <div class="p-10">
-      <router-view />
-    </div>
-
-    <!--cat + footer-->
-    <TheCat />
-    <TheFooter />
-
-    <!-- no mobile -->
-    <TheMobileCover v-if="windowWidth < 800" />
   </div>
 </template>
 
@@ -27,13 +33,19 @@
 import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import TheLogo from '@/components/TheLogo.vue';
 import TheNavBar from '@/components/TheNavBar.vue';
+import ConfigPane from '@/components/ConfigPane.vue';
 import TheFooter from '@/components/TheFooter.vue';
-import TheCat from '@/components/TheCat.vue';
-import TheMobileCover from '@/components/TheMobileCover.vue';
+import IWantUrNFTForm from '@/components/IWantUrNFTForm.vue';
+import QuestionList from '@/components/QuestionList.vue';
+import Tab from '@/components/Tab.vue';
+import Tabs from '@/components/Tabs.vue';
+import useWallet from './composables/wallet';
 
 export default defineComponent({
-  components: { TheMobileCover, TheCat, TheFooter, TheLogo, TheNavBar },
+  components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm, QuestionList },
+
   setup() {
+    const { isConnected, getWallet, getWalletAddress } = useWallet();
     const windowWidth = ref(window.innerWidth);
     const onWidthChange = () => {
       windowWidth.value = window.innerWidth;
@@ -43,16 +55,31 @@ export default defineComponent({
 
     return {
       windowWidth,
+      isConnected,
     };
   },
 });
 </script>
 
 <style>
-* {
-  font-family: 'Press Start 2P', monospace;
-}
+
 input[type='radio']:checked + span {
   @apply text-black;
 }
+
+.gmnh-wallet-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.wallet-text {
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 16px;
+  color: #F2F4F8;
+}
+
 </style>

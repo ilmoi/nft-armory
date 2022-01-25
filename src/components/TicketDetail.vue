@@ -1,6 +1,6 @@
 <template>
     <div v-if="ticket" class="flex">
-      <NFTViewCard :n="ticket" class="text-black" />
+      <NFTViewCard :n="ticket" class="text-white" />
     </div>
     <div v-if="isDataLoaded">
       <IWantUrNFTForm :questionID="ticketID" :uri="ticket.metadataOnchain.data.uri"/>

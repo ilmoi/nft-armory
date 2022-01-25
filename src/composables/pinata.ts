@@ -9,6 +9,7 @@ import { PNFT } from '@/common/helpers/types';
 //  I'm hoping it won't be abused - if it does, just put in your own and run locally or let me know (twitter @_ilmoi)
 const apiKey = '7ed5a3f0849f19876a1e';
 const apiSecret = '3d79c1f0f2293450b9c949cacc293c22223eeb8a33b24124e2d750c86627cbc9';
+ 
 
 export default function usePinata() {
   const pinata = pinataSDK(apiKey, apiSecret);
@@ -49,10 +50,10 @@ export default function usePinata() {
       return uploadJSONWithDescription(imgIpfsHash, walletAddr, "description");
     }; */
 
-  const uploadJSON = async (imgIpfsHash: string, walletAddr: PublicKey, title: string) => {
+  const uploadJSON = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, userWalletAddr: PublicKey) => {
     const metadata = {
-      name: 'HelpDesk Ticket',
-      symbol: 'HELPv1',
+      name: 'GMNeedHelp Question',
+      symbol: 'HELP',
       description: title,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
@@ -66,7 +67,7 @@ export default function usePinata() {
         ],
         creators: [
           {
-            address: walletAddr.toBase58(),
+            address: gmnhWalletAddr.toBase58(),
             share: 100,
           },
         ],
@@ -78,7 +79,10 @@ export default function usePinata() {
         name: title,
         keyvalues: {
           'ticket_type': 'question',
-          'status': 'open'
+          'status': 'open',
+          'generation': 'GENESIS',
+          'userWallet': userWalletAddr.toBase58(),
+          'imageURI': hashToURI(imgIpfsHash)
         }
       },
       pinataOptions: {
@@ -90,10 +94,10 @@ export default function usePinata() {
   };
 
 
-  const uploadJSONForAnswer = async (imgIpfsHash: string, walletAddr: PublicKey, title: string, questionID: string) => {
+  const uploadJSONForAnswer = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, questionID: string, userWalletAddr: PublicKey) => {
     const metadata = {
-      name: 'HelpDesk Response',
-      symbol: 'HELPv1',
+      name: 'GMNeedHelp Answer',
+      symbol: 'HELP',
       description: title,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
@@ -107,7 +111,7 @@ export default function usePinata() {
         ],
         creators: [
           {
-            address: walletAddr.toBase58(),
+            address: gmnhWalletAddr.toBase58(),
             share: 100,
           },
         ],
@@ -120,6 +124,9 @@ export default function usePinata() {
         keyvalues: {
           'ticket_type': 'answer',
           'questionMintId': questionID,
+          'generation': 'GENESIS',
+          'userWallet': userWalletAddr.toBase58(),
+          'imageURI': hashToURI(imgIpfsHash)
         }
       },
       pinataOptions: {
@@ -130,14 +137,25 @@ export default function usePinata() {
     return res.IpfsHash;
   };
 
-  const retrieveOpenTickets =  async() => {
+  const retrieveOpenTickets =  async(userWalletAddr: PublicKey) => {
     /* Search Pinata account for open NTF tickets & 
        preprocess retrieved metadata by saving as PNFT objects
     */
 
+    //TODO: need to add whitelist check
     const pinata_results = await searchForOpenTickets()
-    const pnfts = (await convertTicketsToPNFTs(pinata_results))
-    return pnfts
+    const pnfts = (await convertTicketsToPNFTs(pinata_results));
+    return pnfts;
+  };
+
+  const retrieveMyQuestions =  async(userWalletAddr: PublicKey) => {
+    /* Search Pinata account for open NTF tickets & 
+       preprocess retrieved metadata by saving as PNFT objects
+    */
+
+    const pinata_results = await searchForMyQuestions(userWalletAddr);
+    const pnfts = (await convertTicketsToPNFTs(pinata_results));
+    return pnfts;
   };
 
   const searchForOpenTickets =  async() => {
@@ -154,9 +172,6 @@ export default function usePinata() {
             op: 'eq'
         },
       },
-
-    
-    
     };
   
     const filters = {
@@ -167,6 +182,33 @@ export default function usePinata() {
     };
 
     const res = (await pinata.pinList(filters))
+    return res.rows
+  };
+
+  const searchForMyQuestions =  async(userWalletAddr: PublicKey) => {
+    /* Search Pinata account for user's open NTF tickets using metadata filter
+    */
+    const metadataFilter = {
+      keyvalues: {
+        ticket_type: {
+              value: 'question',
+              op: 'eq'
+          },
+        userWallet: {
+          value: userWalletAddr.toBase58(),
+          op: 'eq'
+        }
+      },
+    };
+  
+    const filters = {
+        status : 'pinned',
+        pageLimit: 25,
+        pageOffset: 0,
+        metadata: metadataFilter
+    };
+
+    const res = (await pinata.pinList(filters));
     return res.rows
   };
 
@@ -189,7 +231,7 @@ export default function usePinata() {
   }
 
   const updatePinataMetadata = async(ipfsHash: string, metaDataHash: {}) => {
-    
+
     pinata.hashMetadata(ipfsHash, metaDataHash).then((result) => {
       //handle results here
         console.log(result);
@@ -198,6 +240,9 @@ export default function usePinata() {
       console.log(err);
     });
   };
+
+
+
 
   return {
     uploadImg,
@@ -208,7 +253,8 @@ export default function usePinata() {
     searchForOpenTickets,
     updatePinataMetadata,
     convertTicketsToPNFTs,
-    retrieveOpenTickets
+    retrieveOpenTickets,
+    retrieveMyQuestions
   };
 }
 

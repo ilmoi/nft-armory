@@ -1,0 +1,114 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('./Inter-VariableFont_slnt\,wght.ttf'); 
+}
+
+textarea::-webkit-input-placeholder {
+  color: #343a3f;
+}
+
+textarea:-moz-placeholder {
+  /* Firefox 18- */
+  color: #343a3f;
+}
+
+textarea::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #343a3f;
+}
+
+textarea:-ms-input-placeholder {
+  color: #343a3f;
+}
+
+textarea::placeholder {
+  color: #343a3f;
+}
+
+.primary-color {
+  color: #dde1e6;
+}
+
+.primary-color:hover {
+  color: #dde1e6;
+}
+
+.secondary-color {
+  color: #343a3f;
+}
+
+.tertiary-color {
+  color: #878d96;
+}
+
+body {
+  background: #21272a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+/* styles from figma */
+.navbar {
+  background-color: #15191b;
+}
+
+.placeholder {
+  width: 30px;
+  height: 30px;
+  background: #343a3f;
+  border-radius: 4px;
+}
+
+.content-container {
+  background: #343a3f;
+  border-radius: 4px;
+}
+
+.selected {
+  border: 1px solid #f2f4f8;
+}
+
+.placeholder-2 {
+  width: 16px;
+  height: 16px;
+  background: #878d96;
+  border-radius: 2px;
+}
+
+.primary-btn {
+  background: #082cab;
+  border: 1px solid #21272a;
+  border-radius: 4px;
+}
+
+.textarea {
+  width: 100%;
+  background: #21272a;
+  border-radius: 4px;
+  outline: none;
+  border: 0;
+  color: #dde1e6;
+}
+
+.separator {
+  background-color: #697077;
+  width: 100%;
+  height: 1px;
+}
+
+.nft-container {
+  background: #219653;
+  border-radius: 4px;
+  min-height: 290px;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #697077;
+}
+
+

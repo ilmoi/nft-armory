@@ -1,9 +1,9 @@
 <template>
   <div class="my-5 nes-container with-title text-xs">
-    <h3 class = "title" >{{readTicketName(n)}}</h3>
+    <h3 class = "title text-white" >{{readTicketName(n)}}</h3>
 
-    <div class="flex flex-row">
-      <div class="ml-5 text-gray-400">
+    <div class="flex flex-row" style="background-color: white">
+      <div class="ml-5 text-black">
         <p>
           Date Pinned:
             <span class="text-black">{{readDatePinned(n)}}</span>
@@ -24,17 +24,22 @@
           Ticket Status:
             <span class="text-black">{{readTicketStatus(n)}}</span>
         </p>
+        <span v-if=generateTicketDetailLink(n) class="text-black-400">
+          <a class='nes-btn is-primary' :href='generateTicketDetailLink(n)'>View Answers</a></span>
+        <!-- NOTE: show no 'Answer' button if a ticket has no mintID (some PNFTs are missing this & thus ticketdetail view can't work) -->
+        <span v-else class="text-black-400">View Answers: N/A</span>
+        <p>
+        <span>
+            <button class="nes-btn is-primary" style="background-color: black; color: white" @click="toggleJSON">{Expand full JSON}</button>
+        </span>
+        </p>
         <div></div>
-        <div>
-          <span v-if=generateTicketDetailLink(n) class="text-gray-400"><a class='nes-btn is-primary' :href='generateTicketDetailLink(n)'>Answer</a></span>
-          <!-- NOTE: show no 'Answer' button if a ticket has no mintID (some PNFTs are missing this & thus ticketdetail view can't work) -->
-          <span v-else class="text-gray-400"></span>
-          <button class="nes-btn is-primary" @click="toggleJSON">{ full JSON }</button>
-          <QuestionMark class="text-base ml-2 mt-2" @click="showModal('tooltipJSON')" />
+        <div class="flex flex-row" >
+         
         </div>
       </div>
     </div>
-    <div v-if="fullJSON" class="bg-gray-200 mt-5 copy-father">
+    <div v-if="fullJSON" class="bg-white mt-5 copy-father">
       <button class="nes-btn is-primary copy" @click="doCopyJSON(n)">
         {{ copyText }}
       </button>
@@ -70,7 +75,7 @@ import QuestionMark from '@/components/QuestionMark.vue';
 import useCopy from '@/composables/copy';
 import ContentTooltipRarity from '@/components/content/tooltip/ContentTooltipRarity.vue';
 import { INFT, PNFT} from '@/common/helpers/types';
-
+import * as pnftInteractions from '@/composables/pnftInteractions'
 export default defineComponent({
   props: {
     n: Object,
@@ -83,67 +88,29 @@ export default defineComponent({
     VueJsonPretty,
   },
 
+  // by referencing methods here, have access through Vue componet + for other needs
   methods: {
-    generateTicketDetailLink (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: link to ticket detail page using mintID or undefined (some tickets may not have mintID)
-      */
-       const ticket_detail_url_prefix = "ticketdetail/"
-       const attr_key = "mintId"
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? ticket_detail_url_prefix + attr : undefined
-
+    generateTicketDetailLink: function(ticket: PNFT) {
+      return pnftInteractions.generateTicketDetailLink(ticket)
     },
-
-    readTicketName (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket name from metadata or undefined (some tickets may not have a name)
-      */
-       const attr_key = 'name'
-       let attr = ticket.metadata.hasOwnProperty(attr_key) ? ticket.metadata[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readTicketName: function(ticket: PNFT) {
+      return pnftInteractions.readTicketName(ticket)
     },
-
-    readTicketStatus (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket status from metadata or undefined
-      */
-       const attr_key = 'status'
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readTicketStatus: function(ticket: PNFT) {
+      return pnftInteractions.readTicketStatus(ticket)
     },
-    readTicketType (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket status from metadata or undefined
-      */
-       const attr_key = 'ticket_type'
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readMintID: function(ticket: PNFT) {
+      return pnftInteractions.readMintID(ticket)
     },
-    readMintID (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket mint ID from metadata or undefined
-      */
-       const attr_key = 'mintId'
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readUserID: function(ticket: PNFT) {
+      return pnftInteractions.readUserID(ticket)
     },
-    readUserID (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket user ID from metadata or undefined
-      */
-       const attr_key = 'user_id'
-       let attr = ticket.hasOwnProperty(attr_key) ? ticket[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+    readDatePinned: function(ticket: PNFT) {
+      return pnftInteractions.readDatePinned(ticket)
     },
-    readDatePinned (ticket: PNFT) {
-      /* Input: Takes in a ticket (pinata NFT metadata)
-         Output: reads ticket date pinned to pinata from metadata or undefined
-      */
-       const attr_key = 'date_pinned'
-       let attr = ticket.hasOwnProperty(attr_key) ? ticket[attr_key] : undefined
-       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
-    },
+    readTicketType: function(ticket: PNFT){
+      return pnftInteractions.readTicketType(ticket)
+    }
   },
 
   setup() {
@@ -155,6 +122,7 @@ export default defineComponent({
       fullJSON.value = !fullJSON.value;
     };
 
+   
     // --------------------------------------- clipboard
     const { copyText, doCopyJSON } = useCopy();
 

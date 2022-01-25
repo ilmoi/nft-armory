@@ -1,6 +1,5 @@
 <template>
   <div>
-    <ConfigPane />
     <IWantUrNFTForm isQuestion="true" />
   </div>
 </template>

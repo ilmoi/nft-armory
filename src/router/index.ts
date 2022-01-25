@@ -15,47 +15,17 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/view',
-    name: 'View',
+    name: 'See Open Questions',
     component: ViewView,
-  },
-  {
-    path: '/view/address/:address',
-    name: 'ViewAddress',
-    component: ViewView,
-  },
-  {
-    path: '/view/creator/:creator',
-    name: 'ViewCreator',
-    component: ViewView,
-  },
-  {
-    path: '/view/authority/:authority',
-    name: 'ViewAuthority',
-    component: ViewView,
-  },
-  {
-    path: '/view/mint/:mint',
-    name: 'ViewMint',
-    component: ViewView,
-  },
-  {
-    path: '/mint',
-    name: 'Mint',
-    component: ViewMint,
   },
   {
     path: '/update',
-    name: 'Update',
+    name: 'Answer',
     component: ViewUpdate,
   },
   {
-    path: '/misc',
-    name: 'Misc',
-    component: ViewMisc,
-  },
-  {
     path: '/urnft',
-    name: 'I Want Ur NFT',
+    name: 'Ask Question',
     component: ViewIWantUrNFT,
   },
   {

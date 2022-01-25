@@ -1,5 +1,5 @@
 <template>
-  <p>View <a class="nes-text is-primary" :href="uri" target="_blank">confirmed transaction</a>.</p>
+  View NFT <a class="nes-text is-primary" :href="uri" target="_blank">here</a>.
 </template>
 
 <script lang="ts">
@@ -8,11 +8,11 @@ import useExplorer from '../composables/explorer';
 
 export default defineComponent({
   props: {
-    txId: { type: String, required: true },
+    mintId: { type: String, required: true },
   },
   setup(props) {
-    const { buildTxURI } = useExplorer();
-    const uri = buildTxURI(props.txId);
+    const { buildMintUrl } = useExplorer();
+    const uri = buildMintUrl(props.mintId);
 
     return {
       uri,
