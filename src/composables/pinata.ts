@@ -205,6 +205,19 @@ export default function usePinata() {
     return pnfts;
   };
 
+  const retrieveByMintId =  async(mintId: string) => {
+    /* Search Pinata account for open NTF tickets & 
+       preprocess retrieved metadata by saving as PNFT objects
+    */
+
+    const pinata_results = await searchByMintId(mintId!);
+    const pnfts = (await convertTicketsToPNFTs(pinata_results));
+
+      //retrieve answers and store them in list
+    await pnfts.forEach(pnft => getAnswerText(pnft)); 
+    return pnfts;
+  };
+
   const searchForOpenTickets =  async() => {
     /* Search Pinata account for open NTF tickets using metadata filter
     */
@@ -273,6 +286,7 @@ export default function usePinata() {
           size: t.size,
           ipfs_pin_hash: t.ipfs_pin_hash,
           date_pinned: t.date_pinned,
+          date_unpinned: t.date_unpinned,
           metadata: t.metadata,
           answerText: ''
         })
@@ -303,7 +317,8 @@ export default function usePinata() {
     convertTicketsToPNFTs,
     retrieveOpenTickets,
     retrieveMyQuestions,
-    searchByMintId
+    searchByMintId,
+    retrieveByMintId
   };
 }
 

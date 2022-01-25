@@ -10,6 +10,7 @@ export interface PNFT {
   size: number;
   ipfs_pin_hash: string;
   date_pinned: string;
+  date_unpinned: string;
   metadata: PinataMetadata | any;
   answerText: string;
   // Note: regions/hashPinPolicy is not currently stored

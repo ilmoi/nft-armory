@@ -4,7 +4,7 @@
     <TheNavBar />
       
       <!-- tabs -->
-      <div v-if="isConnected" class="container mt-3">
+      <div v-if="isConnected && $route.name !== 'Ticket Details'" class="container mt-3">
         <tabs>
           <tab title="Ask a Question">
                   <section class="mt-3">
@@ -19,8 +19,10 @@
           </tab>
         </tabs>
       </div>
-
-    <div v-else> 
+      <div v-else-if="isConnected">
+        <TicketDetail/>
+      </div>
+      <div v-else> 
       <div class="gmnh-wallet-center">
         <span class="wallet-text">Connect your wallet to ask a question!</span>
         <ConfigPane/>
@@ -37,12 +39,14 @@ import ConfigPane from '@/components/ConfigPane.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import IWantUrNFTForm from '@/components/IWantUrNFTForm.vue';
 import QuestionList from '@/components/QuestionList.vue';
+import TicketDetail from '@/components/TicketDetail.vue';
+
 import Tab from '@/components/Tab.vue';
 import Tabs from '@/components/Tabs.vue';
 import useWallet from './composables/wallet';
 
 export default defineComponent({
-  components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm, QuestionList },
+  components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm, QuestionList, TicketDetail},
 
   setup() {
     const { isConnected, getWallet, getWalletAddress } = useWallet();
