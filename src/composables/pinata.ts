@@ -3,6 +3,8 @@ import FormData from 'form-data';
 import axios from 'axios';
 import { PublicKey } from '@solana/web3.js';
 import { PNFT } from '@/common/helpers/types';
+import * as pnftInteractions from '@/composables/pnftInteractions';
+
 
 // todo yes this is INTENTIONALLY LEAKED
 //  this is a burner Pinata acc with 1gb free storage I'm using for storing "I want ur NFTs"
@@ -145,6 +147,7 @@ export default function usePinata() {
     //TODO: need to add whitelist check
     const pinata_results = await searchForOpenTickets()
     const pnfts = (await convertTicketsToPNFTs(pinata_results));
+
     return pnfts;
   };
 
@@ -155,6 +158,50 @@ export default function usePinata() {
 
     const pinata_results = await searchForMyQuestions(userWalletAddr);
     const pnfts = (await convertTicketsToPNFTs(pinata_results));
+
+      //retrieve answers and store them in list
+    await pnfts.forEach(pnft => getAnswerText(pnft)); 
+    return pnfts;
+  };
+
+  const getAnswerText = async(pnft: PNFT) => {
+   pnft.answerText = "Awaiting answer..";
+
+    let answerMintId = await pnftInteractions.getAnswerMintId(pnft); 
+  
+    if (answerMintId != 'undefined') {
+      const answerName = (await searchByMintId(answerMintId) 
+      .then((pinataTickets) => {
+         if (pinataTickets.length && pinataTickets.length == 1) {
+            pnft.answerText = pnftInteractions.readTicketName(pinataTickets[0]);
+            return;
+           } 
+        }));
+
+    } 
+  }
+
+  const searchByMintId =  async(mintId: string) => {
+    /* Search Pinata account by mintId
+    */
+    const metadataFilter = {
+      keyvalues: {
+        mintId: {
+              value: mintId,
+              op: 'eq'
+          }      
+      },
+    };
+  
+    const filters = {
+        status : 'pinned',
+        pageLimit: 1,
+        pageOffset: 0,
+        metadata: metadataFilter
+    };
+
+    const res = (await pinata.pinList(filters))
+    const pnfts = (await convertTicketsToPNFTs(res.rows));
     return pnfts;
   };
 
@@ -212,18 +259,22 @@ export default function usePinata() {
     return res.rows
   };
 
+
+
   async function convertTicketsToPNFTs(tokens: PinataPinListResponseRow[]): Promise<PNFT[]> {
     /* Convert tickets from Pinata search by cross-mapping data to new objects in memory
        Takes PinataPinListResponseRow[] ----> PNFT
     */
     return Promise.all(tokens.map(async (t) =>
-        ({
+        (
+          {
           id: t.id,
           user_id: t.user_id,
           size: t.size,
           ipfs_pin_hash: t.ipfs_pin_hash,
           date_pinned: t.date_pinned,
           metadata: t.metadata,
+          answerText: ''
         })
       )
     
@@ -241,9 +292,6 @@ export default function usePinata() {
     });
   };
 
-
-
-
   return {
     uploadImg,
     uploadJSON,
@@ -254,7 +302,8 @@ export default function usePinata() {
     updatePinataMetadata,
     convertTicketsToPNFTs,
     retrieveOpenTickets,
-    retrieveMyQuestions
+    retrieveMyQuestions,
+    searchByMintId
   };
 }
 

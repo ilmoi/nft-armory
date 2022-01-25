@@ -11,6 +11,7 @@ export interface PNFT {
   ipfs_pin_hash: string;
   date_pinned: string;
   metadata: PinataMetadata | any;
+  answerText: string;
   // Note: regions/hashPinPolicy is not currently stored
 
 }

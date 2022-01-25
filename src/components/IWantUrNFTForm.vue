@@ -199,7 +199,7 @@ export default defineComponent({
     const prepareMetadataForAnswer = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
-      const jsonHash = await uploadJSONForAnswer(imgHash, helpDeskWallet.publicKey!, 'HelpDesk Ticket NFT', props.questionID!, getWalletAddress()!);
+      const jsonHash = await uploadJSONForAnswer(imgHash, helpDeskWallet.publicKey!, nftName.value!, props.questionID!, getWalletAddress()!);
 
       return hashToURI(jsonHash);
     };
