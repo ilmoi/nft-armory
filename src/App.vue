@@ -20,18 +20,6 @@
         </tabs>
       </div>
 
-  <!--
-        <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link active ps-0" aria-current="page" href="#">Ask a Question</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">My Questions</a>
-        </li>
-      </ul>
-      -->
-      <!-- body -->
-
     <div v-else> 
       <div class="gmnh-wallet-center">
         <span class="wallet-text">Connect your wallet to ask a question!</span>
