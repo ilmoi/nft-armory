@@ -166,24 +166,20 @@ export default function usePinata() {
     */
   };
 
- /* const getAnswerText = async(pnft: PNFT) => {
+  const retrieveAnsweredQuestions =  async(userWalletAddr: PublicKey) => {
+    /* Search Pinata account for answered NTF tickets & 
+       preprocess retrieved metadata by saving as PNFT objects
+    */
 
-    let answerMintId = await pnftInteractions.getAnswerMintId(pnft); 
-  
-    if (answerMintId != 'undefined') {
-      const answerName = (await searchByMintId(answerMintId) 
-      .then((pinataTickets) => {
-         if (pinataTickets.length && pinataTickets.length == 1) {
-            pnft.answerText = pnftInteractions.readTicketName(pinataTickets[0]);
-            return;
-           } else {
-            pnft.answerText = "Awaiting answer..";
-            return;
-           }
-        }));
+    const pinata_results = await searchForAnsweredQuestions(userWalletAddr);
+    const pnfts = (await convertTicketsToPNFTs(pinata_results));
 
-    } 
-  } */
+    return pnfts;
+
+      //we dont need to do this anymore
+   /* await pnfts.forEach(pnft => getAnswerText(pnft)); 
+    */
+  };
 
   const searchByMintId =  async(mintId: string) => {
     /* Search Pinata account by mintId
@@ -222,6 +218,33 @@ export default function usePinata() {
 
       //NO LONGER NEED THIS SINCE WE'RE STORING ANSWER TEXT direclty in question metadata
    // await pnfts.forEach(pnft => getAnswerText(pnft)); 
+  };
+
+  const searchForAnsweredQuestions =  async(userWalletAddr: PublicKey) => {
+    /* Search Pinata account for open NTF tickets using metadata filter
+    */
+    const metadataFilter = {
+      keyvalues: {
+        ticket_type: {
+              value: 'question',
+              op: 'eq'
+          },
+          status: {
+            value: 'answered',
+            op: 'eq'
+        },
+      },
+    };
+  
+    const filters = {
+        status : 'pinned',
+        pageLimit: 25,
+        pageOffset: 0,
+        metadata: metadataFilter
+    };
+
+    const res = (await pinata.pinList(filters))
+    return res.rows
   };
 
   const searchForOpenTickets =  async() => {
@@ -321,7 +344,8 @@ export default function usePinata() {
     retrieveOpenTickets,
     retrieveMyQuestions,
     searchByMintId,
-    retrieveByMintId
+    retrieveByMintId,
+    retrieveAnsweredQuestions
   };
 }
 

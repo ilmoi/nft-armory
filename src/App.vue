@@ -17,6 +17,9 @@
           <tab title="Open Questions">
             <QuestionList tabType="openQuestions"/>
           </tab>
+          <tab title="Answered Questions">
+            <QuestionList tabType="answeredQuestions"/>
+          </tab>
         </tabs>
       </div>
       <div v-else-if="isConnected && $route.name == 'Ticket Details'">

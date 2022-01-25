@@ -34,6 +34,18 @@
     </tab>
    </tabs>
 
+   <tabs v-if="doAnsweredQuestionsExist && (tabType == 'answeredQuestions')" direction="vertical">
+      <tab v-for="(n, idx) in answeredQuestions" :key="n.id" :id="idx" :title='readTicketName(n)'>     
+        <div class="gmnh-tab-content">
+            <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
+            <div class="gmnh-tab-content-byline">Asked by you 10 mins ago</div>
+            <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
+            <hr style="border: 1px solid #697077;"/>
+            <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/>
+        </div> 
+    </tab>
+   </tabs>
+
 <!--
        <QuestionItem v-for="n in PNFTs" :key="n.id" :n="n"></QuestionItem>
 
@@ -56,6 +68,7 @@ import * as pnftInteractions from '@/composables/pnftInteractions'
 const { isConnected, getWallet, getWalletAddress } = useWallet();
 const myQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
 const openQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
+const answeredQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
 
 export default defineComponent({
   data() {
@@ -72,6 +85,9 @@ export default defineComponent({
     },
     doOpenQuestionsExist() {
       return openQuestions.value.length > 0;
+    },
+    doAnsweredQuestionsExist() {
+      return answeredQuestions.value.length > 0;
     }
   },
   props: {
@@ -117,11 +133,25 @@ export default defineComponent({
         //  updateLoadingStdErr(ERR_NO_NFTS);
         }
       }) 
+    } else if (props.tabType && props.tabType == 'answeredQuestions') {
+        const { retrieveAnsweredQuestions} = usePinata();
+
+    retrieveAnsweredQuestions(getWalletAddress()!) 
+      .then((pinataTickets) => {
+        if (pinataTickets.length) {
+          answeredQuestions.value = pinataTickets;
+        } else {
+            //TODO: add error message
+        //  updateLoadingStdErr(ERR_NO_NFTS);
+        }
+      }) 
+
     }
 
     return {
       myQuestionList: myQuestions,
-      openQuestionList: openQuestions
+      openQuestionList: openQuestions,
+      answeredQuestions: answeredQuestions
     }; 
       
     
