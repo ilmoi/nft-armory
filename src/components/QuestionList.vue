@@ -105,7 +105,6 @@ export default defineComponent({
         }
       }) 
 
-      
     } else if (props.tabType && props.tabType == 'openQuestions') {
         const { retrieveOpenTickets} = usePinata();
 

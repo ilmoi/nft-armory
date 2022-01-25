@@ -19,15 +19,13 @@
           </tab>
         </tabs>
       </div>
-      <div v-else-if="isConnected">
+      <div v-else-if="isConnected && $route.name == 'Ticket Details'">
         <TicketDetail/>
       </div>
-      <div v-else> 
-      <div class="gmnh-wallet-center">
+      <div v-if="!isConnected" class="gmnh-wallet-center">
         <span class="wallet-text">Connect your wallet to ask a question!</span>
         <ConfigPane/>
       </div>
-    </div>
   </div>
 </template>
 
@@ -66,11 +64,6 @@ export default defineComponent({
 </script>
 
 <style>
-
-input[type='radio']:checked + span {
-  @apply text-black;
-}
-
 .gmnh-wallet-center {
   position: absolute;
   left: 50%;

@@ -36,14 +36,7 @@ export default defineComponent({
     const path = computed(() => route.path);
     const { isConnected, getWallet, getWalletAddress } = useWallet();
 
-
-    const menu = [
-      { name: 'See Open Questions', url: '/view' },
-      { name: 'Ask Question', url: '/urnft' },
-    ];
-
     return {
-      menu,
       path,
       isConnected,
     };

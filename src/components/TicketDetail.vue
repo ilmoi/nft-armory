@@ -8,7 +8,7 @@
             <hr style="border: 1px solid #697077;"/>
             <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/>
 
-            <IWantUrNFTForm :questionID="getQuestionId(n)" :hash="getIPFSHash(n)"/>
+            <IWantUrNFTForm v-if="needsToBeAnswered(n)" :questionID="getQuestionId(n)" :hash="getIPFSHash(n)"/>
 
       </div>
 
@@ -64,12 +64,15 @@ export default defineComponent({
       return pnftInteractions.readIPFSHash(ticket);  
     }, getAnswer: function(ticket: PNFT) {
       return pnftInteractions.getAnswerText(ticket);
+    }, needsToBeAnswered: function(ticket: PNFT) {
+      return pnftInteractions.needsToBeAnswered(ticket);
     }
   },
   setup() {
 
     //todo: temporary, but set to DEV for now
     const { cluster, setCluster, getClusterURL } = useCluster();
+    /*
     const chosenCluster = computed({
       get() {
         return cluster.value;
@@ -77,30 +80,14 @@ export default defineComponent({
       set(newVal: Cluster) {
         setCluster(newVal);
       },
-    });
-    setCluster(Cluster.Devnet);
+    }); */
+    //setCluster(Cluster.Devnet);
 
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { error, clearError, setError } = useError();
 
-    
-    
-    const fetchTicket =  (ticketID:string) => {
-       if (ticketID != null) {
-            try {
-                 NFTGet({ mint: new PublicKey(ticketID) })
-                .then((fetchedNFT) => {
-                    [ticket.value] = fetchedNFT;
-                });
-            } catch (e) {
-                console.log("something went wrong when fetching the ticket", e);
-                return null;    
-            }
-        } 
-    };
-
     //grabbing ticketID from URL
-    onMounted(() => {
+    
       const route = useRoute();
       const {
         ticketID: goTicketID
@@ -127,7 +114,7 @@ export default defineComponent({
       }
 
       
-    });
+    
 
      return {
          isConnected,

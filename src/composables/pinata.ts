@@ -159,13 +159,14 @@ export default function usePinata() {
     const pinata_results = await searchForMyQuestions(userWalletAddr);
     const pnfts = (await convertTicketsToPNFTs(pinata_results));
 
-      //retrieve answers and store them in list
-    await pnfts.forEach(pnft => getAnswerText(pnft)); 
     return pnfts;
+
+      //we dont need to do this anymore
+   /* await pnfts.forEach(pnft => getAnswerText(pnft)); 
+    */
   };
 
-  const getAnswerText = async(pnft: PNFT) => {
-   pnft.answerText = "Awaiting answer..";
+ /* const getAnswerText = async(pnft: PNFT) => {
 
     let answerMintId = await pnftInteractions.getAnswerMintId(pnft); 
   
@@ -175,11 +176,14 @@ export default function usePinata() {
          if (pinataTickets.length && pinataTickets.length == 1) {
             pnft.answerText = pnftInteractions.readTicketName(pinataTickets[0]);
             return;
-           } 
+           } else {
+            pnft.answerText = "Awaiting answer..";
+            return;
+           }
         }));
 
     } 
-  }
+  } */
 
   const searchByMintId =  async(mintId: string) => {
     /* Search Pinata account by mintId
@@ -213,9 +217,11 @@ export default function usePinata() {
     const pinata_results = await searchByMintId(mintId!);
     const pnfts = (await convertTicketsToPNFTs(pinata_results));
 
-      //retrieve answers and store them in list
-    await pnfts.forEach(pnft => getAnswerText(pnft)); 
     return pnfts;
+
+
+      //NO LONGER NEED THIS SINCE WE'RE STORING ANSWER TEXT direclty in question metadata
+   // await pnfts.forEach(pnft => getAnswerText(pnft)); 
   };
 
   const searchForOpenTickets =  async() => {
@@ -288,7 +294,6 @@ export default function usePinata() {
           date_pinned: t.date_pinned,
           date_unpinned: t.date_unpinned,
           metadata: t.metadata,
-          answerText: ''
         })
       )
     
@@ -299,10 +304,8 @@ export default function usePinata() {
 
     pinata.hashMetadata(ipfsHash, metaDataHash).then((result) => {
       //handle results here
-        console.log(result);
       }).catch((err) => {
       //handle error here
-      console.log(err);
     });
   };
 

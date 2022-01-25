@@ -70,8 +70,17 @@ export function generateTicketDetailLink(ticket: PNFT) {
    /* Input: Takes in a ticket (pinata NFT metadata)
       Output: mintId of answer (if exists)
    */
-     return ticket.answerText;
- };
+     const attr_key = 'answerText'
+     let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
+     return typeof attr != 'undefined' ? attr : "Awaiting answer..."
+    };
+
+ export function needsToBeAnswered (ticket: PNFT) {
+    console.log('type: ', readTicketType(ticket));
+    console.log('status: ', readTicketStatus(ticket));
+
+   return (readTicketType(ticket) == 'question' && readTicketStatus(ticket) == 'open');   
+ }
 
   export function readUserID (ticket: PNFT) {
     /* Input: Takes in a ticket (pinata NFT metadata)

@@ -168,6 +168,7 @@ export default defineComponent({
       const newMetadataForQuestion = {
         keyvalues: {
           answerMintId: newNFT.value!.mint.toBase58(),
+          answerText: newNFT.value?.metadataExternal.description,
           status: 'answered',
         }
       };
