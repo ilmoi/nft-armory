@@ -70,3 +70,12 @@ export function generateTicketDetailLink(ticket: PNFT) {
      let attr = ticket.hasOwnProperty(attr_key) ? ticket[attr_key] : undefined
      return typeof attr != 'undefined' ? attr : "Attribute Not Set"
   };
+
+  export function readIPFSHash (ticket: PNFT) {
+   /* Input: Takes in a ticket (pinata NFT metadata)
+      Output: reads ipfshash pinned to pinata 
+   */
+   return ticket.ipfs_pin_hash;
+ };
+
+  

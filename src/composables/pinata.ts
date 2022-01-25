@@ -137,11 +137,12 @@ export default function usePinata() {
     return res.IpfsHash;
   };
 
-  const retrieveOpenTickets =  async() => {
+  const retrieveOpenTickets =  async(userWalletAddr: PublicKey) => {
     /* Search Pinata account for open NTF tickets & 
        preprocess retrieved metadata by saving as PNFT objects
     */
 
+    //TODO: need to add whitelist check
     const pinata_results = await searchForOpenTickets()
     const pnfts = (await convertTicketsToPNFTs(pinata_results));
     return pnfts;
@@ -230,7 +231,7 @@ export default function usePinata() {
   }
 
   const updatePinataMetadata = async(ipfsHash: string, metaDataHash: {}) => {
-    
+
     pinata.hashMetadata(ipfsHash, metaDataHash).then((result) => {
       //handle results here
         console.log(result);

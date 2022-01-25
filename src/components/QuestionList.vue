@@ -12,14 +12,24 @@
     </MDBTabContent>
   </MDBTabs>  -->
   
-  <tabs v-if="doesArrayExist" direction="vertical">
-      <tab v-for="(n, idx) in PNFTs" :key="n.id" :id="idx" :title='readTicketName(n)'>     
+  <tabs v-if="doMyQuestionsExist && (tabType == 'myQuestions')" direction="vertical">
+      <tab v-for="(n, idx) in myQuestionList" :key="n.id" :id="idx" :title='readTicketName(n)'>     
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by you 10 mins ago</div>
             <div class="gmnh-tab-content-status">Awaiting answer...</div>
             <hr style="border: 1px solid #697077;"/>
             <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/>
+        </div> 
+    </tab>
+   </tabs>
+
+    <tabs v-if="doOpenQuestionsExist && (tabType == 'openQuestions')" direction="vertical">
+      <tab v-for="(n, idx) in openQuestionList" :key="n.id" :id="idx" :title='readTicketName(n)'>     
+        <div class="gmnh-tab-content">
+            <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
+            <div class="gmnh-tab-content-byline">Asked by you 10 mins ago</div>
+            <IWantUrNFTForm :is-question=false :questionID="getQuestionId(n)" :hash="getIPFSHash(n)"/>        
         </div> 
     </tab>
    </tabs>
@@ -37,13 +47,16 @@ import 'vue-json-pretty/lib/styles.css';
 import useWallet from '@/composables/wallet';
 import Tabs from '@/components/Tabs.vue';
 import Tab from '@/components/Tab.vue';
+import IWantUrNFTForm from '@/components/IWantUrNFTForm.vue';
 import { PNFT } from '@/common/helpers/types';
 import QuestionItem from '@/components/QuestionItem.vue';
 import usePinata from '@/composables/pinata';
 import * as pnftInteractions from '@/composables/pnftInteractions'
 
 const { isConnected, getWallet, getWalletAddress } = useWallet();
-const allPinataTickets = ref<PNFT[]>([]); // this is everything fetched in mem
+const myQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
+const openQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
+
 
 export default defineComponent({
   data() {
@@ -52,39 +65,67 @@ export default defineComponent({
     };
   },
   components: {
-        QuestionItem, Tabs, Tab
+        QuestionItem, Tabs, Tab, IWantUrNFTForm
   },
   computed: {
-    doesArrayExist() {
-      return allPinataTickets.value.length > 0;
-    }
+    doMyQuestionsExist() {
+      return myQuestions.value.length > 0;
+    },
+    doOpenQuestionsExist() {
+      return openQuestions.value.length > 0;
+    },
+
+  },
+  props: {
+    tabType: { type: String, required: true},
   },
   methods: {
       readTicketName: function(ticket: PNFT) {
       return pnftInteractions.readTicketName(ticket)
     }, getImageUrl: function(ticket: PNFT) {
       return pnftInteractions.getImageURL(ticket)
-    },
+    }, getQuestionId: function(ticket: PNFT) {
+      return pnftInteractions.readMintID(ticket);  
+    }, getIPFSHash: function(ticket: PNFT) {
+      return pnftInteractions.readIPFSHash(ticket);  
+    }
   },
-  setup() {
+  setup(props) {
     
+    if (props.tabType && props.tabType == 'myQuestions') {
     const { retrieveMyQuestions} = usePinata();
 
     retrieveMyQuestions(getWalletAddress()!) 
       .then((pinataTickets) => {
         if (pinataTickets.length) {
-            console.log("Retrieved");
-          allPinataTickets.value = pinataTickets;
+          myQuestions.value = pinataTickets;
         } else {
             //TODO: add error message
         //  updateLoadingStdErr(ERR_NO_NFTS);
         }
-      })  
+      }) 
+
       
+    } else if (props.tabType && props.tabType == 'openQuestions') {
+        const { retrieveOpenTickets} = usePinata();
+
+    retrieveOpenTickets(getWalletAddress()!) 
+      .then((pinataTickets) => {
+        if (pinataTickets.length) {
+          openQuestions.value = pinataTickets;
+        } else {
+            //TODO: add error message
+        //  updateLoadingStdErr(ERR_NO_NFTS);
+        }
+      }) 
+    }
+
     return {
-      PNFTs: allPinataTickets,
-      retrieveMyQuestions,
-    };
+      myQuestionList: myQuestions,
+      openQuestionList: openQuestions
+    }; 
+      
+    
   },
 });
 </script>

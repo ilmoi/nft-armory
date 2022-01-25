@@ -2,18 +2,20 @@
   <div class="relative h-full min-h-screen">
     <!--navbar + logo-->
     <TheNavBar />
-
       
       <!-- tabs -->
       <div v-if="isConnected" class="container mt-3">
         <tabs>
           <tab title="Ask a Question">
                   <section class="mt-3">
-                    <IWantUrNFTForm  isQuestion="true" />
+                    <IWantUrNFTForm :is-question=true />
                   </section>
           </tab>
           <tab title="My Questions">
-            <QuestionList/>
+            <QuestionList tabType="myQuestions"/>
+          </tab>
+          <tab title="Open Questions">
+            <QuestionList tabType="openQuestions"/>
           </tab>
         </tabs>
       </div>

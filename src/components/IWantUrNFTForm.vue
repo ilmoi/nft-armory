@@ -15,25 +15,22 @@
         </button>
       </form>
       <form v-if="!isQuestion && !isLoading" @submit.prevent="createAnswer" class="flex-grow">
-        <div ><label for="nftName">Enter Answer:</label></div>
-
-        <div><input type="text" id="nftName" class="nes-input" v-model="nftName" /></div>
-
+        <div><textarea focus-visible type="text" id="nftName" placeholder="Write answer here:" class="nes-input gmnh-answer" v-model="nftName" /></div>
         <button
-          class="nes-btn is-primary mt-5"
+          class="gmnh-answer-submit"
           :class="{ 'is-disabled': isLoading || !isConnected }"
           :disabled="isLoading || !isConnected"
           type="submit"
         >
-          Respond to Ticket
+          Answer Question
         </button>
       </form>
 
        <!--notifications-->
     
     <div class="flex-grow">
-      <StdNotifications v-if="!mintResult" :is-connected="isConnected" :is-loading="isLoading" :is-created="isCreated" :error="error" />
-      <StdNotifications v-else :is-connected="isConnected" :is-loading="isLoading" :is-created="isCreated" :mint-id="mintResult.mint" :error="error" />
+      <StdNotifications v-if="!mintResult" :is-question="isQuestion" :is-connected="isConnected" :is-loading="isLoading" :is-created="isCreated" />
+      <StdNotifications v-else :is-question="isQuestion" :is-connected="isConnected" :is-loading="isLoading" :is-created="isCreated" :mint-id="mintResult.mint"  />
     </div>
    <!-- <NotifySuccess v-if="mintResult" class="mt-5">
       <p>Mint successful! 🎉</p>
@@ -46,9 +43,13 @@
       </div>
     </NotifySuccess> -->
 
-      <div class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
+      <div v-if="isQuestion" class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
         <p>{{ nftName }}</p>
       </div>
+      <div v-else class=" display-answer display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
+        <p>{{ nftName }}</p>
+      </div>
+
 
    
   </div>
@@ -88,13 +89,14 @@ export default defineComponent({
     StdNotifications,
   },
   props: {
-    isQuestion: String,
+    isQuestion: {type: Boolean},
     questionID: { type: String },
     uri: { type: String },
+    hash: {type: String}
   },
   setup(props) {
     const { isConnected, getWallet, getWalletAddress } = useWallet();
-    const { error, clearError, setError } = useError();
+    const { clearError, setError } = useError();
 
     const isLoading = ref<boolean>(false);
     const isCreated = ref<boolean>(false);
@@ -170,7 +172,7 @@ export default defineComponent({
         }
       };
 
-      updatePinataMetadata(URIToHash(props.uri!), newMetadataForQuestion);
+      updatePinataMetadata(props.hash!, newMetadataForQuestion);
     };
 
     // --------------------------------------- prep metadata
@@ -231,7 +233,7 @@ export default defineComponent({
       NFTMintMaster(helpDeskWallet as any, answerUri, 0)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
-          isLoading.value = false;
+         // isLoading.value = false;
           //FYI, fetchNewNFT updates 
           //1. metadata in IPFS for answer with mintID of NFT
           //2. metadata in IPFS for question with mintID of answer + update status
@@ -279,6 +281,16 @@ export default defineComponent({
   margin: 16px;
 }
 
+.display-answer {
+  @apply text-center flex flex-col justify-center align-middle ml-10 mt-2;
+  background-color: #219653;
+  width: 250px;
+  height: 250px;
+  margin-right: 16px;
+  margin-bottom: 16px;
+  margin-top: 0px;
+}
+
 .gmnh-question {
   display: flex;
 flex-direction: row;
@@ -305,6 +317,31 @@ flex-grow: 0;
 margin: 16px 16px;
 }
 
+.gmnh-answer {
+  display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 16px;
+
+position: static;
+width: 416px;
+height: 131px;
+left: 0px;
+top: 0px;
+
+/* Gray-90 */
+
+background: #21272A;
+border-radius: 4px;
+
+/* Inside auto layout */
+
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+}
+
 .gmnh-question-submit {
   display: flex;
 flex-direction: row;
@@ -319,7 +356,6 @@ top: 73px;
 
 background: #082CAB;
 /* Gray-90 */
-border: 1px solid #21272A;
 box-sizing: border-box;
 border-radius: 4px;
 
@@ -329,5 +365,30 @@ flex: none;
 order: 1;
 flex-grow: 0;
 margin: 16px 16px;
+}
+
+.gmnh-answer-submit {
+  display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 14px 20px;
+
+position: static;
+width: 169px;
+height: 47px;
+left: 0px;
+top: 73px;
+
+background: #082CAB;
+/* Gray-90 */
+box-sizing: border-box;
+border-radius: 4px;
+
+/* Inside auto layout */
+
+flex: none;
+order: 1;
+flex-grow: 0;
+margin-top: 16px;
 }
 </style>

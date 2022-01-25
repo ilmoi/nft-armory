@@ -52,6 +52,10 @@ import ModalWindow from '@/components/ModalWindow.vue';
 import ContentTooltipExport from '@/components/content/tooltip/ContentTooltipExport.vue';
 import useModal from '@/composables/modal';
 import usePinata from '@/composables/pinata';
+import useWallet from '@/composables/wallet';
+
+
+const { isConnected, getWallet, getWalletAddress } = useWallet();
 
 export default defineComponent({
   components: {
@@ -82,7 +86,7 @@ export default defineComponent({
 
     const allPinataTickets = ref<PNFT[]>([]); // this is everything fetched in mem
 
-    retrieveOpenTickets() 
+    retrieveOpenTickets(getWalletAddress()!) 
       .then((pinataTickets) => {
         if (pinataTickets.length) {
           allPinataTickets.value = pinataTickets
@@ -92,11 +96,8 @@ export default defineComponent({
       })
       .catch(updateLoadingStdErr);
 
-   
       EE.removeAllListeners();
       EE.on('loading', updateLoading);
-
-      
 
   
     // --------------------------------------- modal
