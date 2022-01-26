@@ -27,4 +27,8 @@ export const DEFAULTS = {
   PRIMARY_SALE: null,
 
   METADATA_PROGRAM_ID: 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s',
+
+  AIRTABLE_API_KEY: '',
+  AIRTABLE_APP_BASE_ID: '',
+  AIRTABLE_GMNH_USER_TABLE_NAME: ''
 };
