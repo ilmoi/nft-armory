@@ -2,9 +2,9 @@
 // const airtable_api_key = DEFAULTS.AIRTABLE_API_KEY
 // const airtable_app_base_id = DEFAULTS.AIRTABLE_APP_BASE_ID
 // const gmnh_user_table = DEFAULTS.AIRTABLE_GMNH_USER_TABLE_NAME
-var airtable_api_key = 'keyM26wlqw1DGtdY5';
-var airtable_app_base_id = 'app8GOvV30m8LwnkS';
-var gmnh_user_table = 'GMNH User';
+var airtable_api_key = '';
+var airtable_app_base_id = '';
+var gmnh_user_table = '';
 var Airtable = require('airtable');
 
 
