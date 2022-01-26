@@ -4,7 +4,6 @@ import { PublicKey, Keypair, Transaction, sendAndConfirmTransaction } from '@sol
 import { stringifyPubkeysAndBNsInObject } from './helpers/util';
 import useCluster from '@/composables/cluster';
 import useWallet from '@/composables/wallet';
-import { help } from 'commander';
 
 
 const { getConnection } = useCluster();
@@ -41,34 +40,118 @@ export async function NFTMintMaster(wallet: Wallet, uri: string, maxSupply?: num
     );
     
     try {
-    // Create associated token accounts for my token if they don't exist yet
-      var fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+      var transaction = new Transaction();
+
+      const associatedSenderTokenAddr = await Token.getAssociatedTokenAddress(
+        myToken.associatedProgramId,
+        myToken.programId,
+        result.mint,
         helpDeskWallet.publicKey
       );
 
-      var toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+      // First, let's try to create associated token accounts for my token if they don't exist yet
+      try {
+        var fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+        helpDeskWallet.publicKey
+      ); 
+      } catch (err) {
+        console.log('error creating fromTokenAccount', err)
+      }
+
+      const senderAccount = await (connection.getAccountInfo(associatedSenderTokenAddr));
+  
+      if (senderAccount == null) {
+        try {
+
+          //if sender account is still null for some rason, let's try to create associated
+          //account again
+            await myToken.createAssociatedTokenAccount(helpDeskWallet.publicKey);
+        } catch (err) {
+          console.log('still couldnt create sender account', err);
+        }
+      } 
+    
+      //now lets create destination associated account
+      try {
+        var toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+          getWalletAddress()!
+       ); 
+      } catch (err) {
+        console.log('error creating toAccount ', err)
+      }
+
+    const associatedDestinationTokenAddr = await Token.getAssociatedTokenAddress(
+      myToken.associatedProgramId,
+      myToken.programId,
+      result.mint,
       getWalletAddress()!
+    );
+
+    const receiverAccount = await connection.getAccountInfo(associatedDestinationTokenAddr);
+
+    //const instructions: web3.TransactionInstruction[] = [];  
+
+    if (receiverAccount !== null && receiverAccount.owner.toBase58() !== getWalletAddress()!.toBase58()) {
+      // derived account of original owner was at one point transferred, so we transfer our account (only works with NFTs, not fungibles). I opened https://github.com/solana-labs/solana-program-library/issues/2514 to figure out fungibles
+      transaction.add(
+        Token.createSetAuthorityInstruction(
+          TOKEN_PROGRAM_ID,
+          associatedSenderTokenAddr,
+          getWalletAddress(),
+          "AccountOwner",
+          helpDeskWallet.publicKey,
+          []
+        )
       );
 
-      // Add token transfer instructions to transaction 
-      var transaction = new Transaction()
-      .add(
-      Token.createTransferInstruction(
-        TOKEN_PROGRAM_ID,
-        fromTokenAccount.address,
-        toTokenAccount.address,
-        helpDeskWallet.publicKey,
-        [],
-        1
+    /*  var signature = await sendAndConfirmTransaction(
+        connection,
+        transaction3,
+        [helpDeskWallet]
+        ); */
+    } else {
+
+      if (receiverAccount === null) {
+      //if receiver account is still null for some rason, let's try to create it
+
+      try {
+        await myToken.createAssociatedTokenAccount(getWalletAddress()!);
+      } catch (err) {
+        console.log('tried to create a receiveer account', err);
+      }
+     /*   transaction3.add(
+          Token.createAssociatedTokenAccountInstruction(
+            myToken.associatedProgramId,
+            myToken.programId,
+            result.mint,
+            associatedDestinationTokenAddr,
+            getWalletAddress()!,
+            helpDeskWallet.publicKey
+          )
+
+        ) */
+                  
+      }
+
+      //finally, let's transfer GMNH NFT from sender to recipient
+      transaction.add(
+        Token.createTransferInstruction(
+          TOKEN_PROGRAM_ID,
+          associatedSenderTokenAddr,
+          associatedDestinationTokenAddr,
+          helpDeskWallet.publicKey,
+          [],
+          1
         )
       );
 
       // Sign transaction, broadcast, and confirm
       var signature = await sendAndConfirmTransaction(
-      connection,
-      transaction,
-      [helpDeskWallet]
-      );
+        connection,
+        transaction,
+        [helpDeskWallet]
+        );
+    }
 
       console.log("Successfully transferred newly created NFT to receipient wallet: ", getWalletAddress()?.toBase58());
     } catch(err) {

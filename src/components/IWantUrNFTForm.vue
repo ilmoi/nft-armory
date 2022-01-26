@@ -118,8 +118,8 @@ export default defineComponent({
       )
     );
 
-    const clearPreviousResults = () => {
-      isLoading.value = false;
+    const reset = () => {
+      isLoading.value = true;
       isCreated.value = false;
       mintResult.value = null;
       newNFT.value = null;
@@ -212,8 +212,7 @@ export default defineComponent({
 
     // --------------------------------------- mint newe nft
     const createTicket = async () => {
-      clearPreviousResults();
-      isLoading.value = true;
+      reset();
 
       const uri = await prepareMetadata();
 
@@ -231,8 +230,7 @@ export default defineComponent({
     };
 
     const createAnswer = async () => {
-      clearPreviousResults();
-      isLoading.value = true;
+      reset();
 
       const answerUri = await prepareMetadataForAnswer();
 
