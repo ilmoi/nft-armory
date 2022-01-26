@@ -252,7 +252,7 @@ export default defineComponent({
       }
 
       &[aria-selected="true"] {
-        border-bottom: 2px solid var(--primary-color);
+        border-bottom: 1px solid var(--primary-color);
         font-weight: 700;
         color: var(--primary-color);
       }

@@ -46,18 +46,16 @@
       <div v-if="isQuestion" class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
         <p>{{ nftName }}</p>
       </div>
-      <div v-else class=" display-answer display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
+      <div v-else class=" display-answer display-canvas" v-bind:id="canvasIdentifier" :style="{ fontSize: `${textSize}px`} ">
         <p>{{ nftName }}</p>
       </div>
-
-
    
   </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import html2canvas from 'html2canvas';
 // @ts-ignore
 import { PublicKey, Keypair } from '@solana/web3.js';
@@ -92,9 +90,10 @@ export default defineComponent({
     isQuestion: {type: Boolean},
     questionID: { type: String },
     uri: { type: String },
-    hash: {type: String}
+    hash: {type: String},
   },
-  setup(props) {
+  setup(props, { emit }) {
+    const canvasIdentifier = computed(() => {return "canvas-" + props.hash});
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { clearError, setError } = useError();
 
@@ -188,6 +187,13 @@ export default defineComponent({
       return res.blob();
     };
 
+    const generateImgAnswer = async () => {
+      const canvas = await html2canvas(document.getElementById(canvasIdentifier.value)!);
+      const img = canvas.toDataURL('image/png');
+      const res = await fetch(img);
+      return res.blob();
+    };
+
     const prepareMetadata = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
@@ -198,10 +204,9 @@ export default defineComponent({
 
 
     const prepareMetadataForAnswer = async () => {
-      const img = await generateImg();
+      const img = await generateImgAnswer();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
       const jsonHash = await uploadJSONForAnswer(imgHash, helpDeskWallet.publicKey!, nftName.value!, props.questionID!, getWalletAddress()!);
-
       return hashToURI(jsonHash);
     };
 
@@ -239,11 +244,15 @@ export default defineComponent({
           //1. metadata in IPFS for answer with mintID of NFT
           //2. metadata in IPFS for question with mintID of answer + update status
           await fetchNewAnswer();
+          emit("answer-submitted");
+
         })
         .catch((e) => {
           setError(e);
           isLoading.value = false;
         });
+
+
 
     }
 
@@ -268,6 +277,7 @@ export default defineComponent({
       isModalVisible,
       showModal,
       hideModal,
+      canvasIdentifier
     };
   },
 });

@@ -29,7 +29,7 @@
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by you 10 mins ago</div>
-            <IWantUrNFTForm :is-question=false :questionID="getQuestionId(n)" :hash="getIPFSHash(n)"/>        
+            <IWantUrNFTForm @answer-submitted="answerSubmitted" :is-question=false :questionID="getQuestionId(n)" :hash="getIPFSHash(n)"/>        
         </div> 
     </tab>
    </tabs>
@@ -104,10 +104,11 @@ export default defineComponent({
       return pnftInteractions.readIPFSHash(ticket);  
     }, getAnswer: function(ticket: PNFT) {
       return pnftInteractions.getAnswerText(ticket);
+    }, answerSubmitted: function () {
+      console.log('answer submitted');
     }
   },
   setup(props) {
-
     if (props.tabType && props.tabType == 'myQuestions') {
     const { retrieveMyQuestions} = usePinata();
 
