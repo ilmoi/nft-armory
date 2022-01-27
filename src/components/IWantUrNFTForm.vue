@@ -76,6 +76,15 @@ import useModal from '@/composables/modal';
 import { NFTMintMaster } from '@/common/NFTmint';
 import { NFTGet } from '@/common/NFTget';
 
+const isLoading = ref<boolean>(false);
+const isCreated = ref<boolean>(false);
+const mintResult = ref<IMintResult | null>(null);
+const newNFT = ref<INFT | null>(null);
+
+const nftName = ref('');
+const contactDets = ref('BLANK');
+const textSize = ref(16);
+
 export default defineComponent({
   components: {
     ContentTooltipIWantUrNFT,
@@ -91,16 +100,28 @@ export default defineComponent({
     questionID: { type: String },
     uri: { type: String },
     hash: {type: String},
+    clearAskQuestion: {type: Boolean},
+  },
+  watch: { 
+    clearAskQuestion: {
+      immediate: true,
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+          isLoading.value = false;
+          mintResult.value = null;
+          isCreated.value = false;
+          nftName.value = '';
+        }
+      }
+    },
   },
   setup(props, { emit }) {
     const canvasIdentifier = computed(() => {return "canvas-" + props.hash});
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { clearError, setError } = useError();
 
-    const isLoading = ref<boolean>(false);
-    const isCreated = ref<boolean>(false);
-    const mintResult = ref<IMintResult | null>(null);
-    const newNFT = ref<INFT | null>(null);
+
 
     const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata } = usePinata();
 
@@ -176,9 +197,7 @@ export default defineComponent({
     };
 
     // --------------------------------------- prep metadata
-    const nftName = ref('');
-    const contactDets = ref('BLANK');
-    const textSize = ref(16);
+
 
     const generateImg = async () => {
       const canvas = await html2canvas(document.getElementById('canvas')!);
