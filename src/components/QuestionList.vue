@@ -12,7 +12,7 @@
     </MDBTabContent>
   </MDBTabs>  -->
   
-  <tabs v-if="doMyQuestionsExist && (tabType == 'myQuestions')" direction="vertical">
+  <tabs v-if="doMyQuestionsExist && (tabType == 'myQuestions')" direction="vertical" v-model="myQuestionList">
       <tab v-for="(n, idx) in myQuestionList" :key="n.id" :id="idx" :title='readTicketName(n)'>     
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
@@ -24,7 +24,7 @@
     </tab>
    </tabs>
 
-    <tabs v-if="doOpenQuestionsExist && (tabType == 'openQuestions')" direction="vertical">
+    <tabs v-if="doOpenQuestionsExist && (tabType == 'openQuestions')" direction="vertical" v-model="openQuestionList" >
       <tab v-for="(n, idx) in openQuestionList" :key="n.id" :id="idx" :title='readTicketName(n)'>     
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
@@ -34,7 +34,7 @@
     </tab>
    </tabs>
 
-   <tabs v-if="doAnsweredQuestionsExist && (tabType == 'answeredQuestions')" direction="vertical">
+   <tabs v-if="doAnsweredQuestionsExist && (tabType == 'answeredQuestions')" direction="vertical" v-model="answeredQuestions">
       <tab v-for="(n, idx) in answeredQuestions" :key="n.id" :id="idx" :title='readTicketName(n)'>     
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
@@ -68,11 +68,67 @@ const myQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
 const openQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
 const answeredQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
 
+const { retrieveMyQuestions, retrieveOpenTickets, retrieveAnsweredQuestions} = usePinata();
+
 export default defineComponent({
   data() {
     return {
       componentKey: 0,
     };
+  },
+  watch: { 
+    updateMyQuestions: {
+      immediate: true,
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+            retrieveMyQuestions(getWalletAddress()!) 
+            .then((pinataTickets) => {
+            if (pinataTickets.length) {
+              myQuestions.value = pinataTickets;
+            } else {
+              //TODO: add error message
+            //  updateLoadingStdErr(ERR_NO_NFTS);
+            }
+          })
+        }
+      }
+    },
+    updateOpenQuestions: {
+      immediate: true,
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+            retrieveOpenTickets(getWalletAddress()!) 
+            .then((pinataTickets) => {
+            if (pinataTickets.length) {
+              openQuestions.value = pinataTickets;
+            } else {
+              //TODO: add error message
+            //  updateLoadingStdErr(ERR_NO_NFTS);
+            }
+          })
+        }
+      }
+    },
+    updateAnsweredQuestions: {
+      immediate: true,
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+            retrieveAnsweredQuestions(getWalletAddress()!) 
+            .then((pinataTickets) => {
+            if (pinataTickets.length) {
+              answeredQuestions.value = pinataTickets;
+            } else {
+              //TODO: add error message
+            //  updateLoadingStdErr(ERR_NO_NFTS);
+            }
+          })
+        }
+      }
+    },
+   
   },
   components: {
         QuestionItem, Tabs, Tab, IWantUrNFTForm
@@ -90,6 +146,10 @@ export default defineComponent({
   },
   props: {
     tabType: { type: String, required: true},
+    updateMyQuestions: {type: Boolean},
+    updateOpenQuestions: {type: Boolean},
+    updateAnsweredQuestions: {type: Boolean},
+
   },
   methods: {
       readTicketName: function(ticket: PNFT) {
@@ -104,11 +164,13 @@ export default defineComponent({
       return pnftInteractions.getAnswerText(ticket);
     }, answerSubmitted: function () {
       console.log('answer submitted');
-    }
+    } 
+  },
+  onUpdated() {
   },
   setup(props) {
+
     if (props.tabType && props.tabType == 'myQuestions') {
-    const { retrieveMyQuestions} = usePinata();
 
     retrieveMyQuestions(getWalletAddress()!) 
       .then((pinataTickets) => {
@@ -121,7 +183,6 @@ export default defineComponent({
       }) 
 
     } else if (props.tabType && props.tabType == 'openQuestions') {
-        const { retrieveOpenTickets} = usePinata();
 
     retrieveOpenTickets(getWalletAddress()!) 
       .then((pinataTickets) => {
@@ -133,7 +194,6 @@ export default defineComponent({
         }
       }) 
     } else if (props.tabType && props.tabType == 'answeredQuestions') {
-        const { retrieveAnsweredQuestions} = usePinata();
 
     retrieveAnsweredQuestions(getWalletAddress()!) 
       .then((pinataTickets) => {

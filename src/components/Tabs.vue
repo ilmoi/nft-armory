@@ -54,9 +54,9 @@ export default defineComponent({
   emits: {
     tabChanged(index: number) {
       return index !== undefined || index !== null;
-    },
-  },
-  setup(props: IProps, { emit, slots, attrs }) {
+    }
+  }, 
+  setup(props: IProps,  { emit, slots, attrs }) {
     const { defaultIndex, resetTabs, position, direction, reverse } =
       toRefs(props);
 
@@ -80,7 +80,7 @@ export default defineComponent({
     const switchTab = (_: any, index: number, isDisabled: boolean) => {
       if (!isDisabled) {
         selectedIndex.value = index;
-        emit("tabChanged", index);
+        emit('tabChanged', index);
       }
     };
 

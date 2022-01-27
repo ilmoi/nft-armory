@@ -5,20 +5,20 @@
       
       <!-- tabs -->
       <div v-if="isConnected && $route.name !== 'Ticket Details'" class="container mt-3">
-        <tabs>
-          <tab title="Ask a Question">
+        <tabs @tabChanged="tabChanged">
+          <tab title="Ask a Question" >
                   <section class="mt-3">
-                    <IWantUrNFTForm :is-question=true />
+                    <IWantUrNFTForm :is-question=true v-bind:clearAskQuestion="clearAskQuestion"/>
                   </section>
           </tab>
           <tab title="My Questions">
-            <QuestionList tabType="myQuestions"/>
+            <QuestionList tabType="myQuestions" v-bind:updateMyQuestions="updateMyQuestions" />
           </tab>
           <tab title="Open Questions">
-            <QuestionList tabType="openQuestions"/>
+            <QuestionList tabType="openQuestions" v-bind:updateOpenQuestions="updateOpenQuestions"/>
           </tab>
           <tab title="Answered Questions">
-            <QuestionList tabType="answeredQuestions"/>
+            <QuestionList tabType="answeredQuestions" v-bind:updateAnsweredQuestions="updateAnsweredQuestions"/>
           </tab>
         </tabs>
       </div>
@@ -46,9 +46,39 @@ import Tab from '@/components/Tab.vue';
 import Tabs from '@/components/Tabs.vue';
 import useWallet from './composables/wallet';
 
+const clearAskQuestion = ref<Boolean>(false);
+const updateMyQuestions = ref<Boolean>(false);
+const updateOpenQuestions = ref<Boolean>(false);
+const updateAnsweredQuestions = ref<Boolean>(false);
+
 export default defineComponent({
   components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm, QuestionList, TicketDetail},
-
+  methods: {
+    tabChanged: function (index:Number) {
+      if (index == 0) {
+        clearAskQuestion.value = true;
+        updateMyQuestions.value = false;
+        updateOpenQuestions.value = false;
+        updateAnsweredQuestions.value = false;
+      }
+      if (index == 1) {
+        clearAskQuestion.value = false;
+        updateMyQuestions.value = true;
+        updateOpenQuestions.value = false;
+        updateAnsweredQuestions.value = false;
+      } else if (index == 2) {
+        clearAskQuestion.value = false;
+        updateMyQuestions.value = false;
+        updateOpenQuestions.value = true;
+        updateAnsweredQuestions.value = false;
+      } else if (index == 3) {
+        clearAskQuestion.value = false;
+        updateMyQuestions.value = false;
+        updateOpenQuestions.value = false;
+        updateAnsweredQuestions.value = true;
+      }
+    }
+  },
   setup() {
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const windowWidth = ref(window.innerWidth);
@@ -61,6 +91,10 @@ export default defineComponent({
     return {
       windowWidth,
       isConnected,
+      clearAskQuestion,
+      updateMyQuestions,
+      updateOpenQuestions,
+      updateAnsweredQuestions
     };
   },
 });
