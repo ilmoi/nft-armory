@@ -19,6 +19,7 @@ const clusterURLMapping = {
 const cluster = ref<Cluster>(DEFAULTS.CLUSTER as any);
 
 export default function useCluster() {
+  console.log('cluster : ', cluster);
   const getClusterURL = (): string => clusterURLMapping[cluster.value];
 
   const getConnection = (committment?: Commitment): Connection =>
