@@ -10,6 +10,7 @@ export const ERR_NO_NFTS = new Error('No NFTs Found:( Are you on the right netwo
 // ---------------------------------------  defaults
 
 dotenv.config();
+console.log(process.env);
 
 console.log('process: ', process.env.SOLANA_ENV);
 
