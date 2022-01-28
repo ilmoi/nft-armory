@@ -8,6 +8,8 @@ export const ERR_NO_NFTS = new Error('No NFTs Found:( Are you on the right netwo
 
 // ---------------------------------------  defaults
 
+console.log('process: ', process.env.SOLANA_ENV);
+
 export const DEFAULTS = {
   CLUSTER: process.env.SOLANA_ENV ? process.env.SOLANA_ENV : 'devnet',
 
