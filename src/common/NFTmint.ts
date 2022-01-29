@@ -1,5 +1,5 @@
 import { actions, Wallet } from '@metaplex/js';
-import {Token, TOKEN_PROGRAM_ID} from '@solana/spl-token';
+import {Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { PublicKey, Keypair, Transaction, sendAndConfirmTransaction } from '@solana/web3.js';
 import { stringifyPubkeysAndBNsInObject } from './helpers/util';
 import useCluster from '@/composables/cluster';
@@ -15,149 +15,114 @@ new Uint8Array([247,1,238,242,163,40,18,160,99,149,90,132,55,51,84,3,211,255,176
 
 
 export async function NFTMintMaster(wallet: Wallet, uri: string, maxSupply?: number) {
+
+  //mint the NFT
   const connection = getConnection();
-  const result = await actions.mintNFT({
+  const mintResult  = await actions.mintNFT({
     connection,
     wallet,
     uri,
     maxSupply,
   });
 
-  const strResult = stringifyPubkeysAndBNsInObject(result);
-  
-  //only transfer NFT to user if a wallet is connected
-  //todo: move this into a separate function
-  if (getWalletAddress() != null) {
-  
-    //now we need to transfer newly minted NFT to connected wallet from shared wallet
+  const strResult = stringifyPubkeysAndBNsInObject(mintResult);
 
-    //first, create a token representing the mint token
-    const myToken = new Token(
-      connection,
-      result.mint,
-      TOKEN_PROGRAM_ID,
-      helpDeskWallet
-    );
-    
-    try {
-      var transaction = new Transaction();
+  // Setup listener so that we only attempt to create account info/transfer token..
+  //once NFT mint has been CONFIRMED on-chain
+  connection.onSignatureWithOptions(
+    mintResult.txId,
+    async (notification, context) => {
+      if (notification.type === 'status') {
 
-      const associatedSenderTokenAddr = await Token.getAssociatedTokenAddress(
-        myToken.associatedProgramId,
-        myToken.programId,
-        result.mint,
-        helpDeskWallet.publicKey
-      );
+        const { result } = notification;
+        if (!result.err) {
+          console.log('NFT Minted!');
 
-      // First, let's try to create associated token accounts for my token if they don't exist yet
-      try {
-        var fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
-        helpDeskWallet.publicKey
-      ); 
-      } catch (err) {
-        console.log('error creating fromTokenAccount', err)
-      }
+            //only transfer NFT to user if a wallet is connected
+          if (getWalletAddress() != null) {
+            
+            //first, create a token representing the mint token
+            const myToken = new Token(
+            connection,
+            mintResult.mint,
+            TOKEN_PROGRAM_ID,
+            helpDeskWallet);
 
-      const senderAccount = await (connection.getAccountInfo(associatedSenderTokenAddr));
-  
-      if (senderAccount == null) {
-        try {
-
-          //if sender account is still null for some rason, let's try to create associated
-          //account again
-            await myToken.createAssociatedTokenAccount(helpDeskWallet.publicKey);
-        } catch (err) {
-          console.log('still couldnt create sender account', err);
-        }
-      } 
-    
-      //now lets create destination associated account
-      try {
-        var toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
-          getWalletAddress()!
-       ); 
-      } catch (err) {
-        console.log('error creating toAccount ', err)
-      }
-
-    const associatedDestinationTokenAddr = await Token.getAssociatedTokenAddress(
-      myToken.associatedProgramId,
-      myToken.programId,
-      result.mint,
-      getWalletAddress()!
-    );
-
-    const receiverAccount = await connection.getAccountInfo(associatedDestinationTokenAddr);
-
-    //const instructions: web3.TransactionInstruction[] = [];  
-
-    if (receiverAccount !== null && receiverAccount.owner.toBase58() !== getWalletAddress()!.toBase58()) {
-      // derived account of original owner was at one point transferred, so we transfer our account (only works with NFTs, not fungibles). I opened https://github.com/solana-labs/solana-program-library/issues/2514 to figure out fungibles
-      transaction.add(
-        Token.createSetAuthorityInstruction(
-          TOKEN_PROGRAM_ID,
-          associatedSenderTokenAddr,
-          getWalletAddress(),
-          "AccountOwner",
-          helpDeskWallet.publicKey,
-          []
-        )
-      );
-
-    /*  var signature = await sendAndConfirmTransaction(
-        connection,
-        transaction3,
-        [helpDeskWallet]
-        ); */
-    } else {
-
-      if (receiverAccount === null) {
-      //if receiver account is still null for some rason, let's try to create it
-
-      try {
-        await myToken.createAssociatedTokenAccount(getWalletAddress()!);
-      } catch (err) {
-        console.log('tried to create a receiveer account', err);
-      }
-     /*   transaction3.add(
-          Token.createAssociatedTokenAccountInstruction(
-            myToken.associatedProgramId,
-            myToken.programId,
-            result.mint,
-            associatedDestinationTokenAddr,
-            getWalletAddress()!,
+          try {
+            var transaction = new Transaction();
+            const fromTokenAccount = await (myToken.getOrCreateAssociatedAccountInfo(
             helpDeskWallet.publicKey
-          )
+            )); 
 
-        ) */
-                  
+            //instead of creating a token account for the destination, this GH issue 
+            //takes a diff approach and appears to work: https://github.com/solana-labs/solana-program-library/issues/2497
+            const associatedDestinationTokenAddr = await Token.getAssociatedTokenAddress(
+              myToken.associatedProgramId,
+              myToken.programId,
+              mintResult.mint,
+              getWalletAddress()!
+            );
+        
+            const receiverAccount = await connection.getAccountInfo(associatedDestinationTokenAddr);
+                        
+            if (receiverAccount !== null && receiverAccount.owner.toBase58() !== getWalletAddress()!.toBase58()) {
+            // derived account of original owner was at one point transferred, so we transfer our account (only works with NFTs, not fungibles). I opened https://github.com/solana-labs/solana-program-library/issues/2514 to figure out fungibles
+            transaction.add(
+              Token.createSetAuthorityInstruction(
+                TOKEN_PROGRAM_ID,
+                fromTokenAccount.address,
+                getWalletAddress()!,
+                "AccountOwner",
+                helpDeskWallet.publicKey,
+                []
+              )
+            );
+            } else {
+            if (receiverAccount === null) {
+              transaction.add(
+                Token.createAssociatedTokenAccountInstruction(
+                  myToken.associatedProgramId,
+                  myToken.programId,
+                  mintResult.mint,
+                  associatedDestinationTokenAddr,
+                  getWalletAddress()!,
+                  helpDeskWallet.publicKey
+                )
+              )
+            }
+              transaction.add(
+                Token.createTransferInstruction(
+                TOKEN_PROGRAM_ID,
+                fromTokenAccount.address,
+                associatedDestinationTokenAddr,
+                helpDeskWallet.publicKey,
+                [],
+                1
+              )
+            );
+          }
+  
+        // Sign transaction and broadcast once confirmed
+          var signature = await sendAndConfirmTransaction(
+          connection,
+          transaction,
+          [helpDeskWallet],
+          {commitment: 'confirmed'},
+          );
+
+          console.log("Successfully transferred newly created NFT to receipient wallet: ", getWalletAddress()?.toBase58());
+
+          } catch (err) {
+            console.log('error when transferring NFT back to user', err)
+          }
+    
+        }
+
+        }
       }
-
-      //finally, let's transfer GMNH NFT from sender to recipient
-      transaction.add(
-        Token.createTransferInstruction(
-          TOKEN_PROGRAM_ID,
-          associatedSenderTokenAddr,
-          associatedDestinationTokenAddr,
-          helpDeskWallet.publicKey,
-          [],
-          1
-        )
-      );
-
-      // Sign transaction, broadcast, and confirm
-      var signature = await sendAndConfirmTransaction(
-        connection,
-        transaction,
-        [helpDeskWallet]
-        );
-    }
-
-      console.log("Successfully transferred newly created NFT to receipient wallet: ", getWalletAddress()?.toBase58());
-    } catch(err) {
-      console.log("error transferring NFT back to user: ", err);
-    }
-  }
+    },
+    { commitment: 'confirmed' },
+  );
 
   return strResult;
 }
