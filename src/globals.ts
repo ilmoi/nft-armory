@@ -14,6 +14,10 @@ dotenv.config();
 export const DEFAULTS = {
   CLUSTER: process.env.VUE_APP_SOLANA_ENV ? process.env.VUE_APP_SOLANA_ENV : 'devnet',
 
+  // yes this is INTENTIONALLY LEAKED for local dev testing. Production values are stored securely elsewhere.
+  PINATA_API_KEY: process.env.VUE_APP_PINATA_API_KEY ? process.env.VUE_APP_PINATA_API_KEY : '7ed5a3f0849f19876a1e',
+  PINATA_API_SECRET: process.env.VUE_APP_PINATA_API_SECRET ? process.env.VUE_APP_PINATA_API_SECRET :'3d79c1f0f2293450b9c949cacc293c22223eeb8a33b24124e2d750c86627cbc9',
+
   OWNER: 'AEahaRpDFzg74t7NtWoruabo2fPJQjKFM9kQJNjH7obK',
   CREATOR: '9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb',
   AUTHORITY: '9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb',
