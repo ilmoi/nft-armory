@@ -1,4 +1,5 @@
 import events from 'events';
+import * as dotenv from 'dotenv';
 
 export const EE = new events.EventEmitter.EventEmitter();
 
@@ -8,8 +9,10 @@ export const ERR_NO_NFTS = new Error('No NFTs Found:( Are you on the right netwo
 
 // ---------------------------------------  defaults
 
+dotenv.config();
+
 export const DEFAULTS = {
-  CLUSTER: 'devnet',
+  CLUSTER: process.env.VUE_APP_SOLANA_ENV ? process.env.VUE_APP_SOLANA_ENV : 'devnet',
 
   OWNER: 'AEahaRpDFzg74t7NtWoruabo2fPJQjKFM9kQJNjH7obK',
   CREATOR: '9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb',
