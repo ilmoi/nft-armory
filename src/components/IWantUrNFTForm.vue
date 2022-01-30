@@ -249,7 +249,6 @@ export default defineComponent({
          // isLoading.value = false;
           //FYI, fetchNewNFT updates metadata in IPFS with mintID of NFT
           await fetchNewNFT();
-          nftName.value = '';
         })
         .catch((e) => {
           setError(e);
