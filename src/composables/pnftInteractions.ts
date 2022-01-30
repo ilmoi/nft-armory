@@ -106,4 +106,11 @@ export function generateTicketDetailLink(ticket: PNFT) {
    return ticket.ipfs_pin_hash;
  };
 
-  
+ export function getQuestionUserWalletId(ticket: PNFT){
+   /* Input: Takes in a ticket (pinata NFT metadata)
+      Output: reads question user's wallet id from metadata 
+   */
+   const attr_key = 'userWallet'
+   let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
+   return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+ }

@@ -77,6 +77,9 @@ import ContentTooltipIWantUrNFT from '@/components/content/tooltip/ContentToolti
 import useModal from '@/composables/modal';
 import { NFTMintMaster } from '@/common/NFTmint';
 import { NFTGet } from '@/common/NFTget';
+import {retrieveEmailAddressUsingWalletId} from '@/composables/airtable';
+import {getQuestionUserWalletId} from '@/composables/pnftInteractions'
+
 
 export default defineComponent({
   components: {
@@ -92,8 +95,11 @@ export default defineComponent({
     isQuestion: {type: Boolean},
     questionID: { type: String },
     uri: { type: String },
-    hash: {type: String}
+    hash: {type: String},
   },
+
+
+
   setup(props) {
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { clearError, setError } = useError();
@@ -103,7 +109,7 @@ export default defineComponent({
     const mintResult = ref<IMintResult | null>(null);
     const newNFT = ref<INFT | null>(null);
 
-    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata } = usePinata();
+    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata, retrieveByMintId } = usePinata();
 
 
     //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
@@ -225,6 +231,9 @@ export default defineComponent({
         });
     };
 
+
+
+
     const createAnswer = async () => {
       clearPreviousResults();
       isLoading.value = true;
@@ -244,6 +253,31 @@ export default defineComponent({
           setError(e);
           isLoading.value = false;
         });
+
+        // todo: work-in-progress; fill in
+        // const userWalletAnswered  = getWalletAddress() // would be of the user answering a question
+        // retrieveEmailAddressUsingWalletId(userWalletAnswered? userWalletAnswered.toString() : '' )
+         
+        // // how to find user wallet who answered question
+        if ( typeof props.questionID != 'undefined' ){
+            console.log('questionID is ', props.questionID)
+            let questionUserIDWallet = ''
+
+            retrieveByMintId(props.questionID) 
+                .then((pinataTickets) => {
+                  
+                if (pinataTickets.length && pinataTickets.length == 1) {
+                  questionUserIDWallet = getQuestionUserWalletId(pinataTickets[0]);
+              } else {
+                console.log("no tickets found with mint id queried")
+                  //TODO: add error message
+              //  updateLoadingStdErr(ERR_NO_NFTS);
+              }
+            }) 
+             console.log('userWalletKey of question is ', questionUserIDWallet)
+             retrieveEmailAddressUsingWalletId((questionUserIDWallet.toString()))
+
+        }
 
     }
 
