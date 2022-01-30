@@ -76,15 +76,6 @@ import useModal from '@/composables/modal';
 import { NFTMintMaster } from '@/common/NFTmint';
 import { NFTGet } from '@/common/NFTget';
 
-const isLoading = ref<boolean>(false);
-const isCreated = ref<boolean>(false);
-const mintResult = ref<IMintResult | null>(null);
-const newNFT = ref<INFT | null>(null);
-
-const nftName = ref('');
-const contactDets = ref('BLANK');
-const textSize = ref(16);
-
 export default defineComponent({
   components: {
     ContentTooltipIWantUrNFT,
@@ -101,6 +92,7 @@ export default defineComponent({
     uri: { type: String },
     hash: {type: String},
     clearAskQuestion: {type: Boolean},
+    updateOpenQuestions: {type: Boolean}
   },
   watch: { 
     clearAskQuestion: {
@@ -108,23 +100,39 @@ export default defineComponent({
       deep: true,
       handler(newValue, oldValue) {
         if (newValue) {
-          isLoading.value = false;
-          mintResult.value = null;
-          isCreated.value = false;
-          nftName.value = '';
+          this.isLoading = false;
+          this.isCreated = false;
+          this.mintResult = null;
+          this.nftName = '';
+        }
+      }
+    }, updateOpenQuestions: {
+      immediate: true,
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+          this.isLoading = false;
+          this.isCreated = false;
+          this.mintResult = null;
+          this.nftName = '';
         }
       }
     },
   },
   setup(props, { emit }) {
+    const isLoading = ref<boolean>(false);
+    const isCreated = ref<boolean>(false);
+    const mintResult = ref<IMintResult | null>(null);
+    const newNFT = ref<INFT | null>(null);
+    const contactDets = ref('BLANK');
+    const textSize = ref(16);
+    const nftName = ref('');
+
     const canvasIdentifier = computed(() => {return "canvas-" + props.hash});
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { clearError, setError } = useError();
 
-
-
     const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata } = usePinata();
-
 
     //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
     //todo figure out way to not dox private key
@@ -241,6 +249,7 @@ export default defineComponent({
          // isLoading.value = false;
           //FYI, fetchNewNFT updates metadata in IPFS with mintID of NFT
           await fetchNewNFT();
+          nftName.value = '';
         })
         .catch((e) => {
           setError(e);
@@ -294,7 +303,7 @@ export default defineComponent({
       isModalVisible,
       showModal,
       hideModal,
-      canvasIdentifier
+      canvasIdentifier,
     };
   },
 });
