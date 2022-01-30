@@ -1,20 +1,18 @@
 <template>
-     <!-- <NFTViewCard :n="ticket" class="text-white" /> -->
-    <div v-if="isConnected && doesQuestionExist && !errorFinding" direction="vertical" class="gmnh-tab-content">
+    <div class="question-nav"><a href="/" class="gmnh-back">&laquo; Back</a></div> 
+    <div v-if="doesQuestionExist && !errorFinding" direction="vertical" class="gmnh-detail">
       <div v-for="(n, idx) in question" :key="n.id" :id="idx">     
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
-            <div class="gmnh-tab-content-byline">Asked by you 10 mins ago</div>
-            <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
+            <div class="gmnh-tab-content-byline">Asked XXX mins ago</div>
+            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
             <hr style="border: 1px solid #697077;"/>
-            <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/>
-
+            <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
+<!--            <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/> -->
             <IWantUrNFTForm v-if="needsToBeAnswered(n)" :questionID="getQuestionId(n)" :hash="getIPFSHash(n)"/>
-
       </div>
 
- 
     </div>
-    <div v-if="errorFinding" class="gmnh-tab-content-title">
+    <div v-if="errorFinding" class="gmnh-detail gmnh-tab-content-title">
       Question Not Found!
     </div>
 </template>
@@ -66,6 +64,8 @@ export default defineComponent({
       return pnftInteractions.getAnswerText(ticket);
     }, needsToBeAnswered: function(ticket: PNFT) {
       return pnftInteractions.needsToBeAnswered(ticket);
+    }, getDescription: function(ticket: PNFT) {
+      return pnftInteractions.readDescription(ticket);
     }
   },
   setup() {
@@ -128,6 +128,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.gmnh-detail {
+  margin: 16px;
+}
+
 .gmnh-tab-content-title {
     font-size: 24px;
     color: #F2F4F8;
@@ -151,5 +155,25 @@ export default defineComponent({
     top: 0%;
     bottom: 0%;
     width: 150px;
+}
+
+a.gmnh-back {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+a.gmnh-back:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.gmnh-back {
+  background-color: #f1f1f1;
+  color: black;
+}
+
+.question-nav {
+  margin: 16px;
 }
 </style>

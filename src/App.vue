@@ -22,10 +22,10 @@
           </tab>
         </tabs>
       </div>
-      <div v-else-if="isConnected && $route.name == 'Ticket Details'">
+      <div v-else-if="$route.name == 'Ticket Details'">
         <TicketDetail/>
       </div>
-      <div v-if="!isConnected" class="gmnh-wallet-center">
+      <div v-else-if="!isConnected" class="gmnh-wallet-center">
         <span class="wallet-text">Connect your wallet to ask a question!</span>
         <ConfigPane/>
       </div>

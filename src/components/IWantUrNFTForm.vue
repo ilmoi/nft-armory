@@ -4,6 +4,7 @@
       <form v-if="isQuestion && !isLoading" @submit.prevent="createTicket" class="flex-grow">
 
         <input focus-visible type="text" id="nftName" placeholder="What's your question?" class="nes-input gmnh-question" v-model="nftName" />
+        <div><textarea type="text" id="description" placeholder="Add context/background..." class="nes-input gmnh-description" v-model="description" /></div>
 
         <button
           class="gmnh-question-submit"
@@ -104,6 +105,7 @@ export default defineComponent({
           this.isCreated = false;
           this.mintResult = null;
           this.nftName = '';
+          this.description = '';
         }
       }
     }, updateOpenQuestions: {
@@ -115,6 +117,7 @@ export default defineComponent({
           this.isCreated = false;
           this.mintResult = null;
           this.nftName = '';
+          this.description = '';
         }
       }
     },
@@ -127,6 +130,7 @@ export default defineComponent({
     const contactDets = ref('BLANK');
     const textSize = ref(16);
     const nftName = ref('');
+    const description = ref('');
 
     const canvasIdentifier = computed(() => {return "canvas-" + props.hash});
     const { isConnected, getWallet, getWalletAddress } = useWallet();
@@ -224,7 +228,7 @@ export default defineComponent({
     const prepareMetadata = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
-      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, nftName.value!, getWalletAddress()!);
+      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, nftName.value!, description.value!, getWalletAddress()!);
 
       return hashToURI(jsonHash);
     };
@@ -303,6 +307,7 @@ export default defineComponent({
       showModal,
       hideModal,
       canvasIdentifier,
+      description
     };
   },
 });
@@ -336,6 +341,32 @@ padding: 16px;
 position: static;
 width: 816px;
 height: 57px;
+left: 0px;
+top: 0px;
+
+/* Gray-90 */
+
+background: #21272A;
+border-radius: 4px;
+
+/* Inside auto layout */
+
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+margin: 16px 16px;
+}
+
+.gmnh-description {
+  display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 16px;
+
+position: static;
+width: 816px;
+height: 131px;
 left: 0px;
 top: 0px;
 
@@ -426,5 +457,10 @@ flex: none;
 order: 1;
 flex-grow: 0;
 margin-top: 16px;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #f2f4f8;
+  opacity: 1; /* Firefox */
 }
 </style>
