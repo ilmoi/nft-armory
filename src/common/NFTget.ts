@@ -236,16 +236,16 @@ export async function NFTGet(
 
   let tokens: IToken[] = [];
   if (owner) {
-    console.log('Time to get em NFTs by owner:', owner.toBase58());
+ //  console.log('Time to get em NFTs by owner:', owner.toBase58());
     tokens = await getTokensByOwner(owner);
   } else if (creator) {
-    console.log('Time to get em NFTs by creator:', creator.toBase58());
+ //   console.log('Time to get em NFTs by creator:', creator.toBase58());
     tokens = await getTokensByCreator(creator);
   } else if (mint) {
-    console.log('Time to get em NFTs by mint:', mint.toBase58());
+ //   console.log('Time to get em NFTs by mint:', mint.toBase58());
     tokens = await getTokensByMint(mint);
   } else if (updateAuthority) {
-    console.log('Time to get em NFTs by authority:', updateAuthority.toBase58());
+ //   console.log('Time to get em NFTs by authority:', updateAuthority.toBase58());
     tokens = await getTokensByUpdateAuthority(updateAuthority);
   } else {
     throw new Error('You must pass one of owner / creator / authority / mint');
@@ -265,14 +265,14 @@ export async function NFTGet(
   } as IUpdateLoadingParams);
 
   const t2 = performance.now();
-  console.log(`Found ${tokens.length} tokens`);
-  console.log('Time:', (t2 - t1) / 1000);
+  //console.log(`Found ${tokens.length} tokens`);
+  //console.log('Time:', (t2 - t1) / 1000);
 
   const nfts = await tokensToEnrichedNFTs(tokens);
   const t3 = performance.now();
-  console.log(`Prepared a total ${nfts.length} NFTs`);
-  console.log('Time:', (t3 - t2) / 1000);
-  console.log('TOTAL time:', (t3 - t1) / 1000);
+  //console.log(`Prepared a total ${nfts.length} NFTs`);
+  //console.log('Time:', (t3 - t2) / 1000);
+  //console.log('TOTAL time:', (t3 - t1) / 1000);
 
   const validNFTs = filterOutIncompleteNFTs(nfts);
   let finalNFts = validNFTs;

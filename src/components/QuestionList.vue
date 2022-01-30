@@ -29,7 +29,7 @@
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by someone X mins ago</div>
-            <IWantUrNFTForm @answer-submitted="answerSubmitted" :is-question=false :questionID="getQuestionId(n)" :hash="getIPFSHash(n)"/>        
+            <IWantUrNFTForm @answer-submitted="answerSubmitted" :is-question=false :questionID="getQuestionId(n)" :hash="getIPFSHash(n)" v-bind:updateOpenQuestions="updateOpenQuestions"/>        
         </div> 
     </tab>
    </tabs>

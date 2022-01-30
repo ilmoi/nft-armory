@@ -67,7 +67,7 @@ export default defineComponent({
         updateOpenQuestions.value = false;
         updateAnsweredQuestions.value = false;
       } else if (index == 2) {
-        clearAskQuestion.value = true;
+        clearAskQuestion.value = false;
         updateMyQuestions.value = false;
         updateOpenQuestions.value = true;
         updateAnsweredQuestions.value = false;
