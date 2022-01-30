@@ -4,6 +4,7 @@
       <div v-for="(n, idx) in question" :key="n.id" :id="idx">     
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by you 10 mins ago</div>
+            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
             <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
             <hr style="border: 1px solid #697077;"/>
             <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/>
@@ -66,6 +67,8 @@ export default defineComponent({
       return pnftInteractions.getAnswerText(ticket);
     }, needsToBeAnswered: function(ticket: PNFT) {
       return pnftInteractions.needsToBeAnswered(ticket);
+    }, getDescription: function(ticket: PNFT) {
+      return pnftInteractions.readDescription(ticket);
     }
   },
   setup() {
