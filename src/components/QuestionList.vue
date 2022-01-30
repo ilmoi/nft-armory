@@ -17,6 +17,7 @@
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by you X mins ago</div>
+            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
             <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
             <hr style="border: 1px solid #697077;"/>
             <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/>
@@ -29,6 +30,7 @@
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by someone X mins ago</div>
+            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
             <IWantUrNFTForm @answer-submitted="answerSubmitted" :is-question=false :questionID="getQuestionId(n)" :hash="getIPFSHash(n)" v-bind:updateOpenQuestions="updateOpenQuestions"/>        
         </div> 
     </tab>
@@ -39,6 +41,7 @@
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by someone X mins ago</div>
+            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
             <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
         </div> 
     </tab>
@@ -162,8 +165,10 @@ export default defineComponent({
       return pnftInteractions.readIPFSHash(ticket);  
     }, getAnswer: function(ticket: PNFT) {
       return pnftInteractions.getAnswerText(ticket);
+    }, getDescription: function(ticket: PNFT) {
+      return pnftInteractions.readDescription(ticket);
     }, answerSubmitted: function () {
-      console.log('answer submitted');
+      //console.log('answer submitted');
     } 
   },
   onUpdated() {

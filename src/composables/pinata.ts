@@ -44,7 +44,7 @@ export default function usePinata() {
       return uploadJSONWithDescription(imgIpfsHash, walletAddr, "description");
     }; */
 
-  const uploadJSON = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, userWalletAddr: PublicKey) => {
+  const uploadJSON = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, description: string, userWalletAddr: PublicKey) => {
     const metadata = {
       name: 'GMNeedHelp Question',
       symbol: 'HELP',
@@ -72,6 +72,7 @@ export default function usePinata() {
       pinataMetadata: {
         name: title,
         keyvalues: {
+          'description': description,
           'ticket_type': 'question',
           'status': 'open',
           'generation': 'GENESIS',

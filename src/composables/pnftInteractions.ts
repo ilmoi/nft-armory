@@ -22,6 +22,15 @@ export function generateTicketDetailLink(ticket: PNFT) {
       let attr = ticket.metadata.hasOwnProperty(attr_key) ? ticket.metadata[attr_key] : undefined
       return typeof attr != 'undefined' ? attr : "Attribute Not Set"
   };
+
+  export function readDescription (ticket: PNFT) {
+   /* Input: Takes in a ticket (pinata NFT metadata)
+      Output: reads description from metadata or undefined
+   */
+    const attr_key = 'description'
+    let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
+    return typeof attr != 'undefined' ? attr : ""
+ };
   
   export function readTicketStatus (ticket: PNFT) {
     /* Input: Takes in a ticket (pinata NFT metadata)
