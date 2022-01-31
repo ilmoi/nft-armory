@@ -26,7 +26,7 @@
               <QuestionList tabType="myQuestions" v-bind:updateMyQuestions="updateMyQuestions" />
             </section>
             <section v-else class="gmnh-wallet-center">
-                    <span class="wallet-text">Connect your wallet to ask a question!</span>
+                    <span class="wallet-text">Connect your Solana wallet to ask a question!</span>
                     <ConfigPane/>
                     <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a class="phantom-link" target="_blank" href="https://phantom.app/">Phantom</a>.</span>
             </section>
@@ -36,7 +36,7 @@
               <QuestionList tabType="openQuestions" v-bind:updateOpenQuestions="updateOpenQuestions"/>
             </section>
             <section v-else class="gmnh-wallet-center">
-                    <span class="wallet-text">Connect your wallet to ask a question!</span>
+                    <span class="wallet-text">Connect your Solana wallet to ask a question!</span>
                     <ConfigPane/>
                     <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a class="phantom-link" target="_blank" href="https://phantom.app/">Phantom</a>.</span>
             </section>
@@ -46,7 +46,7 @@
               <QuestionList tabType="answeredQuestions" v-bind:updateAnsweredQuestions="updateAnsweredQuestions"/>
             </section>
             <section v-else class="gmnh-wallet-center">
-                    <span class="wallet-text">Connect your wallet to ask a question!</span>
+                    <span class="wallet-text">Connect your Solana wallet to ask a question!</span>
                     <ConfigPane/>
                     <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a class="phantom-link" target="_blank" href="https://phantom.app/">Phantom</a>.</span>
             </section>
