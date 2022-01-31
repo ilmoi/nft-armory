@@ -51,23 +51,22 @@ export async function retrieveEmailAddressUsingWalletId (walletId: string){
 
     console.log("output email address is: ", emailAddress )
 
-    notifyGMNHUser(walletId)
+    notifyGMNHUser(emailAddress)
   
 
 }
 
 
-function notifyGMNHUser(walletId: string){
-  /* initialize and send email using emailjs
+function notifyGMNHUser(emailAddress: string){
+  /* initialize message and send email using emailjs
   */
 
 
   var templateParams = {
-    to_email: gmnhEmailHandle,
-    message: `hola!`
+    to_email: emailAddress,
+    message: `hola! your open question was just answered on gmnh!`
   };
 
-  console.log(templateParams)
  
   emailjs.send(emailjsServiceId, emailjsTemplateId, templateParams, emailjsUserId)
     .then(function(response) {

@@ -259,8 +259,8 @@ export default defineComponent({
         // retrieveEmailAddressUsingWalletId(userWalletAnswered? userWalletAnswered.toString() : '' )
          
         // // how to find user wallet who answered question
-        if ( typeof props.questionID != 'undefined' ){
-            console.log('questionID is ', props.questionID)
+        if (typeof props.questionID != 'undefined'){
+            console.log('questionID is: ', props.questionID)
             let questionUserIDWallet = ''
 
             retrieveByMintId(props.questionID) 
@@ -268,15 +268,15 @@ export default defineComponent({
                   
                 if (pinataTickets.length && pinataTickets.length == 1) {
                   questionUserIDWallet = getQuestionUserWalletId(pinataTickets[0]);
+                  console.log('userWalletKey of question is ', questionUserIDWallet)
+                  retrieveEmailAddressUsingWalletId((questionUserIDWallet.toString()))
               } else {
                 console.log("no tickets found with mint id queried")
                   //TODO: add error message
               //  updateLoadingStdErr(ERR_NO_NFTS);
               }
             }) 
-             console.log('userWalletKey of question is ', questionUserIDWallet)
-             retrieveEmailAddressUsingWalletId((questionUserIDWallet.toString()))
-
+      
         }
 
     }
