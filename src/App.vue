@@ -18,7 +18,7 @@
                   <section v-else class="gmnh-wallet-center">
                     <span class="wallet-text">Connect your Solana wallet to ask a question!</span>
                     <ConfigPane/>
-                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a class="phantom-link" href="https://phantom.app/">Phantom</a>.</span>
                   </section>
           </tab>
           <tab title="My Questions">
@@ -151,6 +151,11 @@ export default defineComponent({
   justify-content: center;
   display: flex;
   margin-top: 16px;
+}
+
+a.phantom-link {
+  color: #0d6efd;
+  text-decoration: underline;
 }
 
 </style>
