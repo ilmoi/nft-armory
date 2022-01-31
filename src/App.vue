@@ -8,7 +8,7 @@
         <tabs @tabChanged="tabChanged">
           <tab title="Trending Questions">
               <section class="wallet-text">
-                This section (coming soon!) will feature the top answered questions...
+                This section (coming soon!) will feature our top answered questions...
               </section>
           </tab>
           <tab title="Ask a Question" >
