@@ -16,8 +16,9 @@
                     <IWantUrNFTForm :is-question=true v-bind:clearAskQuestion="clearAskQuestion"/>
                   </section>
                   <section v-else class="gmnh-wallet-center">
-                    <span class="wallet-text">Connect your wallet to ask a question!</span>
+                    <span class="wallet-text">Connect your Solana wallet to ask a question!</span>
                     <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
                   </section>
           </tab>
           <tab title="My Questions">
@@ -27,6 +28,7 @@
             <section v-else class="gmnh-wallet-center">
                     <span class="wallet-text">Connect your wallet to ask a question!</span>
                     <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
             </section>
           </tab>
           <tab title="Open Questions">
@@ -36,6 +38,7 @@
             <section v-else class="gmnh-wallet-center">
                     <span class="wallet-text">Connect your wallet to ask a question!</span>
                     <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
             </section>
           </tab>
           <tab title="Answered Questions">
@@ -45,6 +48,7 @@
             <section v-else class="gmnh-wallet-center">
                     <span class="wallet-text">Connect your wallet to ask a question!</span>
                     <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
             </section>
           </tab>
         </tabs>
@@ -137,6 +141,16 @@ export default defineComponent({
   font-weight: 700;
   font-size: 16px;
   color: #F2F4F8;
+}
+
+.no-wallet-text {
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 14px;
+  color: #F2F4F8;
+  justify-content: center;
+  display: flex;
+  margin-top: 16px;
 }
 
 </style>
