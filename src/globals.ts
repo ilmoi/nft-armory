@@ -12,7 +12,7 @@ export const ERR_NO_NFTS = new Error('No NFTs Found:( Are you on the right netwo
 dotenv.config();
 
 export const DEFAULTS = {
-  CLUSTER: process.env.VUE_APP_SOLANA_ENV ? process.env.VUE_APP_SOLANA_ENV : 'devnet',
+  CLUSTER: process.env.VUE_APP_SOLANA_ENV ? process.env.VUE_APP_SOLANA_ENV : 'testnet',
 
   // yes this is INTENTIONALLY LEAKED for local dev testing. Production values are stored securely elsewhere.
   PINATA_API_KEY: process.env.VUE_APP_PINATA_API_KEY ? process.env.VUE_APP_PINATA_API_KEY : '7ed5a3f0849f19876a1e',

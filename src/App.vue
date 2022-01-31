@@ -4,30 +4,57 @@
     <TheNavBar />
       
       <!-- tabs -->
-      <div v-if="isConnected && $route.name !== 'Ticket Details'" class="container mt-3">
+      <div v-if="$route.name !== 'Ticket Details'" class="container mt-3">
         <tabs @tabChanged="tabChanged">
+          <tab title="Trending Questions">
+              <section class="wallet-text">
+                This section (coming soon!) will feature the top answered questions...
+              </section>
+          </tab>
           <tab title="Ask a Question" >
-                  <section class="mt-3">
+                  <section v-if="isConnected" class="mt-3">
                     <IWantUrNFTForm :is-question=true v-bind:clearAskQuestion="clearAskQuestion"/>
+                  </section>
+                  <section v-else class="gmnh-wallet-center">
+                    <span class="wallet-text">Connect your Solana wallet to ask a question!</span>
+                    <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
                   </section>
           </tab>
           <tab title="My Questions">
-            <QuestionList tabType="myQuestions" v-bind:updateMyQuestions="updateMyQuestions" />
+            <section v-if="isConnected">
+              <QuestionList tabType="myQuestions" v-bind:updateMyQuestions="updateMyQuestions" />
+            </section>
+            <section v-else class="gmnh-wallet-center">
+                    <span class="wallet-text">Connect your wallet to ask a question!</span>
+                    <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
+            </section>
           </tab>
           <tab title="Open Questions">
-            <QuestionList tabType="openQuestions" v-bind:updateOpenQuestions="updateOpenQuestions"/>
+            <section v-if="isConnected">
+              <QuestionList tabType="openQuestions" v-bind:updateOpenQuestions="updateOpenQuestions"/>
+            </section>
+            <section v-else class="gmnh-wallet-center">
+                    <span class="wallet-text">Connect your wallet to ask a question!</span>
+                    <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
+            </section>
           </tab>
           <tab title="Answered Questions">
-            <QuestionList tabType="answeredQuestions" v-bind:updateAnsweredQuestions="updateAnsweredQuestions"/>
+            <section v-if="isConnected">
+              <QuestionList tabType="answeredQuestions" v-bind:updateAnsweredQuestions="updateAnsweredQuestions"/>
+            </section>
+            <section v-else class="gmnh-wallet-center">
+                    <span class="wallet-text">Connect your wallet to ask a question!</span>
+                    <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a href="https://phantom.app/">Phantom</a>.</span>
+            </section>
           </tab>
         </tabs>
       </div>
       <div v-else-if="$route.name == 'Ticket Details'">
         <TicketDetail/>
-      </div>
-      <div v-else-if="!isConnected" class="gmnh-wallet-center">
-        <span class="wallet-text">Connect your wallet to ask a question!</span>
-        <ConfigPane/>
       </div>
   </div>
 </template>
@@ -55,23 +82,23 @@ export default defineComponent({
   components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm, QuestionList, TicketDetail},
   methods: {
     tabChanged: function (index:Number) {
-      if (index == 0) {
+      if (index == 1) {
         clearAskQuestion.value = true;
         updateMyQuestions.value = false;
         updateOpenQuestions.value = false;
         updateAnsweredQuestions.value = false;
       }
-      if (index == 1) {
+      if (index == 2) {
         clearAskQuestion.value = false;
         updateMyQuestions.value = true;
         updateOpenQuestions.value = false;
         updateAnsweredQuestions.value = false;
-      } else if (index == 2) {
+      } else if (index == 3) {
         clearAskQuestion.value = false;
         updateMyQuestions.value = false;
         updateOpenQuestions.value = true;
         updateAnsweredQuestions.value = false;
-      } else if (index == 3) {
+      } else if (index == 4) {
         clearAskQuestion.value = false;
         updateMyQuestions.value = false;
         updateOpenQuestions.value = false;
@@ -114,6 +141,16 @@ export default defineComponent({
   font-weight: 700;
   font-size: 16px;
   color: #F2F4F8;
+}
+
+.no-wallet-text {
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 14px;
+  color: #F2F4F8;
+  justify-content: center;
+  display: flex;
+  margin-top: 16px;
 }
 
 </style>
