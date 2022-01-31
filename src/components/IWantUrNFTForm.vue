@@ -159,58 +159,7 @@ export default defineComponent({
       clearError();
     };
 
-    const fetchNewNFT = async () => {
-      // this will keep failing, while the network updates, for a while so keep retrying
-      try {
-        [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
-        isCreated.value = true;
-      } catch (e) {
-        await fetchNewNFT();
-      }
-
-      //update IPFS metadata with mintId
-      const newMetadata = {
-        keyvalues: {
-          mintId: newNFT.value!.mint.toBase58(),
-        }
-      };
-
-      updatePinataMetadata(URIToHash(newNFT.value!.metadataOnchain.data.uri), newMetadata);
-    };
-
-    const fetchNewAnswer = async () => {
-      // this will keep failing, while the network updates, for a while so keep retrying
-      try {
-        [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
-        isCreated.value = true;
-      } catch (e) {
-        await fetchNewNFT();
-      }
-
-      //update IPFS metadata with mintId for answer
-      const newMetadata = {
-        keyvalues: {
-          mintId: newNFT.value!.mint.toBase58(),
-        }
-      };
-
-      updatePinataMetadata(URIToHash(newNFT.value!.metadataOnchain.data.uri), newMetadata);
-    
-      //update question NFT with answerMintID and update status to "answered"
-      const newMetadataForQuestion = {
-        keyvalues: {
-          answerMintId: newNFT.value!.mint.toBase58(),
-          answerText: newNFT.value?.metadataExternal.description,
-          status: 'answered',
-        }
-      };
-
-      updatePinataMetadata(props.hash!, newMetadataForQuestion);
-    };
-
     // --------------------------------------- prep metadata
-
-
     const generateImg = async () => {
       const canvas = await html2canvas(document.getElementById('canvas')!);
       const img = canvas.toDataURL('image/png');
@@ -250,13 +199,20 @@ export default defineComponent({
       NFTMintMaster(helpDeskWallet as any, uri, 0)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
-         // isLoading.value = false;
-          //FYI, fetchNewNFT updates metadata in IPFS with mintID of NFT
-          await fetchNewNFT();
+          isCreated.value = true;
+          
+          //update IPFS metadata with mintId
+          const newMetadata = {
+          keyvalues: {
+            mintId: mintResult.value.mint,
+          }
+          };
+
+          updatePinataMetadata(URIToHash(uri), newMetadata);
         })
         .catch((e) => {
+          console.log('some error happened', e);
           setError(e);
-       //   isLoading.value = false;
         });
     };
 
@@ -268,20 +224,36 @@ export default defineComponent({
       NFTMintMaster(helpDeskWallet as any, answerUri, 0)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
-         // isLoading.value = false;
-          //FYI, fetchNewNFT updates 
+          isCreated.value = true;
+
+          //  emit("answer-submitted");
+
           //1. metadata in IPFS for answer with mintID of NFT
+          const newMetadata = {
+            keyvalues: {
+              mintId: mintResult.value.mint,
+           }
+          };
+
+          updatePinataMetadata(URIToHash(answerUri), newMetadata);
+    
           //2. metadata in IPFS for question with mintID of answer + update status
-          await fetchNewAnswer();
-          emit("answer-submitted");
+          const newMetadataForQuestion = {
+            keyvalues: {
+              answerMintId: mintResult.value.mint,
+              answerText: nftName.value!,
+              status: 'answered',
+            }
+          };
+
+          updatePinataMetadata(props.hash!, newMetadataForQuestion);
 
         })
         .catch((e) => {
+          console.log('error occured: ', e);
           setError(e);
           isLoading.value = false;
         });
-
-
 
     }
 
