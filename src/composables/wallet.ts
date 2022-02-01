@@ -45,7 +45,7 @@ export default function useWallet() {
     const gottenWallet = (walletMapping as any)[newWallet!]({ network });
     const connectedAdapter = gottenWallet.adapter();
     connectedAdapter
-      .connect()
+      .connect({ onlyIfTrusted: true })
       .then(() => {
         // only set the two if the call succeeds
         walletClass.value = gottenWallet;

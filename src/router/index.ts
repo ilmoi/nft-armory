@@ -3,7 +3,7 @@ import ViewTicketDetail from '@/views/ViewTicketDetail.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/ticketdetail/:ticketID',
+    path: '/question/:ticketID',
     name: 'Ticket Details',
     component: ViewTicketDetail,
   },

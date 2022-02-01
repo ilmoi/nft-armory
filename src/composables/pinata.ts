@@ -3,18 +3,10 @@ import FormData from 'form-data';
 import axios from 'axios';
 import { PublicKey } from '@solana/web3.js';
 import { PNFT } from '@/common/helpers/types';
-import * as pnftInteractions from '@/composables/pnftInteractions';
-
-
-// todo yes this is INTENTIONALLY LEAKED
-//  this is a burner Pinata acc with 1gb free storage I'm using for storing "I want ur NFTs"
-//  I'm hoping it won't be abused - if it does, just put in your own and run locally or let me know (twitter @_ilmoi)
-const apiKey = '7ed5a3f0849f19876a1e';
-const apiSecret = '3d79c1f0f2293450b9c949cacc293c22223eeb8a33b24124e2d750c86627cbc9';
- 
+import { DEFAULTS } from '@/globals';
 
 export default function usePinata() {
-  const pinata = pinataSDK(apiKey, apiSecret);
+  const pinata = pinataSDK(DEFAULTS.PINATA_API_KEY, DEFAULTS.PINATA_API_SECRET);
 
   const uploadImg = async (blob: Blob, walletAddr: PublicKey): Promise<string> => {
     const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
@@ -37,8 +29,8 @@ export default function usePinata() {
       headers: {
         // @ts-ignore
         'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
-        pinata_api_key: apiKey,
-        pinata_secret_api_key: apiSecret,
+        pinata_api_key: DEFAULTS.PINATA_API_KEY,
+        pinata_secret_api_key: DEFAULTS.PINATA_API_SECRET,
       },
     });
     return res.data.IpfsHash;
@@ -52,7 +44,7 @@ export default function usePinata() {
       return uploadJSONWithDescription(imgIpfsHash, walletAddr, "description");
     }; */
 
-  const uploadJSON = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, userWalletAddr: PublicKey) => {
+  const uploadJSON = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, description: string, userWalletAddr: PublicKey) => {
     const metadata = {
       name: 'GMNeedHelp Question',
       symbol: 'HELP',
@@ -80,6 +72,7 @@ export default function usePinata() {
       pinataMetadata: {
         name: title,
         keyvalues: {
+          'description': description,
           'ticket_type': 'question',
           'status': 'open',
           'generation': 'GENESIS',

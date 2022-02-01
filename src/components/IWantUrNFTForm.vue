@@ -4,6 +4,7 @@
       <form v-if="isQuestion && !isLoading" @submit.prevent="createTicket" class="flex-grow">
 
         <input focus-visible type="text" id="nftName" placeholder="What's your question?" class="nes-input gmnh-question" v-model="nftName" />
+        <div><textarea type="text" id="description" placeholder="Add context/background..." class="nes-input gmnh-description" v-model="description" /></div>
 
         <button
           class="gmnh-question-submit"
@@ -46,18 +47,16 @@
       <div v-if="isQuestion" class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
         <p>{{ nftName }}</p>
       </div>
-      <div v-else class=" display-answer display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
+      <div v-else class=" display-answer display-canvas" v-bind:id="canvasIdentifier" :style="{ fontSize: `${textSize}px`} ">
         <p>{{ nftName }}</p>
       </div>
-
-
    
   </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import html2canvas from 'html2canvas';
 // @ts-ignore
 import { PublicKey, Keypair } from '@solana/web3.js';
@@ -96,21 +95,51 @@ export default defineComponent({
     questionID: { type: String },
     uri: { type: String },
     hash: {type: String},
+    clearAskQuestion: {type: Boolean},
+    updateOpenQuestions: {type: Boolean}
   },
-
-
-
-  setup(props) {
-    const { isConnected, getWallet, getWalletAddress } = useWallet();
-    const { clearError, setError } = useError();
-
+  watch: { 
+    clearAskQuestion: {
+      immediate: true,
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+          this.isLoading = false;
+          this.isCreated = false;
+          this.mintResult = null;
+          this.nftName = '';
+          this.description = '';
+        }
+      }
+    }, updateOpenQuestions: {
+      immediate: true,
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+          this.isLoading = false;
+          this.isCreated = false;
+          this.mintResult = null;
+          this.nftName = '';
+          this.description = '';
+        }
+      }
+    },
+  },
+  setup(props, { emit }) {
     const isLoading = ref<boolean>(false);
     const isCreated = ref<boolean>(false);
     const mintResult = ref<IMintResult | null>(null);
     const newNFT = ref<INFT | null>(null);
+    const contactDets = ref('BLANK');
+    const textSize = ref(16);
+    const nftName = ref('');
+    const description = ref('');
 
-    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata, retrieveByMintId } = usePinata();
+    const canvasIdentifier = computed(() => {return "canvas-" + props.hash});
+    const { isConnected, getWallet, getWalletAddress } = useWallet();
+    const { clearError, setError } = useError();
 
+    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata } = usePinata();
 
     //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
     //todo figure out way to not dox private key
@@ -125,70 +154,24 @@ export default defineComponent({
       )
     );
 
-    const clearPreviousResults = () => {
-      isLoading.value = false;
+    const reset = () => {
+      isLoading.value = true;
       isCreated.value = false;
       mintResult.value = null;
       newNFT.value = null;
       clearError();
     };
 
-    const fetchNewNFT = async () => {
-      // this will keep failing, while the network updates, for a while so keep retrying
-      try {
-        [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
-        isCreated.value = true;
-      } catch (e) {
-        await fetchNewNFT();
-      }
-
-      //update IPFS metadata with mintId
-      const newMetadata = {
-        keyvalues: {
-          mintId: newNFT.value!.mint.toBase58(),
-        }
-      };
-
-      updatePinataMetadata(URIToHash(newNFT.value!.metadataOnchain.data.uri), newMetadata);
-    };
-
-    const fetchNewAnswer = async () => {
-      // this will keep failing, while the network updates, for a while so keep retrying
-      try {
-        [newNFT.value] = await NFTGet({ mint: new PublicKey(mintResult.value!.mint) });
-        isCreated.value = true;
-      } catch (e) {
-        await fetchNewNFT();
-      }
-
-      //update IPFS metadata with mintId for answer
-      const newMetadata = {
-        keyvalues: {
-          mintId: newNFT.value!.mint.toBase58(),
-        }
-      };
-
-      updatePinataMetadata(URIToHash(newNFT.value!.metadataOnchain.data.uri), newMetadata);
-    
-      //update question NFT with answerMintID and update status to "answered"
-      const newMetadataForQuestion = {
-        keyvalues: {
-          answerMintId: newNFT.value!.mint.toBase58(),
-          answerText: newNFT.value?.metadataExternal.description,
-          status: 'answered',
-        }
-      };
-
-      updatePinataMetadata(props.hash!, newMetadataForQuestion);
-    };
-
     // --------------------------------------- prep metadata
-    const nftName = ref('');
-    const contactDets = ref('BLANK');
-    const textSize = ref(16);
-
     const generateImg = async () => {
       const canvas = await html2canvas(document.getElementById('canvas')!);
+      const img = canvas.toDataURL('image/png');
+      const res = await fetch(img);
+      return res.blob();
+    };
+
+    const generateImgAnswer = async () => {
+      const canvas = await html2canvas(document.getElementById(canvasIdentifier.value)!);
       const img = canvas.toDataURL('image/png');
       const res = await fetch(img);
       return res.blob();
@@ -197,37 +180,42 @@ export default defineComponent({
     const prepareMetadata = async () => {
       const img = await generateImg();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
-      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, nftName.value!, getWalletAddress()!);
+      const jsonHash = await uploadJSON(imgHash, helpDeskWallet.publicKey!, nftName.value!, description.value!, getWalletAddress()!);
 
       return hashToURI(jsonHash);
     };
 
 
     const prepareMetadataForAnswer = async () => {
-      const img = await generateImg();
+      const img = await generateImgAnswer();
       const imgHash = await uploadImg(img, helpDeskWallet.publicKey!);
       const jsonHash = await uploadJSONForAnswer(imgHash, helpDeskWallet.publicKey!, nftName.value!, props.questionID!, getWalletAddress()!);
-
       return hashToURI(jsonHash);
     };
 
     // --------------------------------------- mint newe nft
     const createTicket = async () => {
-      clearPreviousResults();
-      isLoading.value = true;
+      reset();
 
       const uri = await prepareMetadata();
 
       NFTMintMaster(helpDeskWallet as any, uri, 0)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
-         // isLoading.value = false;
-          //FYI, fetchNewNFT updates metadata in IPFS with mintID of NFT
-          await fetchNewNFT();
+          isCreated.value = true;
+          
+          //update IPFS metadata with mintId
+          const newMetadata = {
+          keyvalues: {
+            mintId: mintResult.value.mint,
+          }
+          };
+
+          updatePinataMetadata(URIToHash(uri), newMetadata);
         })
         .catch((e) => {
+          console.log('some error happened', e);
           setError(e);
-       //   isLoading.value = false;
         });
     };
 
@@ -273,21 +261,40 @@ export default defineComponent({
 
 
     const createAnswer = async () => {
-      clearPreviousResults();
-      isLoading.value = true;
+      reset();
 
       const answerUri = await prepareMetadataForAnswer();
 
       NFTMintMaster(helpDeskWallet as any, answerUri, 0)
         .then(async (result) => {
           mintResult.value = result as IMintResult;
-         // isLoading.value = false;
-          //FYI, fetchNewNFT updates 
+          isCreated.value = true;
+
+          //  emit("answer-submitted");
+
           //1. metadata in IPFS for answer with mintID of NFT
+          const newMetadata = {
+            keyvalues: {
+              mintId: mintResult.value.mint,
+           }
+          };
+
+          updatePinataMetadata(URIToHash(answerUri), newMetadata);
+    
           //2. metadata in IPFS for question with mintID of answer + update status
-          await fetchNewAnswer();
+          const newMetadataForQuestion = {
+            keyvalues: {
+              answerMintId: mintResult.value.mint,
+              answerText: nftName.value!,
+              status: 'answered',
+            }
+          };
+
+          updatePinataMetadata(props.hash!, newMetadataForQuestion);
+
         })
         .catch((e) => {
+          console.log('error occured: ', e);
           setError(e);
           isLoading.value = false;
         });
@@ -320,6 +327,8 @@ export default defineComponent({
       isModalVisible,
       showModal,
       hideModal,
+      canvasIdentifier,
+      description
     };
   },
 });
@@ -353,6 +362,32 @@ padding: 16px;
 position: static;
 width: 816px;
 height: 57px;
+left: 0px;
+top: 0px;
+
+/* Gray-90 */
+
+background: #21272A;
+border-radius: 4px;
+
+/* Inside auto layout */
+
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+margin: 16px 16px;
+}
+
+.gmnh-description {
+  display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 16px;
+
+position: static;
+width: 816px;
+height: 131px;
 left: 0px;
 top: 0px;
 
@@ -443,5 +478,10 @@ flex: none;
 order: 1;
 flex-grow: 0;
 margin-top: 16px;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #f2f4f8;
+  opacity: 1; /* Firefox */
 }
 </style>
