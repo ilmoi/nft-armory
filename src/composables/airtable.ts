@@ -51,7 +51,6 @@ export async function notifyGMNHUser(userWalletId: string, emailType: string, qu
     let output = await queryAirtable(gmnhUserTable, selectionCriteria)
     let userEmailAddress = output[0].get(emailAddressColumn)
 
-    console.log("output email address is: ", userEmailAddress )
     sendEmail(userEmailAddress, emailType, questionLink)
   
 

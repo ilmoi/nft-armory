@@ -233,7 +233,6 @@ export default defineComponent({
 
                 if (pinataTickets.length && pinataTickets.length == 1) {
                   questionUserIDWallet = getQuestionUserWalletId(pinataTickets[0]);
-                  console.log('userWalletKey of question is ', questionUserIDWallet)
                   notifyGMNHUser(questionUserIDWallet.toString(), emailTypeAnswered, ticketLink)
               } else {
                 console.log("No tickets found with mint id of questionID queried; cannot notify question asker via email")
@@ -251,7 +250,7 @@ export default defineComponent({
 
         if (typeof userWalletId != 'undefined' && typeof props.questionID != 'undefined'){
             let ticketLink = formatTicketDetailLink(props.questionID, DEFAULTS.APP_URL)
-            notifyGMNHUser(userWalletId, emailTypeResponder, '');
+            notifyGMNHUser(userWalletId, emailTypeResponder, ticketLink);
         }else{
             console.log("No wallet found for question responder")
         }

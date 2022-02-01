@@ -23,6 +23,7 @@ export function sendEmail(userEmailAddress: string, emailType: string, questionL
   // TODO down the road: clean this up more
   if (emailType == 'QuestionResponder') {
     var templateParams = {
+      header: 'GMNH: Your answer to an open question was posted on GMNH',
       from_email: gmnhEmailHandle,
       to_email: userEmailAddress,
       message: `You answered an open question! Check out your full response here anytime: ${questionLink}`
@@ -30,6 +31,7 @@ export function sendEmail(userEmailAddress: string, emailType: string, questionL
   }
   else if (emailType == 'QuestionAsked') {
     var templateParams = {
+      header: 'GMNH: Your question was posted on GMNH',
       from_email: gmnhEmailHandle,
       to_email: userEmailAddress,
       message: `Your question was posted on GMNH! Check out your question here anytime: ${questionLink}`
@@ -37,14 +39,16 @@ export function sendEmail(userEmailAddress: string, emailType: string, questionL
   }
   else if (emailType == 'QuestionAnswered') {
     var templateParams = {
+      header: 'GMNH: Your question was answered on GMNH',
       from_email: gmnhEmailHandle,
       to_email: userEmailAddress,
-      message: `Your question was answered on GMNH! Check out your question here anytime: ${questionLink}`
+      message: `Your question was answered on GMNH! Check out the answer here: ${questionLink}`
     };
   }
   // emailType == UserSignUp
   else {
     var templateParams = {
+      header: 'GMNH: You signed up for GMNH',
       from_email: gmnhEmailHandle,
       to_email: userEmailAddress,
       message: `Thanks for joining GMNH! Be on the lookout for emails when you ask a question or answer one!`
