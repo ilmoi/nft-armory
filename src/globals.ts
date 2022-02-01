@@ -35,5 +35,6 @@ export const DEFAULTS = {
 
   EMAILJS_SERVICE_ID: '',
   EMAILJS_TEMPLATE_ID: '',
-  EMAILJS_USER_ID: ''
+  EMAILJS_USER_ID: '',
+  APP_URL: "https://gmnh.vercel.app/"
 };

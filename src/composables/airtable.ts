@@ -1,19 +1,14 @@
 import { DEFAULTS } from "@/globals";
 import Airtable from 'airtable';
 
-import emailjs from '@emailjs/browser/'
+import { sendEmail } from "@/composables/emailjs";
 
 const airtableApiKey = DEFAULTS.AIRTABLE_API_KEY
 const airtableAppBaseId = DEFAULTS.AIRTABLE_APP_BASE_ID
 const gmnhUserTable = DEFAULTS.AIRTABLE_GMNH_USER_TABLE_NAME
-const gmnhEmailHandle = DEFAULTS.GMNH_EMAIL_HANDLE
-const emailjsServiceId = DEFAULTS.EMAILJS_SERVICE_ID;
-const emailjsTemplateId = DEFAULTS.EMAILJS_TEMPLATE_ID;
-const emailjsUserId = DEFAULTS.EMAILJS_USER_ID
-
-
 
 var base = new Airtable({ apiKey: airtableApiKey }).base(airtableAppBaseId);
+
 async function queryAirtable(tableName: string, selectionCriteria: Object) {
     /* Query AirTable 
       Inputs: selection critera & table to query
@@ -33,12 +28,19 @@ async function queryAirtable(tableName: string, selectionCriteria: Object) {
 }
 
 
-export async function retrieveEmailAddressUsingWalletId (walletId: string){
+export async function notifyGMNHUser(userWalletId: string, emailType: string, questionLink: string){
+  /* Lookup a GMNHUser's email address in airtable & send specified email type
+     Input: 
+        userWalletId --> user's wallet id
+        emailType --> type of email to send (tied to template)
+        questionLink --> /question/ link
+
+  */
 
     let emailAddressColumn = 'EmailAddress'
     let walletKeyColumn = 'WalletKey'
 
-    let filterString = `({${walletKeyColumn}} = '${walletId}')`
+    let filterString = `({${walletKeyColumn}} = '${userWalletId}')`
 
     let selectionCriteria = {
         maxRecords: 1,
@@ -47,35 +49,13 @@ export async function retrieveEmailAddressUsingWalletId (walletId: string){
     }
 
     let output = await queryAirtable(gmnhUserTable, selectionCriteria)
-    let emailAddress = output[0].get(emailAddressColumn)
+    let userEmailAddress = output[0].get(emailAddressColumn)
 
-    console.log("output email address is: ", emailAddress )
-
-    notifyGMNHUser(emailAddress)
+    console.log("output email address is: ", userEmailAddress )
+    sendEmail(userEmailAddress, emailType, questionLink)
   
 
 }
 
-
-function notifyGMNHUser(emailAddress: string){
-  /* initialize message and send email using emailjs
-  */
-
-
-  var templateParams = {
-    to_email: emailAddress,
-    message: `hola! your open question was just answered on gmnh!`
-  };
-
- 
-  emailjs.send(emailjsServiceId, emailjsTemplateId, templateParams, emailjsUserId)
-    .then(function(response) {
-       console.log('SUCCESS!', response.status, response.text);
-    }, function(error) {
-       console.log('FAILED...', error);
-    });
-
-
-}
 
 
