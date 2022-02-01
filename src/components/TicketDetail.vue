@@ -6,9 +6,16 @@
             <div class="gmnh-tab-content-byline">Asked XXX mins ago</div>
             <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
             <hr style="border: 1px solid #697077;"/>
-            <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
+            <div v-if="!needsToBeAnswered(n)" class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
 <!--            <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/> -->
-            <IWantUrNFTForm v-if="needsToBeAnswered(n)" :questionID="getQuestionId(n)" :hash="getIPFSHash(n)"/>
+            <div v-else-if="!isConnected" style="margin: 0 auto;">
+                    <span class="wallet-text" style="justify-content: center; display: flex">Connect your Solana wallet to answer this question!</span>
+                    <ConfigPane/>
+                    <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a class="phantom-link" target="_blank" href="https://phantom.app/">Phantom</a>.</span>
+            </div>
+            <div v-else>
+              <IWantUrNFTForm :questionID="getQuestionId(n)" :hash="getIPFSHash(n)" :fromQuestionDetail="true"/>
+            </div>
       </div>
 
     </div>
@@ -27,7 +34,7 @@ import useError from '@/composables/error';
 import { INFT } from '@/common/helpers/types';
 import { useRoute } from 'vue-router';
 import NFTViewCard from '@/components/NFTViewCard.vue';
-import { NFTGet } from '@/common/NFTget';
+import ConfigPane from '@/components/ConfigPane.vue';
 import useCluster, { Cluster } from '@/composables/cluster';
 import IWantUrNFTForm from '@/components/IWantUrNFTForm.vue';
 import usePinata from '@/composables/pinata';
@@ -44,7 +51,7 @@ const errorFinding = ref<boolean>(false);
 
 export default defineComponent({
   components: {
-    NFTViewCard, IWantUrNFTForm
+    NFTViewCard, IWantUrNFTForm, ConfigPane
   },
   computed: {
     doesQuestionExist() {
@@ -175,5 +182,10 @@ a.gmnh-back:hover {
 
 .question-nav {
   margin: 16px;
+}
+
+.gmnh-answer-wallet-text {
+  display: flex;
+  justify-content: center;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center content-center max-w-xl">
+  <div class="gmnh-center flex justify-center content-center max-w-xl">
     <!--<div class="nes-select is-dark flex-1">
       <select required id="cluster" v-model="chosenCluster">
         <option :value="Cluster.Mainnet">Mainnet</option>
@@ -50,4 +50,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.gmnh-center {
+  margin: 0 auto;
+}
+</style>

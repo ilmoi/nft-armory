@@ -16,8 +16,9 @@
         </button>
       </form>
       <form v-if="!isQuestion && !isLoading" @submit.prevent="createAnswer" class="flex-grow">
-        <div><textarea focus-visible type="text" id="nftName" placeholder="Write answer here:" class="nes-input gmnh-answer" v-model="nftName" /></div>
-        <button
+        <div v-if="!fromQuestionDetail"><textarea focus-visible type="text" id="nftName" placeholder="Write answer here:" class="nes-input gmnh-answer" v-model="nftName" /></div>
+        <div v-else><textarea focus-visible type="text" id="nftName" placeholder="Write answer here:" class="nes-input gmnh-answer-detail" v-model="nftName" /></div>
+        <button v-if="!fromQuestionDetail"
           class="gmnh-answer-submit"
           :class="{ 'is-disabled': isLoading || !isConnected }"
           :disabled="isLoading || !isConnected"
@@ -25,6 +26,15 @@
         >
           Answer Question
         </button>
+        <button v-else
+          class="gmnh-answer-submit gmnh-answer-submit-detail"
+          :class="{ 'is-disabled': isLoading || !isConnected }"
+          :disabled="isLoading || !isConnected"
+          type="submit"
+        >
+          Answer Question
+        </button>
+    
       </form>
 
        <!--notifications-->
@@ -47,7 +57,10 @@
       <div v-if="isQuestion" class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
         <p>{{ nftName }}</p>
       </div>
-      <div v-else class=" display-answer display-canvas" v-bind:id="canvasIdentifier" :style="{ fontSize: `${textSize}px`} ">
+      <div v-else-if="!fromQuestionDetail" class=" display-answer display-canvas" v-bind:id="canvasIdentifier" :style="{ fontSize: `${textSize}px`} ">
+        <p>{{ nftName }}</p>
+      </div>
+      <div v-else class="display-answer-detail display-canvas" v-bind:id="canvasIdentifier" :style="{ fontSize: `${textSize}px`} ">
         <p>{{ nftName }}</p>
       </div>
    
@@ -93,7 +106,8 @@ export default defineComponent({
     uri: { type: String },
     hash: {type: String},
     clearAskQuestion: {type: Boolean},
-    updateOpenQuestions: {type: Boolean}
+    updateOpenQuestions: {type: Boolean},
+    fromQuestionDetail: {type: Boolean}
   },
   watch: { 
     clearAskQuestion: {
@@ -133,6 +147,7 @@ export default defineComponent({
     const description = ref('');
 
     const canvasIdentifier = computed(() => {return "canvas-" + props.hash});
+
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { clearError, setError } = useError();
 
@@ -304,6 +319,16 @@ export default defineComponent({
   margin-top: 0px;
 }
 
+.display-answer-detail {
+  @apply text-center flex flex-col justify-center align-middle ml-10 mt-2;
+  background-color: #219653;
+  width: 250px;
+  height: 250px;
+  margin-right: 16px;
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
 .gmnh-question {
   display: flex;
 flex-direction: row;
@@ -381,6 +406,32 @@ align-self: stretch;
 flex-grow: 0;
 }
 
+.gmnh-answer-detail {
+  display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 16px;
+margin: 16px;
+
+position: static;
+width: 816px;
+height: 131px;
+left: 0px;
+top: 0px;
+
+/* Gray-90 */
+
+background: #21272A;
+border-radius: 4px;
+
+/* Inside auto layout */
+
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+}
+
 .gmnh-question-submit {
   display: flex;
 flex-direction: row;
@@ -429,6 +480,10 @@ flex: none;
 order: 1;
 flex-grow: 0;
 margin-top: 16px;
+}
+
+.gmnh-answer-submit-detail {
+margin: 16px;
 }
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */

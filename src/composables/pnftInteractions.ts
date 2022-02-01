@@ -85,9 +85,6 @@ export function generateTicketDetailLink(ticket: PNFT) {
     };
 
  export function needsToBeAnswered (ticket: PNFT) {
-    console.log('type: ', readTicketType(ticket));
-    console.log('status: ', readTicketStatus(ticket));
-
    return (readTicketType(ticket) == 'question' && readTicketStatus(ticket) == 'open');   
  }
 
