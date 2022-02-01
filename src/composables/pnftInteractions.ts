@@ -1,6 +1,6 @@
-import { PNFT } from '/Users/patenish/Documents/hax/helpdesk-nft-armory/src/common/helpers/types';
-import usePinata from '/Users/patenish/Documents/hax/helpdesk-nft-armory/src/composables/pinata';
-import useWallet from '/Users/patenish/Documents/hax/helpdesk-nft-armory/src/composables/wallet';
+import { PNFT } from '@/common/helpers/types';
+import usePinata from '@/composables/pinata';
+import useWallet from '@/composables/wallet';
 const { isConnected, getWallet, getWalletAddress } = useWallet();
 
 
