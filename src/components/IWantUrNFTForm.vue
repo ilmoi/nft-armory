@@ -139,7 +139,7 @@ export default defineComponent({
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { clearError, setError } = useError();
 
-    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata } = usePinata();
+    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata, retrieveByMintId } = usePinata();
 
     //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
     //todo figure out way to not dox private key
