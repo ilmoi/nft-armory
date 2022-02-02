@@ -8,7 +8,7 @@ export function formatTicketDetailLink(questionMintId: string, appUrl?: string) 
    /* Input: Takes in a question's mintId 
       Output: link to ticket detail page using mintID or undefined (some tickets may not have mintID)
    */
-      const appUrlPrefix =  typeof appUrl != undefined ? appUrl : ""
+      const appUrlPrefix =  typeof appUrl != undefined ? appUrl : "https://gmnh.vercel.app"
       const ticketPageEndpoint = "/question/"
       return appUrlPrefix + ticketPageEndpoint + questionMintId
  }

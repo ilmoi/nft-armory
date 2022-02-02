@@ -224,7 +224,7 @@ export default defineComponent({
           Flow: questionId -> user walletId -> GMNH Users Airtable
       */
         if (typeof props.questionID != 'undefined'){
-            console.log('questionID is: ', props.questionID)
+
             let questionUserIDWallet = undefined
             let ticketLink = formatTicketDetailLink(props.questionID, DEFAULTS.APP_URL)
 
@@ -234,8 +234,6 @@ export default defineComponent({
                 if (pinataTickets.length && pinataTickets.length == 1) {
                   questionUserIDWallet = getQuestionUserWalletId(pinataTickets[0]);
                   notifyGMNHUser(questionUserIDWallet.toString(), emailTypeAnswered, ticketLink)
-              } else {
-                console.log("No tickets found with mint id of questionID queried; cannot notify question asker via email")
               }
             }) 
       
@@ -252,7 +250,6 @@ export default defineComponent({
             let ticketLink = formatTicketDetailLink(props.questionID, DEFAULTS.APP_URL)
             notifyGMNHUser(userWalletId, emailTypeResponder, ticketLink);
         }else{
-            console.log("No wallet found for question responder")
         }
       
     }
@@ -302,7 +299,7 @@ export default defineComponent({
         sendEmailUpdateQuestionAsker();
 
         // Email question responder about their answer
-        sendEmailUpdateQuestionResponder();
+        // sendEmailUpdateQuestionResponder();
     }
 
     // --------------------------------------- modals

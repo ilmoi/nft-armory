@@ -58,7 +58,6 @@ export function sendEmail(userEmailAddress: string, emailType: string, questionL
 
   emailjs.send(emailjsServiceId, emailjsTemplateId, templateParams, emailjsUserId)
     .then(function (response) {
-      console.log('SUCCESS!', response.status, response.text);
     }, function (error) {
       console.log('FAILED...', error);
     });

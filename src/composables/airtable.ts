@@ -17,11 +17,9 @@ async function queryAirtable(tableName: string, selectionCriteria: Object) {
     
     return await base(tableName).select(selectionCriteria).firstPage().then((records: any) => {
                 if (records.length) {
-                  console.log("yeah found")
                   return records
                 } else {
-                  console.log("yike")
-                  return "nope"
+                  return undefined
                 }
               })
 
@@ -49,10 +47,13 @@ export async function notifyGMNHUser(userWalletId: string, emailType: string, qu
     }
 
     let output = await queryAirtable(gmnhUserTable, selectionCriteria)
-    let userEmailAddress = output[0].get(emailAddressColumn)
 
-    sendEmail(userEmailAddress, emailType, questionLink)
-  
+    // only send an email if user found in GMNH Users Airtable
+    if (output && output.length == 1){
+      let userEmailAddress = output[0].get(emailAddressColumn)
+      sendEmail(userEmailAddress, emailType, questionLink)
+    }
+    
 
 }
 
