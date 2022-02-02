@@ -3,6 +3,33 @@
     <!--navbar + logo-->
     <TheNavBar />
       
+  <div v-if="isConnected && shouldShowEmailModal" class="modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog" style="margin-top: 200px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Enter Email Address</h5>
+        <button type="button" v-on:click="shouldShowEmailModal=false" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form v-if="!emailSubmitted" @submit.prevent="enterEmail" class="flex-grow">
+        <div style="margin: 10px">Enter your email address so we can notify you when your questions get answered.</div>
+        <input style="margin: 10px; width: 400px; padding: 5px;" type="text" id="emailAddress" placeholder="What's your email address?" class="nes-input gmnh-question focus-visible" v-model="emailAddress" />
+        <div class="modal-footer">
+        <button v-on:click="shouldShowEmailModal=false" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button
+          class="btn btn-primary"
+          type="submit"
+        >
+          Get Notified
+        </button>
+        </div>
+      </form>
+      <div v-if="emailSubmitted" style="margin: 10px">
+        Thank you for submitting your email.
+      </div>
+    </div>
+  </div>
+</div>
+
       <!-- tabs -->
       <div v-if="$route.name !== 'Ticket Details'" class="container mt-3">
         <tabs @tabChanged="tabChanged">
@@ -74,14 +101,18 @@ import {hasUserBeenAsked} from '@/composables/airtable';
 import Tab from '@/components/Tab.vue';
 import Tabs from '@/components/Tabs.vue';
 import useWallet from './composables/wallet';
+import {addEmailAddress} from './composables/airtable';
 
 const clearAskQuestion = ref<Boolean>(false);
 const updateMyQuestions = ref<Boolean>(false);
 const updateOpenQuestions = ref<Boolean>(false);
 const updateAnsweredQuestions = ref<Boolean>(false);
 const shouldShowEmailModal = ref<Boolean>(false);
+const emailSubmitted = ref<Boolean>(false);
 
 const { isConnected, getWallet, getWalletAddress } = useWallet();
+
+const emailAddress = ref('');
 
 export default defineComponent({
   components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm, QuestionList, TicketDetail},
@@ -119,8 +150,8 @@ export default defineComponent({
         if (newValue) {
             hasUserBeenAsked(getWalletAddress()!.toBase58()).
             then(async (result) => {
-              console.log('result!: ', result);
-              shouldShowEmailModal.value = result;
+              //if the user has been asked, then we should not show email (that's why its the opposite)
+              shouldShowEmailModal.value = !result;
             });
         }
       }
@@ -134,13 +165,30 @@ export default defineComponent({
     onMounted(() => window.addEventListener('resize', onWidthChange));
     onUnmounted(() => window.removeEventListener('resize', onWidthChange));
 
+    const enterEmail = async () => {
+      if (isConnected.value) {
+
+        addEmailAddress(getWalletAddress()!.toBase58(), emailAddress.value).
+            then(async (result) => {
+              //once email address has been added, set value to true so we can update modal
+              emailSubmitted.value = true;
+            });
+
+        ;
+      }
+    }
+
     return {
       windowWidth,
       isConnected,
       clearAskQuestion,
       updateMyQuestions,
       updateOpenQuestions,
-      updateAnsweredQuestions
+      updateAnsweredQuestions,
+      emailAddress,
+      shouldShowEmailModal,
+      enterEmail,
+      emailSubmitted
     };
   },
 });
