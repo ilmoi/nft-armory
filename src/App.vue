@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref, computed} from 'vue';
 import TheLogo from '@/components/TheLogo.vue';
 import TheNavBar from '@/components/TheNavBar.vue';
 import ConfigPane from '@/components/ConfigPane.vue';
@@ -68,6 +68,8 @@ import TheFooter from '@/components/TheFooter.vue';
 import IWantUrNFTForm from '@/components/IWantUrNFTForm.vue';
 import QuestionList from '@/components/QuestionList.vue';
 import TicketDetail from '@/components/TicketDetail.vue';
+
+import {hasUserBeenAsked} from '@/composables/airtable';
 
 import Tab from '@/components/Tab.vue';
 import Tabs from '@/components/Tabs.vue';
@@ -77,6 +79,9 @@ const clearAskQuestion = ref<Boolean>(false);
 const updateMyQuestions = ref<Boolean>(false);
 const updateOpenQuestions = ref<Boolean>(false);
 const updateAnsweredQuestions = ref<Boolean>(false);
+const shouldShowEmailModal = ref<Boolean>(false);
+
+const { isConnected, getWallet, getWalletAddress } = useWallet();
 
 export default defineComponent({
   components: { TheFooter, TheLogo, ConfigPane, TheNavBar, Tab, Tabs, IWantUrNFTForm, QuestionList, TicketDetail},
@@ -106,8 +111,22 @@ export default defineComponent({
       }
     }
   },
+  watch: { 
+    isConnected: {
+      immediate: true,
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+            hasUserBeenAsked(getWalletAddress()!.toBase58()).
+            then(async (result) => {
+              console.log('result!: ', result);
+              shouldShowEmailModal.value = result;
+            });
+        }
+      }
+    }   
+  },
   setup() {
-    const { isConnected, getWallet, getWalletAddress } = useWallet();
     const windowWidth = ref(window.innerWidth);
     const onWidthChange = () => {
       windowWidth.value = window.innerWidth;

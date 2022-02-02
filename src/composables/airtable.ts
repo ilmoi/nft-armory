@@ -53,7 +53,44 @@ export async function notifyGMNHUser(userWalletId: string, emailType: string, qu
       let userEmailAddress = output[0].get(emailAddressColumn)
       sendEmail(userEmailAddress, emailType, questionLink)
     }
+  }
+
+  export async function hasUserBeenAsked(userWalletId: string) {
+      /* Lookup if a GMNH user has been asked to enter their email. 
+      If not, ask them and mark them true so we don't ask them again
+            userWalletId --> user's wallet id
+            emailType --> type of email to send (tied to template)
+            questionLink --> /question/ link
     
+      */
+    
+        let hasBeenAskedToEnterEmail = 'hasBeenAskedToEnterEmail'
+        let walletKeyColumn = 'WalletKey'
+    
+        let filterString = `(AND({${walletKeyColumn}} = '${userWalletId}', {${hasBeenAskedToEnterEmail}} = "1"))`
+    
+        console.log(filterString);
+
+        let selectionCriteria = {
+            maxRecords: 1,
+            fields: [walletKeyColumn],
+            filterByFormula: filterString
+        }
+    
+        let output = await queryAirtable(gmnhUserTable, selectionCriteria)
+
+        console.log('output', output);
+    
+        // only send an email if user found in GMNH Users Airtable
+        if (output && output.length > 0){
+          console.log('returning true');
+          return true;
+        } else {
+          return false;
+        }
+
+        
+      
 
 }
 
