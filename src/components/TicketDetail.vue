@@ -4,12 +4,12 @@
       <div v-for="(n, idx) in question" :key="n.id" :id="idx">     
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked XXX mins ago</div>
-            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
+            <div class="gmnh-tab-content-description">{{getDescription(n)}}</div>
             <hr style="border: 1px solid #697077;"/>
             <div v-if="!needsToBeAnswered(n)" class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
 <!--            <img class="gmnh-tab-content-nft" v-bind:src="getImageUrl(n)"/> -->
             <div v-else-if="!isConnected" style="margin: 0 auto;">
-                    <span class="wallet-text" style="justify-content: center; display: flex">Connect your Solana wallet to answer this question!</span>
+                    <span class="wallet-text" style="justify-content: center; display: flex; margin-top: 16px;">Connect your Solana wallet to answer this question!</span>
                     <ConfigPane/>
                     <span class="no-wallet-text">Don't have a wallet? Download&nbsp;<a class="phantom-link" target="_blank" href="https://phantom.app/">Phantom</a>.</span>
             </div>
@@ -153,7 +153,13 @@ export default defineComponent({
     font-size: 16px;
     font-weight: bold;
     color: #F2F4F8;
-    margin-top: 7px;
+    margin-top: 10px;
+}
+
+.gmnh-tab-content-description {
+    font-size: 14px;
+    color: #878D96;
+    margin-top: 8px;
 }
 
 .gmnh-tab-content-nft {

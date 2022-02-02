@@ -17,7 +17,7 @@
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by you X mins ago</div>
-            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
+            <div class="gmnh-tab-content-description">{{getDescription(n)}}</div>
             <hr style="border: 1px solid #697077;"/>
             <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
         </div> 
@@ -29,7 +29,7 @@
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by someone X mins ago</div>
-            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
+            <div class="gmnh-tab-content-description">{{getDescription(n)}}</div>
             <IWantUrNFTForm @answer-submitted="answerSubmitted" :is-question=false :fromQuestionDetail=false :questionID="getQuestionId(n)" :hash="getIPFSHash(n)" v-bind:updateOpenQuestions="updateOpenQuestions"/>        
         </div> 
     </tab>
@@ -40,7 +40,7 @@
         <div class="gmnh-tab-content">
             <div class="gmnh-tab-content-title">{{readTicketName(n)}}</div>
             <div class="gmnh-tab-content-byline">Asked by someone X mins ago</div>
-            <div class="gmnh-tab-content-status">{{getDescription(n)}}</div>
+            <div class="gmnh-tab-content-description">{{getDescription(n)}}</div>
             <hr style="border: 1px solid #697077;"/>
             <div class="gmnh-tab-content-status">{{getAnswer(n)}}</div>
         </div> 
@@ -239,6 +239,12 @@ export default defineComponent({
     font-weight: bold;
     color: #F2F4F8;
     margin-top: 7px;
+}
+
+.gmnh-tab-content-description {
+    font-size: 14px;
+    color: #878D96;
+    margin-top: 8px;
 }
 
 .gmnh-tab-content-nft {
