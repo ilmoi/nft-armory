@@ -48,7 +48,8 @@ export default function usePinata() {
     const metadata = {
       name: 'GMNeedHelp Question',
       symbol: 'HELP',
-      description: title,
+      title: title,
+      description: description,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
       properties: {
@@ -59,6 +60,9 @@ export default function usePinata() {
             type: 'image/png',
           },
         ],
+        ticket_type: 'question',
+        generation: 'v1',
+        userWallet: userWalletAddr.toBase58(),
         creators: [
           {
             address: gmnhWalletAddr.toBase58(),
@@ -75,7 +79,7 @@ export default function usePinata() {
           'description': description,
           'ticket_type': 'question',
           'status': 'open',
-          'generation': 'GENESIS',
+          'generation': 'v1',
           'userWallet': userWalletAddr.toBase58(),
           'imageURI': hashToURI(imgIpfsHash)
         }
@@ -93,7 +97,7 @@ export default function usePinata() {
     const metadata = {
       name: 'GMNeedHelp Answer',
       symbol: 'HELP',
-      description: title,
+      title: title,
       seller_fee_basis_points: 0,
       image: hashToURI(imgIpfsHash),
       properties: {
@@ -110,6 +114,10 @@ export default function usePinata() {
             share: 100,
           },
         ],
+        ticket_type: 'answer',
+        question_mint_id: questionID,
+        generation: 'v1',
+        userWallet: userWalletAddr.toBase58()
       },
     };
 
@@ -119,7 +127,7 @@ export default function usePinata() {
         keyvalues: {
           'ticket_type': 'answer',
           'questionMintId': questionID,
-          'generation': 'GENESIS',
+          'generation': 'v1',
           'userWallet': userWalletAddr.toBase58(),
           'imageURI': hashToURI(imgIpfsHash)
         }
