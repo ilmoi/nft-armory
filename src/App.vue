@@ -12,7 +12,7 @@
       </div>
       <form v-if="!emailSubmitted" @submit.prevent="enterEmail" class="flex-grow">
         <div style="margin: 10px">Enter your email address so we can notify you when your questions get answered.</div>
-        <input style="margin: 10px; width: 400px; padding: 5px;" type="text" id="emailAddress" placeholder="What's your email address?" class="nes-input gmnh-question focus-visible" v-model="emailAddress" />
+        <input type="text" id="emailAddress" placeholder="What's your email address?" class="nes-input gmnh-question focus-visible" v-model="emailAddress" />
         <div class="modal-footer">
         <button v-on:click="shouldShowEmailModal=false" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <button
@@ -223,6 +223,13 @@ export default defineComponent({
 a.phantom-link {
   color: #0d6efd;
   text-decoration: underline;
+}
+
+#emailAddress {
+  margin: 10px; 
+  width: 400px; 
+  padding: 5px;
+
 }
 
 </style>
