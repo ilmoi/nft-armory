@@ -74,8 +74,9 @@ export default function usePinata() {
 
     const options = {
       pinataMetadata: {
-        name: title,
+        name: title.substring(0,254),
         keyvalues: {
+          'name': title,
           'description': description,
           'ticket_type': 'question',
           'status': 'open',
@@ -123,8 +124,9 @@ export default function usePinata() {
 
     const options = {
       pinataMetadata: {
-        name: title,
+        name: title.substring(0,254),
         keyvalues: {
+          'name': title,
           'ticket_type': 'answer',
           'questionMintId': questionID,
           'generation': 'v1',
