@@ -329,6 +329,7 @@ export default function usePinata() {
     pinata.hashMetadata(ipfsHash, metaDataHash).then((result) => {
       //handle results here
       }).catch((err) => {
+        console.log('an error occured when updating metadata', err);
       //handle error here
     });
   };
