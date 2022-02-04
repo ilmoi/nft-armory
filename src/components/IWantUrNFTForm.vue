@@ -3,7 +3,7 @@
       <div class="flex mt-10 text-white" style="background: #343A3F; ">
       <form v-if="isQuestion && !isLoading" @submit.prevent="createTicket" class="flex-grow">
 
-        <input focus-visible type="text" id="nftName" placeholder="What's your question?" class="nes-input gmnh-question" v-model="nftName" />
+        <input focus-visible type="text" id="nftName" maxlength="255" placeholder="What's your question?" class="nes-input gmnh-question" v-model="nftName" />
         <div><textarea type="text" id="description" placeholder="Add context/background..." class="nes-input gmnh-description" v-model="description" /></div>
 
         <button
@@ -55,13 +55,13 @@
     </NotifySuccess> -->
 
       <div v-if="isQuestion" class="display display-canvas" id="canvas" :style="{ fontSize: `${textSize}px`} ">
-        <p>{{ nftName }}</p>
+        <p>{{ nftName.substring(0,254) }}</p>
       </div>
       <div v-else-if="!fromQuestionDetail" class=" display-answer display-canvas" v-bind:id="canvasIdentifier" :style="{ fontSize: `${textSize}px`} ">
-        <p>{{ nftName }}</p>
+        <p>{{ nftName.substring(0,254) }}</p>
       </div>
       <div v-else class="display-answer-detail display-canvas" v-bind:id="canvasIdentifier" :style="{ fontSize: `${textSize}px`} ">
-        <p>{{ nftName }}</p>
+        <p>{{ nftName.substring(0,254) }}</p>
       </div>
    
   </div>
@@ -251,7 +251,7 @@ export default defineComponent({
           };
 
           updatePinataMetadata(URIToHash(answerUri), newMetadata);
-    
+
           //2. metadata in IPFS for question with mintID of answer + update status
           const newMetadataForQuestion = {
             keyvalues: {

@@ -46,7 +46,7 @@ export default function usePinata() {
 
   const uploadJSON = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, description: string, userWalletAddr: PublicKey) => {
     const metadata = {
-      name: 'GMNeedHelp Question',
+      name: 'GMneedhelp Question',
       symbol: 'HELP',
       title: title,
       description: description,
@@ -62,7 +62,6 @@ export default function usePinata() {
         ],
         ticket_type: 'question',
         generation: 'v1',
-        userWallet: userWalletAddr.toBase58(),
         creators: [
           {
             address: gmnhWalletAddr.toBase58(),
@@ -74,12 +73,12 @@ export default function usePinata() {
 
     const options = {
       pinataMetadata: {
-        name: title,
+        name: title.substring(0,254),
         keyvalues: {
+          'name': title,
           'description': description,
           'ticket_type': 'question',
           'status': 'open',
-          'generation': 'v1',
           'userWallet': userWalletAddr.toBase58(),
           'imageURI': hashToURI(imgIpfsHash)
         }
@@ -95,7 +94,7 @@ export default function usePinata() {
 
   const uploadJSONForAnswer = async (imgIpfsHash: string, gmnhWalletAddr: PublicKey, title: string, questionID: string, userWalletAddr: PublicKey) => {
     const metadata = {
-      name: 'GMNeedHelp Answer',
+      name: 'GMneedhelp Answer',
       symbol: 'HELP',
       title: title,
       seller_fee_basis_points: 0,
@@ -117,17 +116,16 @@ export default function usePinata() {
         ticket_type: 'answer',
         question_mint_id: questionID,
         generation: 'v1',
-        userWallet: userWalletAddr.toBase58()
       },
     };
 
     const options = {
       pinataMetadata: {
-        name: title,
+        name: title.substring(0,254),
         keyvalues: {
+          'name': title,
           'ticket_type': 'answer',
           'questionMintId': questionID,
-          'generation': 'v1',
           'userWallet': userWalletAddr.toBase58(),
           'imageURI': hashToURI(imgIpfsHash)
         }

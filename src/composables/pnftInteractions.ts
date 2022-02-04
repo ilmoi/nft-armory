@@ -19,8 +19,20 @@ export function generateTicketDetailLink(ticket: PNFT) {
     */
      const attr_key = 'name';
     
-      let attr = ticket.metadata.hasOwnProperty(attr_key) ? ticket.metadata[attr_key] : undefined
-      return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+      //we used to store title in 'name' within metadata, but realized it has a 255 char limit. 
+      //So we're moving to its own metadata element, so we'll check metadata first, and then 'name' next.
+      
+      let title = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
+      let backupTitle = ticket.metadata.hasOwnProperty(attr_key) ? ticket.metadata[attr_key] : undefined
+
+
+      if (title && typeof title != 'undefined') {
+         return title;
+      } else if (backupTitle && typeof backupTitle != 'undefined') {
+         return backupTitle;
+      } else {
+         return "";
+      }
   };
 
   export function readDescription (ticket: PNFT) {
