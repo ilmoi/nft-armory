@@ -80,7 +80,6 @@ export default function usePinata() {
           'description': description,
           'ticket_type': 'question',
           'status': 'open',
-          'generation': 'v1',
           'userWallet': userWalletAddr.toBase58(),
           'imageURI': hashToURI(imgIpfsHash)
         }
@@ -129,7 +128,6 @@ export default function usePinata() {
           'name': title,
           'ticket_type': 'answer',
           'questionMintId': questionID,
-          'generation': 'v1',
           'userWallet': userWalletAddr.toBase58(),
           'imageURI': hashToURI(imgIpfsHash)
         }
