@@ -1,16 +1,29 @@
 import { PNFT } from '@/common/helpers/types';
 import usePinata from '@/composables/pinata';
+import useWallet from '@/composables/wallet';
+const { isConnected, getWallet, getWalletAddress } = useWallet();
 
 
-export function generateTicketDetailLink(ticket: PNFT) {
-    /* Input: Takes in a ticket (pinata NFT metadata)
-       Output: link to ticket detail page using mintID or undefined (some tickets may not have mintID)
-    */
-       const ticket_detail_url_prefix = "/ticketdetail/"
-       const attr_key = "mintId"
-       let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
-       return typeof attr != 'undefined' ? ticket_detail_url_prefix + attr : undefined
-  }
+export function formatTicketDetailLink(questionMintId: string, appUrl?: string)  {
+   /* Input: Takes in a question's mintId 
+      Output: link to ticket detail page using mintID or undefined (some tickets may not have mintID)
+   */
+      const appUrlPrefix =  typeof appUrl != undefined ? appUrl : "https://gmnh.vercel.app"
+      const ticketPageEndpoint = "/question/"
+      return appUrlPrefix + ticketPageEndpoint + questionMintId
+ }
+
+
+export function generateTicketDetailLink(ticket: PNFT, appUrl?: string)  {
+   /* Input: Takes in a ticket (pinata NFT metadata)
+      Output: link to ticket detail page using mintID or undefined (some tickets may not have mintID)
+   */
+      const appUrlPrefix =  typeof appUrl != undefined ? appUrl : ""
+      const ticketPageEndpoint = "/question/"
+      const attr_key = "mintId"
+      let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
+      return typeof attr != 'undefined' ? appUrlPrefix + ticketPageEndpoint + attr : undefined
+ }
   
 
   export function readTicketName (ticket: PNFT) {
@@ -124,4 +137,15 @@ export function generateTicketDetailLink(ticket: PNFT) {
    return ticket.ipfs_pin_hash;
  };
 
-  
+ export function getQuestionUserWalletId(ticket: PNFT){
+   /* Input: Takes in a ticket (pinata NFT metadata)
+      Output: reads question user's wallet id from metadata 
+   */
+   const attr_key = 'userWallet'
+   let attr = ticket.metadata.keyvalues.hasOwnProperty(attr_key) ? ticket.metadata.keyvalues[attr_key] : undefined
+   return typeof attr != 'undefined' ? attr : "Attribute Not Set"
+ }
+
+const { retrieveOpenTickets} = usePinata();
+
+

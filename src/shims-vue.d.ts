@@ -5,3 +5,5 @@ declare module '*.vue' {
   export default component;
 }
 
+declare module 'form-data';
+

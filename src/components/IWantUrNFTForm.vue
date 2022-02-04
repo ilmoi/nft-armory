@@ -74,7 +74,7 @@ import html2canvas from 'html2canvas';
 // @ts-ignore
 import { PublicKey, Keypair } from '@solana/web3.js';
 import { NodeWallet } from '@metaplex/js';
-
+import {DEFAULTS} from '@/globals'
 import usePinata from '@/composables/pinata';
 import useWallet from '@/composables/wallet';
 import useError from '@/composables/error';
@@ -89,6 +89,9 @@ import ContentTooltipIWantUrNFT from '@/components/content/tooltip/ContentToolti
 import useModal from '@/composables/modal';
 import { NFTMintMaster } from '@/common/NFTmint';
 import { NFTGet } from '@/common/NFTget';
+import {notifyGMNHUser} from '@/composables/airtable';
+import {getQuestionUserWalletId, generateTicketDetailLink, formatTicketDetailLink} from '@/composables/pnftInteractions'
+import {emailTypeAnswered, emailTypeResponder} from '@/composables/emailjs'
 
 export default defineComponent({
   components: {
@@ -151,7 +154,7 @@ export default defineComponent({
     const { isConnected, getWallet, getWalletAddress } = useWallet();
     const { clearError, setError } = useError();
 
-    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata } = usePinata();
+    const { uploadImg, uploadJSON, hashToURI, URIToHash, uploadJSONForAnswer, updatePinataMetadata, retrieveByMintId } = usePinata();
 
     //This is the HelpDesk treasury wallet (9px36ZsECEdSbNAobezC77Wr9BfACenRN1W8X7AUuWAb) where all NFTs will be minted to
     //todo figure out way to not dox private key
@@ -231,6 +234,43 @@ export default defineComponent({
         });
     };
 
+    const sendEmailUpdateQuestionAsker = async() => {
+      /*  Send email to question asker to let them know their question was answered
+          Flow: questionId -> user walletId -> GMNH Users Airtable
+      */
+        if (typeof props.questionID != 'undefined'){
+
+            let questionUserIDWallet = undefined
+            let ticketLink = formatTicketDetailLink(props.questionID, DEFAULTS.APP_URL)
+
+            retrieveByMintId(props.questionID) 
+                .then((pinataTickets) => {
+
+                if (pinataTickets.length && pinataTickets.length == 1) {
+                  questionUserIDWallet = getQuestionUserWalletId(pinataTickets[0]);
+                  notifyGMNHUser(questionUserIDWallet.toString(), emailTypeAnswered, ticketLink)
+              }
+            }) 
+      
+        }
+    } 
+
+      const sendEmailUpdateQuestionResponder = async() => {
+      /*  Send email to question responder to reconfirm their answer was posted
+          Flow: user walletId -> GMNH Users Airtable
+      */
+        let userWalletId = getWalletAddress() ? getWalletAddress()?.toString() : undefined
+
+        if (typeof userWalletId != 'undefined' && typeof props.questionID != 'undefined'){
+            let ticketLink = formatTicketDetailLink(props.questionID, DEFAULTS.APP_URL)
+            notifyGMNHUser(userWalletId, emailTypeResponder, ticketLink);
+        }else{
+        }
+      
+    }
+
+
+
     const createAnswer = async () => {
       reset();
 
@@ -270,6 +310,11 @@ export default defineComponent({
           isLoading.value = false;
         });
 
+        // Email question asker about their question being answered
+        sendEmailUpdateQuestionAsker();
+
+        // Email question responder about their answer
+        // sendEmailUpdateQuestionResponder();
     }
 
     // --------------------------------------- modals
