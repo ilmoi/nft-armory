@@ -65,6 +65,7 @@ import { PNFT } from '@/common/helpers/types';
 import QuestionItem from '@/components/QuestionItem.vue';
 import usePinata from '@/composables/pinata';
 import * as pnftInteractions from '@/composables/pnftInteractions'
+import { getOpenQuestionsFromGMNH} from '@/composables/gmnh-service';
 
 const { isConnected, getWallet, getWalletAddress } = useWallet();
 const myQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
@@ -102,15 +103,9 @@ export default defineComponent({
       deep: true,
       handler(newValue, oldValue) {
         if (newValue) {
-            retrieveOpenTickets(getWalletAddress()!) 
-            .then((pinataTickets) => {
-            if (pinataTickets.length) {
-              openQuestions.value = pinataTickets;
-            } else {
-              //TODO: add error message
-            //  updateLoadingStdErr(ERR_NO_NFTS);
-            }
-          })
+            getOpenQuestionsFromGMNH().then((openQuestionsFromGMNH) => {
+              openQuestions.value = openQuestionsFromGMNH;
+            });
         }
       }
     },
@@ -174,7 +169,6 @@ export default defineComponent({
   onUpdated() {
   },
   setup(props) {
-
     if (props.tabType && props.tabType == 'myQuestions') {
 
     retrieveMyQuestions(getWalletAddress()!) 
@@ -188,16 +182,9 @@ export default defineComponent({
       }) 
 
     } else if (props.tabType && props.tabType == 'openQuestions') {
-
-    retrieveOpenTickets(getWalletAddress()!) 
-      .then((pinataTickets) => {
-        if (pinataTickets.length) {
-          openQuestions.value = pinataTickets;
-        } else {
-            //TODO: add error message
-        //  updateLoadingStdErr(ERR_NO_NFTS);
-        }
-      }) 
+      getOpenQuestionsFromGMNH().then((openQuestionsFromGMNH) => {
+              openQuestions.value = openQuestionsFromGMNH;
+            });
     } else if (props.tabType && props.tabType == 'answeredQuestions') {
 
     retrieveAnsweredQuestions(getWalletAddress()!) 
@@ -217,6 +204,9 @@ export default defineComponent({
       openQuestionList: openQuestions,
       answeredQuestions: answeredQuestions
     }; 
+
+
+   
       
     
   },
