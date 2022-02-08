@@ -1,17 +1,4 @@
-<template>
-  <!-- <MDBTabs v-model="activeTabId4" vertical>
-    <MDBTabNav pills tabsClasses="mb-3 text-center">
-    <QuestionItem v-for="(n, index) in PNFTs" :key="n.id" :id="index" :n="n"/>
-      </MDBTabNav> 
-
-    <MDBTabContent>
-      <MDBTabPane tabId="ex4-0">Tab 1 content</MDBTabPane>
-      <MDBTabPane tabId="ex4-1">Tab 2 content</MDBTabPane>
-      <MDBTabPane tabId="ex4-2">Tab 1 content</MDBTabPane>
-      <MDBTabPane tabId="ex4-3">Tab 2 content</MDBTabPane>
-    </MDBTabContent>
-  </MDBTabs>  -->
-  
+<template>  
   <tabs v-if="doMyQuestionsExist && (tabType == 'myQuestions')" direction="vertical" v-model="myQuestionList">
       <tab v-for="(n, idx) in myQuestionList" :key="n.id" :id="idx" :title='readTicketName(n)'>     
         <div class="gmnh-tab-content">
@@ -63,16 +50,13 @@ import Tab from '@/components/Tab.vue';
 import IWantUrNFTForm from '@/components/IWantUrNFTForm.vue';
 import { PNFT } from '@/common/helpers/types';
 import QuestionItem from '@/components/QuestionItem.vue';
-import usePinata from '@/composables/pinata';
 import * as pnftInteractions from '@/composables/pnftInteractions'
-import { getOpenQuestionsFromGMNH} from '@/composables/gmnh-service';
+import { getOpenQuestionsFromGMNH, getAnsweredQuestionsFromGMNH, getMyQuestionsFromGMNH} from '@/composables/gmnh-service';
 
 const { isConnected, getWallet, getWalletAddress } = useWallet();
 const myQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
 const openQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
 const answeredQuestions = ref<PNFT[]>([]); // this is everything fetched in mem
-
-const { retrieveMyQuestions, retrieveOpenTickets, retrieveAnsweredQuestions} = usePinata();
 
 export default defineComponent({
   data() {
@@ -86,15 +70,9 @@ export default defineComponent({
       deep: true,
       handler(newValue, oldValue) {
         if (newValue) {
-            retrieveMyQuestions(getWalletAddress()!) 
-            .then((pinataTickets) => {
-            if (pinataTickets.length) {
-              myQuestions.value = pinataTickets;
-            } else {
-              //TODO: add error message
-            //  updateLoadingStdErr(ERR_NO_NFTS);
-            }
-          })
+             getMyQuestionsFromGMNH(getWalletAddress()!.toBase58()).then((myQuestionsFromGMNH) => {
+              myQuestions.value = myQuestionsFromGMNH;
+            });
         }
       }
     },
@@ -114,15 +92,9 @@ export default defineComponent({
       deep: true,
       handler(newValue, oldValue) {
         if (newValue) {
-            retrieveAnsweredQuestions(getWalletAddress()!) 
-            .then((pinataTickets) => {
-            if (pinataTickets.length) {
-              answeredQuestions.value = pinataTickets;
-            } else {
-              //TODO: add error message
-            //  updateLoadingStdErr(ERR_NO_NFTS);
-            }
-          })
+            getAnsweredQuestionsFromGMNH().then((answeredQuestionsFromGMNH) => {
+              answeredQuestions.value = answeredQuestionsFromGMNH;
+          });
         }
       }
     },
@@ -163,23 +135,17 @@ export default defineComponent({
     }, getDescription: function(ticket: PNFT) {
       return pnftInteractions.readDescription(ticket);
     }, answerSubmitted: function () {
-      //console.log('answer submitted');
     } 
   },
   onUpdated() {
   },
   setup(props) {
+    //fetch initially so that there isn't lag for first tab open
     if (props.tabType && props.tabType == 'myQuestions') {
 
-    retrieveMyQuestions(getWalletAddress()!) 
-      .then((pinataTickets) => {
-        if (pinataTickets.length) {
-          myQuestions.value = pinataTickets;
-        } else {
-            //TODO: add error message
-        //  updateLoadingStdErr(ERR_NO_NFTS);
-        }
-      }) 
+      getMyQuestionsFromGMNH(getWalletAddress()!.toBase58()).then((myQuestionsFromGMNH) => {
+              myQuestions.value = myQuestionsFromGMNH;
+      });
 
     } else if (props.tabType && props.tabType == 'openQuestions') {
       getOpenQuestionsFromGMNH().then((openQuestionsFromGMNH) => {
@@ -187,16 +153,9 @@ export default defineComponent({
             });
     } else if (props.tabType && props.tabType == 'answeredQuestions') {
 
-    retrieveAnsweredQuestions(getWalletAddress()!) 
-      .then((pinataTickets) => {
-        if (pinataTickets.length) {
-          answeredQuestions.value = pinataTickets;
-        } else {
-            //TODO: add error message
-        //  updateLoadingStdErr(ERR_NO_NFTS);
-        }
-      }) 
-
+      getAnsweredQuestionsFromGMNH().then((answeredQuestionsFromGMNH) => {
+              answeredQuestions.value = answeredQuestionsFromGMNH;
+          });
     }
 
     return {
@@ -204,11 +163,6 @@ export default defineComponent({
       openQuestionList: openQuestions,
       answeredQuestions: answeredQuestions
     }; 
-
-
-   
-      
-    
   },
 });
 </script>

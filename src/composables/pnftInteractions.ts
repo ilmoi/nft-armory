@@ -146,6 +146,3 @@ export function generateTicketDetailLink(ticket: PNFT, appUrl?: string)  {
    return typeof attr != 'undefined' ? attr : "Attribute Not Set"
  }
 
-const { retrieveOpenTickets} = usePinata();
-
-

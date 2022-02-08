@@ -138,48 +138,6 @@ export default function usePinata() {
     return res.IpfsHash;
   };
 
-  const retrieveOpenTickets =  async(userWalletAddr: PublicKey) => {
-    /* Search Pinata account for open NTF tickets & 
-       preprocess retrieved metadata by saving as PNFT objects
-    */
-
-    //TODO: need to add whitelist check
-    const pinata_results = await searchForOpenTickets()
-    const pnfts = (await convertTicketsToPNFTs(pinata_results));
-
-    return pnfts;
-  };
-
-  const retrieveMyQuestions =  async(userWalletAddr: PublicKey) => {
-    /* Search Pinata account for open NTF tickets & 
-       preprocess retrieved metadata by saving as PNFT objects
-    */
-
-    const pinata_results = await searchForMyQuestions(userWalletAddr);
-    const pnfts = (await convertTicketsToPNFTs(pinata_results));
-
-    return pnfts;
-
-      //we dont need to do this anymore
-   /* await pnfts.forEach(pnft => getAnswerText(pnft)); 
-    */
-  };
-
-  const retrieveAnsweredQuestions =  async(userWalletAddr: PublicKey) => {
-    /* Search Pinata account for answered NTF tickets & 
-       preprocess retrieved metadata by saving as PNFT objects
-    */
-
-    const pinata_results = await searchForAnsweredQuestions(userWalletAddr);
-    const pnfts = (await convertTicketsToPNFTs(pinata_results));
-
-    return pnfts;
-
-      //we dont need to do this anymore
-   /* await pnfts.forEach(pnft => getAnswerText(pnft)); 
-    */
-  };
-
   const searchByMintId =  async(mintId: string) => {
     /* Search Pinata account by mintId
     */
@@ -219,89 +177,6 @@ export default function usePinata() {
    // await pnfts.forEach(pnft => getAnswerText(pnft)); 
   };
 
-  const searchForAnsweredQuestions =  async(userWalletAddr: PublicKey) => {
-    /* Search Pinata account for open NTF tickets using metadata filter
-    */
-    const metadataFilter = {
-      keyvalues: {
-        ticket_type: {
-              value: 'question',
-              op: 'eq'
-          },
-          status: {
-            value: 'answered',
-            op: 'eq'
-        },
-      },
-    };
-  
-    const filters = {
-        status : 'pinned',
-        pageLimit: 25,
-        pageOffset: 0,
-        metadata: metadataFilter
-    };
-
-    const res = (await pinata.pinList(filters))
-    return res.rows
-  };
-
-  const searchForOpenTickets =  async() => {
-    /* Search Pinata account for open NTF tickets using metadata filter
-    */
-    const metadataFilter = {
-      keyvalues: {
-        ticket_type: {
-              value: 'question',
-              op: 'eq'
-          },
-          status: {
-            value: 'open',
-            op: 'eq'
-        },
-      },
-    };
-  
-    const filters = {
-        status : 'pinned',
-        pageLimit: 25,
-        pageOffset: 0,
-        metadata: metadataFilter
-    };
-
-    const res = (await pinata.pinList(filters))
-    return res.rows
-  };
-
-  const searchForMyQuestions =  async(userWalletAddr: PublicKey) => {
-    /* Search Pinata account for user's open NTF tickets using metadata filter
-    */
-    const metadataFilter = {
-      keyvalues: {
-        ticket_type: {
-              value: 'question',
-              op: 'eq'
-          },
-        userWallet: {
-          value: userWalletAddr.toBase58(),
-          op: 'eq'
-        }
-      },
-    };
-  
-    const filters = {
-        status : 'pinned',
-        pageLimit: 25,
-        pageOffset: 0,
-        metadata: metadataFilter
-    };
-
-    const res = (await pinata.pinList(filters));
-    return res.rows
-  };
-
-
-
   async function convertTicketsToPNFTs(tokens: PinataPinListResponseRow[]): Promise<PNFT[]> {
     /* Convert tickets from Pinata search by cross-mapping data to new objects in memory
        Takes PinataPinListResponseRow[] ----> PNFT
@@ -338,14 +213,10 @@ export default function usePinata() {
     hashToURI,
     URIToHash,
     uploadJSONForAnswer,
-    searchForOpenTickets,
     updatePinataMetadata,
     convertTicketsToPNFTs,
-    retrieveOpenTickets,
-    retrieveMyQuestions,
     searchByMintId,
     retrieveByMintId,
-    retrieveAnsweredQuestions
   };
 }
 
