@@ -93,7 +93,7 @@ import { NFTGet } from '@/common/NFTget';
 import { NFTUpdate } from '@/common/NFTupdate';
 import useModal from '@/composables/modal';
 import ExplorerLink from '@/components/ExplorerLink.vue';
-import { objectOneInsideObjectTwo } from '@/common/helpers/util';
+import { objectOneInsideObjectTwo, isTransactionComplete } from '@/common/helpers/util';
 import ContentTooltipMetadata from '@/components/content/tooltip/ContentTooltipMetadata.vue';
 import StdNotifications from '@/components/StdNotifications.vue';
 import { DEFAULTS } from '@/globals';
@@ -178,9 +178,11 @@ export default defineComponent({
         primarySaleHappened.value as any // null-undefined conflict
       )
         .then(async (result: string) => {
-          txId.value = result;
-          isLoading.value = false;
-          await fetchUpdatedNFT();
+          if(await isTransactionComplete(result)) {
+            txId.value = result;
+            isLoading.value = false;
+            await fetchUpdatedNFT();
+          }
         })
         .catch((e) => {
           setError(e);

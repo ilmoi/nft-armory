@@ -3,6 +3,9 @@
 import { PublicKey } from '@solana/web3.js';
 import fs from 'fs';
 import BN from 'bn.js';
+import useCluster from '@/composables/cluster';
+
+const { getConnection } = useCluster();
 
 export function getEnumKeyByEnumValue(myEnum: any, enumValue: any) {
   const keys = Object.keys(myEnum).filter((x) => myEnum[x] == enumValue);
@@ -155,4 +158,41 @@ export function objectOneInsideObjectTwo(o1: any, o2: any): boolean {
 
 export function isIterable(value: any): boolean {
   return Symbol.iterator in Object(value);
+}
+
+const getUnixTs = () => {
+  return new Date().getTime() / 1000;
+};
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * 
+ * @param txId a returned solana transaction id
+ * @returns boolean whether or not the transaction has been confirmed/finalized on chain. 
+ * retries at rate of checkInterval. returns true when found and throws error after timeout ms.
+ */
+export async function isTransactionComplete(txId: string): Promise<boolean> {
+  const startTime = getUnixTs();
+  const timeout: number = 60000;
+  const checkInterval: number = 3000;
+  let confirmation = null;
+  let done = false;
+  while (!done && getUnixTs() - startTime < (timeout/1000)) {
+      confirmation = await getConnection().getSignatureStatus(txId);
+
+      if (confirmation.value && ((confirmation.value.confirmationStatus === 'confirmed') || (confirmation.value.confirmationStatus === 'finalized'))) {
+          console.log(`Confirmation Status: ${confirmation.value.confirmationStatus}`)
+          done = true;
+          break;
+      }
+      else {console.log(`Confirmation Status: ${confirmation.value?.confirmationStatus || 'not yet found.'}`);
+  }
+      await sleep(checkInterval);
+  }
+  if(!done) {
+      throw new Error('Timed out awaiting confirmation on transaction.');
+  }
+  return done;
 }
