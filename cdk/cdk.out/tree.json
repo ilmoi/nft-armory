@@ -1,0 +1,128 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.112"
+        }
+      },
+      "CdkStack": {
+        "id": "CdkStack",
+        "path": "CdkStack",
+        "children": {
+          "nft-armory": {
+            "id": "nft-armory",
+            "path": "CdkStack/nft-armory",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "CdkStack/nft-armory/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkStack/nft-armory/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "amplify.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.20.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.20.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkStack/nft-armory/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Amplify::App",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "nft-armory",
+                    "basicAuthConfig": {
+                      "enableBasicAuth": false
+                    },
+                    "buildSpec": "version: \"1.0\"\nfrontend:\n  phases:\n    preBuild:\n      commands:\n        - yarn\n    build:\n      commands:\n        - yarn build\n  artifacts:\n    baseDirectory: dist\n    files: .nan\n",
+                    "iamServiceRole": {
+                      "Fn::GetAtt": [
+                        "nftarmoryRoleC8DF8C0A",
+                        "Arn"
+                      ]
+                    },
+                    "oauthToken": "{{resolve:secretsmanager:ilmoi-github-token:SecretString:token::}}",
+                    "repository": "https://github.com/ilmoi/nft-armory"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_amplify.CfnApp",
+                  "version": "2.20.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-amplify-alpha.App",
+              "version": "2.20.0-alpha.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "CdkStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CdkStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.20.0"
+                }
+              },
+              "Condition": {
+                "id": "Condition",
+                "path": "CdkStack/CDKMetadata/Condition",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "2.20.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.112"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.20.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.20.0"
+    }
+  }
+}
