@@ -1,0 +1,32 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "0fdca1f9321e544f51f40fd3e47d0638e003c546bc9726e72d5cb0a3d4a1f92c": {
+      "source": {
+        "path": "asset.0fdca1f9321e544f51f40fd3e47d0638e003c546bc9726e72d5cb0a3d4a1f92c",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0fdca1f9321e544f51f40fd3e47d0638e003c546bc9726e72d5cb0a3d4a1f92c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2e07af52061fcc900956d0910a831619cfadbd5e0c660d735fc79d2a715d2777": {
+      "source": {
+        "path": "ArmoryStack2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2e07af52061fcc900956d0910a831619cfadbd5e0c660d735fc79d2a715d2777.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

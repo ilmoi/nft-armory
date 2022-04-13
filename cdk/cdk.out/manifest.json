@@ -7,27 +7,27 @@
         "file": "tree.json"
       }
     },
-    "CdkStack.assets": {
+    "ArmoryStack2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CdkStack.assets.json",
+        "file": "ArmoryStack2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CdkStack": {
+    "ArmoryStack2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "CdkStack.template.json",
+        "templateFile": "ArmoryStack2.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/563319e7c9c2366b1f0d05b991f9aea271d43d3dde0e89bb0bc35c34b78324a2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e07af52061fcc900956d0910a831619cfadbd5e0c660d735fc79d2a715d2777.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CdkStack.assets"
+          "ArmoryStack2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -36,47 +36,149 @@
         }
       },
       "dependencies": [
-        "CdkStack.assets"
+        "ArmoryStack2.assets"
       ],
       "metadata": {
-        "/CdkStack/nft-armory/Role/Resource": [
+        "/ArmoryStack2/gengo-auth/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "nftarmoryRoleC8DF8C0A"
+            "data": "gengoauthServiceRole05AFC773"
           }
         ],
-        "/CdkStack/nft-armory/Resource": [
+        "/ArmoryStack2/gengo-auth/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "nftarmory2ABB3CC5"
+            "data": "gengoauth28E7C223"
           }
         ],
-        "/CdkStack/CDKMetadata/Default": [
+        "/ArmoryStack2/gengo-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapi64114B09"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiCloudWatchRole899CC95D"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiAccount43858E97"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiDeployment7C0A06DB14fe472c6aebf220b32722b53ae1bf93"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiDeploymentStageprodD06BECE1"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiEndpoint4B9C2532"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Default/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiproxy3DB37879"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Default/{proxy+}/ANY/ApiPermission.ArmoryStack2gengoapiE4869FB0.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiproxyANYApiPermissionArmoryStack2gengoapiE4869FB0ANYproxy971B4CEE"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Default/{proxy+}/ANY/ApiPermission.Test.ArmoryStack2gengoapiE4869FB0.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiproxyANYApiPermissionTestArmoryStack2gengoapiE4869FB0ANYproxy46F10271"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Default/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiproxyANY32164E0E"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Default/ANY/ApiPermission.ArmoryStack2gengoapiE4869FB0.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiANYApiPermissionArmoryStack2gengoapiE4869FB0ANY98775B2F"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Default/ANY/ApiPermission.Test.ArmoryStack2gengoapiE4869FB0.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiANYApiPermissionTestArmoryStack2gengoapiE4869FB0ANY079903A2"
+          }
+        ],
+        "/ArmoryStack2/gengo-api/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gengoapiANY7B388DFE"
+          }
+        ],
+        "/ArmoryStack2/api-url": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiurl"
+          }
+        ],
+        "/ArmoryStack2/nft-armory-app-2/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nftarmoryapp2Role967EBCCC"
+          }
+        ],
+        "/ArmoryStack2/nft-armory-app-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nftarmoryapp25DD01FBD"
+          }
+        ],
+        "/ArmoryStack2/nft-armory-app-2/main/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nftarmoryapp2mainED3CB508"
+          }
+        ],
+        "/ArmoryStack2/CDKMetadata/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadata"
           }
         ],
-        "/CdkStack/CDKMetadata/Condition": [
+        "/ArmoryStack2/CDKMetadata/Condition": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadataAvailable"
           }
         ],
-        "/CdkStack/BootstrapVersion": [
+        "/ArmoryStack2/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CdkStack/CheckBootstrapVersion": [
+        "/ArmoryStack2/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CdkStack"
+      "displayName": "ArmoryStack2"
     }
   }
 }

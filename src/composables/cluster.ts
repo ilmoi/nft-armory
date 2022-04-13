@@ -25,12 +25,13 @@ export default function useCluster() {
 
   const getToken = async (): Promise<string> =>
     // @ts-ignore
-    (await axios.get('http://localhost:3000/token')).data.access_token;
+    (await axios.get(process.env.VUE_APP_GENGO_AUTH)).data.access_token;
 
   const getConnection = (commitment?: Commitment): Connection =>
     new Connection(getClusterURL(), {
       commitment: commitment ?? 'processed',
       fetchMiddleware: tokenAuthFetchMiddleware({
+        // tokenExpiry: 0,
         getToken,
       }),
     });
