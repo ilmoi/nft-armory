@@ -85,6 +85,26 @@ yarn build
 
 Note you'll need to have [vue-cli](https://cli.vuejs.org/guide/installation.html) installed.
 
+# Run in Docker
+The Docker image supports these environment variable for configuration:
+
+- PORT: the port to run the web server on, default: 3000
+- NF_FILE: name of the custom 404 file, default: 404.html
+- IDX_FILE: name of the custom index files, default: index.html
+- TLS_CERT_FILE: TLS certification file, optional, required for HTTPS support
+- TLS_KEY_FILE: TLS key file, optional, required for HTTPS support
+
+Run with default configs:
+```bash
+$ docker pull gyengus/nft-armory
+$ docker run -d -p 8080:3000 nft-armory
+```
+You can also use docker compose:
+```bash
+$ docker-compose up -d
+```
+
+
 # License
 MIT
 
