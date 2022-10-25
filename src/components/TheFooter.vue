@@ -1,16 +1,16 @@
 <template>
   <div class="footer pt-1 pb-1">
-    <p class="px-3">Built with</p>
+    <p class="px-3 pt-1">Built with</p>
     <i class="nes-icon heart"></i>
-    <p class="px-3">
+    <p class="px-3 pt-1">
       by
       <a class="nes-text is-primary" href="https://twitter.com/_ilmoi" target="_blank">@_ilmoi</a>
       | powered by
-      <a class="nes-text is-primary" href="https://twitter.com/GenesysGo" target="_blank"
-        >GenesysGo</a
+      <a class="nes-text is-primary" href="https://twitter.com/heliuslabs" target="_blank"
+        >Helius</a
       >
     </p>
-    <img src="../assets/gg_logo.png" height="31" width="28" />
+    <img src="../assets/helius.png" height="31" />
   </div>
 </template>
 
